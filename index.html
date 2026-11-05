@@ -310,7 +310,7 @@ input { font-family: inherit; }
 
   <!-- МЕНЮ -->
   <div id="menu" class="screen">
-    <div class="menu-cards"><div class="card f s"><span class="cr">A</span><span class="cs">♠</span><span class="cbig">♠</span></div><div class="card f h"><span class="cr">K</span><span class="cs">♥</span><span class="cbig">♥</span></div><div class="card f d"><span class="cr">Q</span><span class="cs">♦</span><span class="cbig">♦</span></div><div class="card f c"><span class="cr">J</span><span class="cs">♣</span><span class="cbig">♣</span></div></div>
+    <div class="menu-cards"><div class="card f s"><span class="cr">A</span><span class="cbig">♠</span></div><div class="card f h"><span class="cr">K</span><span class="cbig">♥</span></div><div class="card f d"><span class="cr">Q</span><span class="cbig">♦</span></div><div class="card f c"><span class="cr">J</span><span class="cbig">♣</span></div></div>
     <div class="menu-title"><span class="t1">НОВОСИБИРСКИЙ</span><span class="t2">ХОЛДЕН МАСТЕР</span><span class="t3">ПОКЕР</span></div>
     <div class="menu-sub">Texas Hold'em · с друзьями и ботами</div>
     <div class="nick-box">
@@ -1633,6 +1633,7 @@ const E = PokerEngine;
 const {BOT_CHARACTERS, TURN_SECONDS, getBestHand} = E;
 const SERVER_URL = 'wss://pokertest-server.onrender.com';              // подставляется при сборке; ?server=wss://... переопределяет
 const BOT_LINK = 'https://t.me/bratishkapoker_bot';
+const APP_VERSION = '0.64';                       // должна совпадать с v в меню; build.py кладёт её в version.json
 const tg = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
 const SUIT_CLASS = E.SUIT_CLASS;
 const SEAT_COLORS = ['#ff2d86', '#12dcef', '#ff8a00', '#8c4fe6', '#2fdc7a', '#f4ee1f'];
@@ -1716,9 +1717,26 @@ function boot() {
     // комната подключается сама только по ссылке-приглашению с кодом ровно из 5 символов; сама по себе комната не создаётся.
     // (в Telegram hash страницы выглядит как #tgWebAppData=..., его нельзя принимать за код)
     const hashCode = (location.hash || '').replace('#', '');
+    checkForUpdate();
     const sp = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || queryParam('room') || (/^[A-Za-z0-9]{5}$/.test(hashCode) ? hashCode : '');
     const code = /^[A-Za-z0-9]{5}$/.test(String(sp || '')) ? String(sp).toUpperCase() : '';
     if (code) { $('codeInput').value = code; setTimeout(() => joinByInput(), 50); }
+}
+// Telegram и браузер любят надолго запоминать страницу: если рядом лежит свежий version.json с другой версией,
+// перезагружаемся на адрес с ?v=<версия> (для кеша это новый адрес). hash (данные Telegram) и остальные параметры сохраняем.
+function checkForUpdate() {
+    try {
+        if (!/^https?:$/.test(location.protocol) || typeof fetch !== 'function') return;
+        fetch('version.json?t=' + Date.now(), {cache: 'no-store'}).then(r => r.ok ? r.json() : null).then(j => {
+            if (!j || !j.v || typeof j.v !== 'string' || !/^[0-9][0-9.]{0,10}$/.test(j.v) || j.v === APP_VERSION) return;
+            const q = new URLSearchParams(location.search);
+            if (q.get('v') === j.v) return;                     // уже пробовали этот адрес: не зацикливаемся
+            if (sessionStorage.getItem('poker_upd') === j.v) return;
+            sessionStorage.setItem('poker_upd', j.v);
+            q.set('v', j.v);
+            location.replace(location.pathname + '?' + q.toString() + location.hash);
+        }).catch(() => {});
+    } catch (e) {}
 }
 function initMenu() {
     const u = tgUser();
