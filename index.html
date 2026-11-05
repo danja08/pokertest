@@ -334,7 +334,7 @@ input { font-family: inherit; }
       </div>
       <div class="menu-msg" id="menuMsg"></div>
     </div>
-    <div class="menu-ver">v0.66</div>
+    <div class="menu-ver">v0.67</div>
   </div>
 
 
@@ -801,7 +801,7 @@ function createTable(opts) {
         opts: {bots: true, blindEvery: 5},   // настройки стола (меняет хозяин в лобби); blindEvery 0 = блайнды не растут
         turnOpen: false, deadline: 0,
         winningCards: null, potBreakdown: null, winner: null,
-        handOver: false, uncontested: -1      // раздача закончена (можно показать карты) / кто забрал банк без вскрытия
+        handOver: false, uncontested: -1, lastAggressor: -1      // раздача закончена (можно показать карты) / кто забрал банк без вскрытия
     };
     for (let i = 0; i < SEATS; i++) game.players.push(emptySeat(i));
 
@@ -1073,7 +1073,7 @@ function createTable(opts) {
             log(`⬆ БЛАЙНДЫ ↑ ₽${game.smallBlind}/₽${game.bigBlind}`);
         }
 
-        game.handOver = false; game.uncontested = -1;
+        game.handOver = false; game.uncontested = -1; game.lastAggressor = -1;
         game.deck = createDeck();
         game.pot = 0;
         game.currentBet = 0;
@@ -1174,12 +1174,19 @@ function createTable(opts) {
     // ctx: needToPay, street, eq (шанс выиграть против нужного числа соперников с учётом их диапазона), potOdds, nOpp, handValue, unopened
     function decideAction(p, ctx) {
         const char = BOT_CHARACTERS[p.character] || BOT_CHARACTERS['tag'];
-        const {needToPay, street, eq, potOdds, nOpp, handValue, unopened} = ctx;
+        const {needToPay, street, eq, potOdds, nOpp, handValue, unopened, stackBB, read} = ctx;
         const rnd = Math.random();
         const shouldBluff = Math.random() < char.bluffFreq;
 
         // маньяк иногда идёт ва-банк, но не с мусором
         if (char.allInFreq && Math.random() < char.allInFreq && p.chips > needToPay && eq >= 0.42) return 'allin';
+
+        // ── короткий стек (до 10 BB): пуш или фолд, как в турнирах: чем короче стек, тем шире диапазон ──
+        if (street === 'preflop' && unopened && stackBB <= 10 && p.chips > needToPay) {
+            const need = stackBB <= 5 ? 4 : stackBB <= 7 ? 5 : 5.8;
+            if (handValue >= need) return 'allin';
+            return needToPay === 0 ? 'check' : 'fold';
+        }
 
         // ── префлоп: вход в банк, в котором ещё никто не повышал (есть только блайнды и, возможно, лимперы) ──
         if (street === 'preflop' && unopened) {
@@ -1214,7 +1221,7 @@ function createTable(opts) {
         }
 
         // ── нужно платить: сравниваем шансы с ценой ──
-        const need = Math.min(0.97, potOdds * char.callK);
+        const need = Math.min(0.97, potOdds * char.callK * (read || 1));
         const raiseEq = Math.min(0.80, 1 / (nOpp + 1) + 0.32);
         if (canRaise(p) && eq >= raiseEq && Math.random() < 0.35 + char.aggression * 0.6) return 'raise';
         if (street === 'preflop' && handValue >= 8.5 && canRaise(p) && Math.random() < 0.7) return 'raise';
@@ -1254,6 +1261,14 @@ function createTable(opts) {
                      : game.community.length === 4 ? 'turn' : 'river';
         const nOpp = Math.max(1, contenders().length - 1);
         const potOdds = needToPay / (game.pot + needToPay);
+        const stackBB = (p.chips + p.bet) / game.bigBlind;
+        // чтение соперника: человек, который последним поставил или повысил
+        let read = 1;
+        const ag = game.lastAggressor >= 0 ? game.players[game.lastAggressor] : null;
+        if (ag && isHumanSeat(ag) && ag.stats && ag.stats.r + ag.stats.c + ag.stats.f >= 12) {
+            const rr = ag.stats.r / (ag.stats.r + ag.stats.c + 1);
+            if (rr > 0.5) read = 0.88; else if (rr < 0.12) read = 1.12;
+        }
         const handValue = street === 'preflop' ? getPreflopHandValue(p.hand) : 0;
         const unopened = street === 'preflop' && game.currentBet <= game.bigBlind;
 
@@ -1275,7 +1290,7 @@ function createTable(opts) {
             }
         }
 
-        let action = decideAction(p, {needToPay, street, eq, potOdds, nOpp, handValue, unopened});
+        let action = decideAction(p, {needToPay, street, eq, potOdds, nOpp, handValue, unopened, stackBB, read});
         const shove = action === 'allin';
         if (action === 'allin' || action === 'bet') action = 'raise';
         if (action === 'raise' && !canRaise(p)) action = needToPay > 0 ? 'call' : 'check';
@@ -1296,6 +1311,12 @@ function createTable(opts) {
     }
 
     // ───── единая обработка действия (человек и боты) ─────
+    // как играет человек: боты читают это и подстраивают цену колла (часто повышает: платим шире; почти не повышает, но поставил: платим уже)
+    function noteAction(p, kind) {
+        if (!isHumanSeat(p)) return;
+        const st = p.stats || (p.stats = {r: 0, c: 0, f: 0});
+        if (kind === 'raise') st.r++; else if (kind === 'fold') st.f++; else st.c++;
+    }
     H.doAction = function (i, kind, raiseTo) {
         const p = game.players[i];
         const toCall = Math.max(0, game.currentBet - p.bet);
@@ -1325,6 +1346,7 @@ function createTable(opts) {
                     game.lastActors.forEach(j => { if (j !== i) game.players[j].noRaise = true; });
                     game.lastActors.add(i);
                 }
+                noteAction(p, 'raise'); game.lastAggressor = i;
                 p.action = p.allIn ? 'All-in' : (wasBet ? 'Бет' : 'Рейз');
                 if (p.allIn) log(`${nm(p)} ALL-IN ₽${p.bet}`);
                 else if (wasBet) log(`${nm(p)} ставка ₽${p.bet} (${(p.bet / game.bigBlind).toFixed(1)} BB) → стек ₽${p.chips}`);
@@ -1335,6 +1357,7 @@ function createTable(opts) {
             }
         }
 
+        noteAction(p, kind);
         if (kind === 'fold') {
             p.folded = true;
             p.action = 'Фолд';
@@ -1676,14 +1699,14 @@ return {
 };
 });
 
-// ═══════════════════════════ КЛИЕНТ v0.66 ═══════════════════════════
+// ═══════════════════════════ КЛИЕНТ v0.67 ═══════════════════════════
 // Экран ничего не решает: он рисует снимок состояния (S), который приходит
 // либо с сервера по WebSocket (игра с друзьями), либо от встроенного движка (игра с ботами).
 const E = PokerEngine;
 const {BOT_CHARACTERS, TURN_SECONDS, getBestHand} = E;
 const SERVER_URL = 'wss://pokertest-server.onrender.com';              // подставляется при сборке; ?server=wss://... переопределяет
 const BOT_LINK = 'https://t.me/bratishkapoker_bot';
-const APP_VERSION = '0.66';                       // должна совпадать с v в меню; build.py кладёт её в version.json
+const APP_VERSION = '0.67';                       // должна совпадать с v в меню; build.py кладёт её в version.json
 const tg = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
 const SUIT_CLASS = E.SUIT_CLASS;
 const SEAT_COLORS = ['#ff2d86', '#12dcef', '#ff8a00', '#8c4fe6', '#2fdc7a', '#f4ee1f'];
