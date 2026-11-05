@@ -128,7 +128,7 @@ input { font-family: inherit; }
 .card.back { background-color: var(--pink); background-image: var(--cardback); background-size: cover; background-position: center; box-shadow: inset 0 0 0 calc(var(--u)*2) var(--bone), calc(var(--u)*2) calc(var(--u)*3) 0 var(--ink); }
 .card.deal-anim { animation: dealCard .45s cubic-bezier(.3,1.5,.5,1) backwards; }   /* backwards, не both: если анимация не запустилась, карта всё равно видна */
 @keyframes dealCard { from { transform: translateY(calc(var(--u)*-70)) rotate(-40deg) scale(.3); opacity: 0; } to { transform: none; opacity: 1; } }
-.card.combo-part { transform: translateY(calc(var(--u)*-8)) scale(1.08); border-color: var(--gold); box-shadow: 0 0 0 calc(var(--u)*3) var(--ink), 0 0 calc(var(--u)*14) calc(var(--u)*4) var(--gold); z-index: 3; animation: glow .6s ease-in-out infinite alternate; }
+.card.combo-part { transform: translateY(calc(var(--u)*-8)) scale(1.08); border-color: var(--gold); box-shadow: 0 0 0 calc(var(--u)*3) var(--ink), 0 0 calc(var(--u)*14) calc(var(--u)*4) var(--gold); z-index: 3; animation: glow .6s ease-in-out 4 alternate; }   /* четыре вспышки и стоп: бесконечное свечение box-shadow на 5–7 картах тормозило */
 .card.dim { opacity: .62; filter: grayscale(.3); }
 @keyframes glow { from { box-shadow: 0 0 0 calc(var(--u)*3) var(--ink), 0 0 calc(var(--u)*8) calc(var(--u)*2) var(--gold); } to { box-shadow: 0 0 0 calc(var(--u)*3) var(--ink), 0 0 calc(var(--u)*18) calc(var(--u)*6) var(--gold); } }
 
@@ -146,9 +146,9 @@ input { font-family: inherit; }
 .avatar { position: relative; width: calc(var(--u)*46); height: calc(var(--u)*46); border-radius: 50%; border: calc(var(--u)*3) solid var(--ink); box-shadow: 0 0 0 calc(var(--u)*3) #8a82f0, 0 0 0 calc(var(--u)*6) var(--ink), calc(var(--u)*3) calc(var(--u)*5) 0 calc(var(--u)*6) var(--ink); display: flex; align-items: center; justify-content: center; overflow: hidden; background-size: cover; background-position: center; font-family: var(--font-h); font-size: calc(var(--u)*18); color: #fff; text-shadow: calc(var(--u)*2) calc(var(--u)*2) 0 var(--ink); }
 .avatar.face { background-image: var(--face); }
 .avatar::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background-image: var(--dots); background-size: calc(var(--u)*4) calc(var(--u)*4); opacity: .22; pointer-events: none; }
-.seat.active .avatar { animation: turnPulse .7s ease-in-out infinite alternate; box-shadow: 0 0 0 calc(var(--u)*3) var(--pink), 0 0 0 calc(var(--u)*6) var(--ink), 0 0 calc(var(--u)*18) calc(var(--u)*8) var(--pink); }
+.seat.active .avatar { will-change: transform; animation: turnPulse .7s ease-in-out infinite alternate; box-shadow: 0 0 0 calc(var(--u)*3) var(--pink), 0 0 0 calc(var(--u)*6) var(--ink), 0 0 calc(var(--u)*18) calc(var(--u)*8) var(--pink); }
 @keyframes turnPulse { from { transform: scale(1); } to { transform: scale(1.07); } }
-.seat.winner .avatar { box-shadow: 0 0 0 calc(var(--u)*3) var(--gold), 0 0 0 calc(var(--u)*6) var(--ink), 0 0 calc(var(--u)*20) calc(var(--u)*9) var(--gold); animation: turnPulse .5s ease-in-out infinite alternate; }
+.seat.winner .avatar { will-change: transform; box-shadow: 0 0 0 calc(var(--u)*3) var(--gold), 0 0 0 calc(var(--u)*6) var(--ink), 0 0 calc(var(--u)*20) calc(var(--u)*9) var(--gold); animation: turnPulse .5s ease-in-out 6 alternate; }
 .mk-row { position: absolute; right: calc(var(--u)*-14); top: calc(var(--u)*-6); display: flex; flex-direction: column; gap: calc(var(--u)*2); z-index: 4; }
 .seat[data-seat="1"] .mk-row, .seat[data-seat="2"] .mk-row, .seat[data-seat="3"] .mk-row { right: auto; left: calc(var(--u)*-14); }
 .mk { display: flex; align-items: center; justify-content: center; width: calc(var(--u)*22); height: calc(var(--u)*22); border-radius: 50%; border: calc(var(--u)*2.5) solid var(--ink); font-style: normal; font-size: calc(var(--u)*11); line-height: 1; color: var(--ink); box-shadow: calc(var(--u)*1) calc(var(--u)*2) 0 var(--ink); }
@@ -157,8 +157,8 @@ input { font-family: inherit; }
 @keyframes popS { from { transform: rotate(-8deg) scale(.2); } to { transform: rotate(-8deg) scale(1); } }
 @keyframes pop { from { transform: translateX(-50%) rotate(-3deg) scale(.2); } to { transform: translateX(-50%) rotate(-3deg) scale(1); } }
 .st-fold { background: #6a6a8a; } .st-check { background: var(--cyan); color: var(--ink); text-shadow: none; } .st-call { background: var(--green); color: var(--ink); text-shadow: none; }
-.st-raise, .st-bet { background: var(--orange); } .st-allin { background: var(--pink); animation: popS .25s cubic-bezier(.3,1.6,.5,1), shake .3s infinite alternate; }
-@keyframes shake { from { margin-left: calc(var(--u)*-1); } to { margin-left: calc(var(--u)*1); } }
+.st-raise, .st-bet { background: var(--orange); } .st-allin { background: var(--pink); animation: popS .25s cubic-bezier(.3,1.6,.5,1), shake .1s .25s 8 alternate; }   /* дрожь только transform и конечная: margin и бесконечные анимации перерисовывали вёрстку */
+@keyframes shake { from { transform: rotate(-8deg) translateX(calc(var(--u)*-1.5)); } to { transform: rotate(-8deg) translateX(calc(var(--u)*1.5)); } }
 .plate { position: relative; z-index: 4; margin-top: calc(var(--u)*6); min-width: calc(var(--u)*76); max-width: calc(var(--u)*86); padding: calc(var(--u)*4) calc(var(--u)*6) calc(var(--u)*5); text-align: center; background: var(--ink); border: calc(var(--u)*3) solid var(--violet); border-radius: calc(var(--u)*8); box-shadow: calc(var(--u)*2) calc(var(--u)*3) 0 rgba(18,13,51,.7); transform: rotate(-.8deg); }
 .seat:nth-child(even) .plate { transform: rotate(.8deg); }
 .plate .nm { display: block; font-size: calc(var(--u)*15); line-height: 1.1; color: var(--bone); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -326,7 +326,7 @@ input { font-family: inherit; }
       </div>
       <div class="menu-msg" id="menuMsg"></div>
     </div>
-    <div class="menu-ver">v0.63</div>
+    <div class="menu-ver">v0.64</div>
   </div>
 
 
@@ -1626,7 +1626,7 @@ return {
 };
 });
 
-// ═══════════════════════════ КЛИЕНТ v0.63 ═══════════════════════════
+// ═══════════════════════════ КЛИЕНТ v0.64 ═══════════════════════════
 // Экран ничего не решает: он рисует снимок состояния (S), который приходит
 // либо с сервера по WebSocket (игра с друзьями), либо от встроенного движка (игра с ботами).
 const E = PokerEngine;
@@ -1659,8 +1659,9 @@ const cfg = {sound: true, showCharacters: false, reactions: true, nick: ''};
 let audioCtx = null;
 
 function $(id) { return document.getElementById(id); }
-function setText(id, t) { const el = $(id); if (el) el.textContent = t; }
-function setHtml(id, h) { const el = $(id); if (el) el.innerHTML = h; }
+// пишем в DOM только если текст изменился: лишние записи перезапускают анимации и вызывают пересчёт вёрстки (это и «дёргало» интерфейс)
+function setText(id, t) { const el = $(id); if (!el) return; t = String(t); if (el._t !== t) { el.textContent = t; el._t = t; } }
+function setHtml(id, h) { const el = $(id); if (!el) return; if (el._h !== h) { el.innerHTML = h; el._h = h; } }
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c])); }
 function safeUrl(u) { return String(u || '').replace(/['"()\\<>\s]/g, ''); }
 
@@ -1945,10 +1946,12 @@ function syncRaiseInputs() {
 // подпись на кнопке: если не помещается, уменьшаем шрифт, пока не влезет (длинные суммы, All-in)
 function fitBtn(id, text) {
     const el = $(id); if (!el) return;
-    el.textContent = text; el.style.fontSize = '';
-    if (!el.clientWidth) return;                       // кнопка скрыта: подгоним, когда покажем
+    if (el._t === text && el._w && el._w === el.clientWidth) return;     // ничего не изменилось
+    el.textContent = text; el._t = text; el.style.fontSize = '';
+    if (!el.clientWidth) { el._w = 0; return; }                       // кнопка скрыта: подгоним, когда покажем
     let f = parseFloat(getComputedStyle(el).fontSize) || 20, guard = 0;
     while (el.scrollWidth > el.clientWidth && f > 9 && guard++ < 30) { f -= 1; el.style.fontSize = f + 'px'; }
+    el._w = el.clientWidth;
 }
 function preset(t) {
     if (!iAmActive()) return;
@@ -2082,10 +2085,10 @@ function renderLobby() {
     $('lobbyStart').disabled = !botsOn && n < 2;
     $('lobbyStart').style.opacity = (!botsOn && n < 2) ? '.5' : '';
     const blindTxt = BLIND_LABEL[o.blindEvery] || 'каждые ' + o.blindEvery + ' раздач';
-    $('lobbyOpts').innerHTML = host
+    setHtml('lobbyOpts', host
         ? `<button class="opt-btn ${botsOn ? 'on' : ''}" onclick="setOpt({bots:${!botsOn}})">🤖 Боты: ${botsOn ? 'ВКЛ' : 'ВЫКЛ'}</button>
            <button class="opt-btn" onclick="cycleBlinds()">⬆ Блайнды: ${blindTxt}</button>`
-        : `<div class="opt-line">🤖 Боты: <b>${botsOn ? 'вкл' : 'выкл'}</b> · ⬆ Блайнды: <b>${blindTxt}</b></div>`;
+        : `<div class="opt-line">🤖 Боты: <b>${botsOn ? 'вкл' : 'выкл'}</b> · ⬆ Блайнды: <b>${blindTxt}</b></div>`);
     setText('lobbyNote', host
         ? (!botsOn ? (n < 2 ? 'Без ботов: ждём хотя бы одного друга.' : `За столом ${n} игроков, без ботов.`)
             : (n < 2 ? 'Пока вы один. Позовите друга или начните игру с ботами.' : `За столом ${n} из 6. Остальные места займут боты.`))
@@ -2433,10 +2436,11 @@ function render() {
     S.players.forEach((p, i) => {
         const d = viewSeat(i);
         const seat = $('seat' + d);
-        if (seat && p.empty) { seat.innerHTML = ''; seat.style.display = 'none'; }
+        if (seat && p.empty) { if (seat._h !== '') { seat.innerHTML = ''; seat._h = ''; } seat.style.display = 'none'; }
         else if (seat) {
             seat.style.display = '';
-            seat.innerHTML = seatHtml(p, i);
+            const sh = seatHtml(p, i);
+            if (seat._h !== sh) { seat.innerHTML = sh; seat._h = sh; }
             const out = !p.inHand && p.chips === 0;
             seat.classList.toggle('active', i === S.active && p.inHand && !p.folded && S.phase !== 'showdown');
             seat.classList.toggle('folded', p.folded);
