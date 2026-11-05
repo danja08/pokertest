@@ -395,7 +395,7 @@ input { font-family: inherit; }
       </div>
       <div class="menu-msg" id="menuMsg"></div>
     </div>
-    <div class="menu-ver">v0.74</div>
+    <div class="menu-ver">v0.75</div>
   </div>
 
 
@@ -1066,6 +1066,36 @@ function createTable(opts) {
         sched(() => nextHand(), 600);
     }
 
+    // вход в уже идущую игру по приглашению: бот уходит, человек садится на его место со следующей раздачи
+    const queue = [];
+    function botSeatsFree() { return game.players.filter(p => !p.empty && p.userId == null && p.chips > 0).length - queue.length; }
+    function enqueue(user) {
+        const id = String(user.id);
+        if (game.status !== 'playing') return {ok: false, err: 'started'};
+        if (seatOf(id) >= 0) return {ok: true, seat: seatOf(id)};
+        if (queue.some(q => q.id === id)) return {ok: true, queued: true};
+        if (botSeatsFree() <= 0) return {ok: false, err: 'full'};
+        queue.push({id: id, name: cleanName(user.name), photo: cleanPhoto(user.photo)});
+        if (game.paused) setPaused(false);
+        if (game.waiting) { applyQueue(); kick(); }                  // раздачи сейчас нет: садим сразу
+        render();
+        return seatOf(id) >= 0 ? {ok: true, seat: seatOf(id)} : {ok: true, queued: true};
+    }
+    function unqueue(userId) { const k = queue.findIndex(q => q.id === String(userId)); if (k >= 0) queue.splice(k, 1); return k >= 0; }
+    function isQueued(userId) { return queue.some(q => q.id === String(userId)); }
+    function applyQueue() {
+        while (queue.length) {
+            const q = queue.shift();
+            const bots = game.players.filter(p => !p.empty && p.userId == null && p.chips > 0);
+            if (!bots.length) break;
+            const b = bots[Math.floor(Math.random() * bots.length)], cash = game.opts.mode === 'cash', old = b.name;
+            // кэш: свежий вход; турнир: человек получает стек бота, чтобы общее число фишек не менялось
+            Object.assign(b, emptySeat(b.idx), {empty: false, userId: q.id, name: q.name, photo: q.photo, chips: cash ? STAKES[game.opts.stake].buyIn : b.chips, connected: true});
+            log(`🪑 ${q.name} садится вместо бота ${old}`);
+        }
+        queue.length = 0;
+    }
+
     function humanCount() { return game.players.filter(isHumanSeat).length; }
     function connectedCount() { return game.players.filter(p => isHumanSeat(p) && p.connected).length; }
     function presentCount() { return game.players.filter(p => isHumanSeat(p) && p.connected && !p.afk).length; }   // люди, которые сейчас за столом (на связи и не отошли)
@@ -1195,6 +1225,7 @@ function createTable(opts) {
                     allIn: false, noRaise: false, action: '', isWinner: false, won: 0, winCards: null, timeouts: 0, sitOut: !p.connected, out: false, place: 0, leaving: false});
             } else Object.assign(p, emptySeat(i));
         });
+        queue.length = 0;
         game.status = 'lobby'; game.rematch = []; game.waiting = false; game.result = null;
         game.community = []; game.pot = 0; game.currentBet = 0; game.phase = 'preflop';
         game.active = -1; game.sb = null; game.bb = null; game.winner = null; game.hand = 0;
@@ -1898,6 +1929,7 @@ function createTable(opts) {
     }
 
     function nextHand() {
+        applyQueue();
         const cash = game.opts.mode === 'cash';
         if (cash) {
             game.players.forEach((p, i) => { if (!p.empty && p.leaving) Object.assign(p, emptySeat(i)); });                 // ушедшие освобождают места
@@ -1964,7 +1996,7 @@ function createTable(opts) {
 
     return {
         game: game, H: H, snapshot: snapshot,
-        join: join, leave: leave, setConnected: setConnected, start: start, configure: configure, rematch: rematch, rebuy: rebuy, react: react, show: show, restart: restart, afk: afk, pause: pause,
+        join: join, leave: leave, setConnected: setConnected, start: start, configure: configure, rematch: rematch, rebuy: rebuy, react: react, show: show, restart: restart, afk: afk, pause: pause, enqueue: enqueue, unqueue: unqueue, isQueued: isQueued,
         act: act, destroy: destroy, seatOf: seatOf,
         humanCount: humanCount, connectedCount: connectedCount,
         // для тестов
@@ -1990,7 +2022,7 @@ const E = PokerEngine;
 const {BOT_CHARACTERS, TURN_SECONDS, getBestHand} = E;
 const SERVER_URL = 'wss://pokertest-server.onrender.com';              // подставляется при сборке; ?server=wss://... переопределяет
 const BOT_LINK = 'https://t.me/bratishkapoker_bot';
-const APP_VERSION = '0.74';                       // должна совпадать с v в меню; build.py кладёт её в version.json
+const APP_VERSION = '0.75';                       // должна совпадать с v в меню; build.py кладёт её в version.json
 const tg = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
 const SUIT_CLASS = E.SUIT_CLASS;
 const SEAT_COLORS = ['#ff2d86', '#12dcef', '#ff8a00', '#8c4fe6', '#2fdc7a', '#f4ee1f'];
@@ -2732,6 +2764,7 @@ function applySnapshot(s) {
     S = s;
     lastSnapAt = Date.now();
     clockOffset = s.now - Date.now();
+    if (S.me >= 0) { watching = false; if (currentRoom) store(ROOM_KEY, currentRoom); }      // сели вместо бота: теперь мы игрок
     walletOnSnapshot();
     if (!S) return;
     if (s.status === 'playing' && prevStatus && prevStatus !== 'playing') { logsView = []; histView = []; }   // новая игра: старый журнал не нужен
@@ -2868,7 +2901,7 @@ function makeWsNet(onStatus) {
         ws.onopen = () => {
             everOpened = true; tries = 0; lastRx = Date.now();
             const u = tgUser();
-            ws.send(JSON.stringify({t: 'hello', initData: (tg && tg.initData) || '', nick: cfg.nick, guest: guestId(), room: currentRoom || undefined, spectate: watching || undefined}));
+            ws.send(JSON.stringify({t: 'hello', initData: (tg && tg.initData) || '', nick: cfg.nick, guest: guestId(), room: currentRoom || undefined, spectate: (watching && !(S && S.queued)) || undefined}));   // в очереди на место бота при переподключении снова встаём в очередь
         };
         ws.onmessage = ev => {
             lastRx = Date.now();
@@ -3174,7 +3207,7 @@ function updateWaitText() {
     else if (S.waiting) t = 'Ждём игроков за столом…';
     else if (me && me.folded) t = 'Вы сбросили карты. Ждём…';
     else t = 'Раздача…';
-    if (!me && S.status === 'playing' && !S.paused) t = '👁 ' + t;
+    if (!me && S.status === 'playing' && !S.paused) t = S.queued ? '🪑 Бот уступит вам место со следующей раздачи' : '👁 ' + t;
     setHtml('waitText', t + waitButtonsHtml());
 }
 // кнопки под текстом ожидания: показать карты, докупить, отойти/пауза, сесть за стол
