@@ -127,7 +127,7 @@ input { font-family: inherit; }
 .card .cbig { position: absolute; right: calc(var(--u)*3); bottom: calc(var(--u)*1); font-size: calc(var(--cw) * .72); line-height: 1; opacity: 1; }
 .card.s { color: #241a66; } .card.h { color: var(--red); } .card.d { color: var(--blue); } .card.c { color: #139a52; }
 .card.back { background-color: var(--pink); background-image: var(--cardback); background-size: cover; background-position: center; box-shadow: inset 0 0 0 calc(var(--u)*2) var(--bone), calc(var(--u)*2) calc(var(--u)*3) 0 var(--ink); }
-.card.deal-anim { animation: dealCard .45s cubic-bezier(.3,1.5,.5,1) both; }
+.card.deal-anim { animation: dealCard .45s cubic-bezier(.3,1.5,.5,1) backwards; }   /* backwards, не both: если анимация не запустилась, карта всё равно видна */
 @keyframes dealCard { from { transform: translateY(calc(var(--u)*-70)) rotate(-40deg) scale(.3); opacity: 0; } to { transform: none; opacity: 1; } }
 .card.combo-part { transform: translateY(calc(var(--u)*-8)) scale(1.08); border-color: var(--gold); box-shadow: 0 0 0 calc(var(--u)*3) var(--ink), 0 0 calc(var(--u)*14) calc(var(--u)*4) var(--gold); z-index: 3; animation: glow .6s ease-in-out infinite alternate; }
 .card.dim { opacity: .62; filter: grayscale(.3); }
@@ -1629,7 +1629,11 @@ function fit() {
 if (typeof window !== 'undefined' && window.addEventListener) {
     window.addEventListener('resize', fit);
     window.addEventListener('load', boot);
-    document.addEventListener('visibilitychange', () => { if (!document.hidden && mode === 'online' && net && net.wake) net.wake(); });
+    // вернулись в приложение (например, после копирования кода в чате): сокет мог тихо умереть, поэтому переподключаемся сразу
+    const comeBack = () => { if (!document.hidden && mode === 'online' && net && net.reconnect) net.reconnect(); };
+    document.addEventListener('visibilitychange', comeBack);
+    window.addEventListener('online', comeBack);
+    window.addEventListener('pageshow', comeBack);
 }
 function boot() {
     fit(); tgInit(); initMenu(); buildHelp();
@@ -1719,7 +1723,7 @@ function toggleCharacters() { cfg.showCharacters = !cfg.showCharacters; setToggl
 function toggleReactions() { cfg.reactions = !cfg.reactions; setToggle('btnReact', cfg.reactions); if (!cfg.reactions) $('reactLayer').innerHTML = ''; }
 
 // ───────── реакции: эмодзи и короткие фразы ─────────
-let reactCooldown = 0;
+let reactCooldown = 0, lastSnapAt = Date.now(), syncAskedAt = 0, reconAt = 0;
 function buildReactPanel() {
     const R = E.REACTIONS;
     $('reactPanel').innerHTML =
@@ -1916,8 +1920,25 @@ function remainingSec() {
     if (!S || !S.deadline) return 0;
     return Math.max(0, (S.deadline - (Date.now() + clockOffset)) / 1000);
 }
+// если кажется, что мы пропустили обновление (ход «завис»), просим сервер повторить состояние, а потом переподключаемся
+function watchdog() {
+    if (mode !== 'online' || !net || !S) return;
+    const now = Date.now(), stale = now - lastSnapAt;
+    if (S.status === 'lobby') {   // в лобби обновления редкие: раз в 8 с сверяемся, если тишина 16 с, подключаемся заново
+        if (stale > 8000 && now - syncAskedAt > 8000) { syncAskedAt = now; net.send({t: 'sync'}); }
+        if (stale > 16000 && net.reconnect && now - reconAt > 16000) { reconAt = now; net.reconnect(); }
+        return;
+    }
+    if (S.status !== 'playing' || S.phase === 'showdown') return;
+    const turnNotOpened = S.active >= 0 && !S.turnOpen;
+    const overdue = S.turnOpen && S.deadline && (now + clockOffset) > S.deadline + 3500;
+    if (!turnNotOpened && !overdue) return;
+    if (stale > 4000 && now - syncAskedAt > 4000) { syncAskedAt = now; net.send({t: 'sync'}); }
+    if (stale > 9000 && net.reconnect && now - reconAt > 9000) { reconAt = now; net.reconnect(); }
+}
 function updateTimerUi() {
     if (!S) return;
+    watchdog();
     if (iAmActive()) {
         const v = remainingSec();
         setText('timer', Math.ceil(v));
@@ -1932,6 +1953,7 @@ function stopTick() { if (tickTimer) clearInterval(tickTimer); tickTimer = null;
 function applySnapshot(s) {
     const prevStatus = S ? S.status : null;
     S = s;
+    lastSnapAt = Date.now();
     clockOffset = s.now - Date.now();
     if (s.status === 'playing' && prevStatus && prevStatus !== 'playing') logsView = [];   // новая игра: старый журнал не нужен
     s.logs.forEach(l => logsView.push({text: l.text, cls: l.cls}));
@@ -2008,7 +2030,7 @@ function copyCode() {
 function shareRoom() {
     const code = currentRoom || (S && S.code) || '';
     if (!code) return;
-    const link = BOT_LINK + '?startapp=' + code;
+    const link = BOT_LINK + '?start=' + code;   // бот ответит кнопкой «Сесть за стол»; startapp сработает только после настройки в BotFather
     const text = '♠ Играем в покер! Код стола: ' + code;
     try {
         if (tg && tg.openTelegramLink) {
@@ -2037,7 +2059,16 @@ function makeWsNet(onStatus) {
         send(o) { if (ws && ws.readyState === 1) ws.send(JSON.stringify(o)); },
         queue(o) { pending = o; if (helloOk) { api.send(o); pending = null; } },
         close() { closedByUs = true; clearTimeout(retryTimer); clearInterval(pingTimer); try { ws && ws.close(); } catch (e) {} },
-        wake() { if (!closedByUs && (!ws || ws.readyState > 1)) { clearTimeout(retryTimer); connect(); } }
+        wake() { if (!closedByUs && (!ws || ws.readyState > 1)) { clearTimeout(retryTimer); connect(); } },
+        // принудительно: старый сокет отбрасываем (его сообщения больше не слушаем) и подключаемся заново; сервер вернёт текущее состояние
+        reconnect() {
+            if (closedByUs || !url) return;
+            clearTimeout(retryTimer);
+            const old = ws;
+            if (old) { old.onopen = old.onmessage = old.onclose = old.onerror = null; try { old.close(); } catch (e) {} }
+            ws = null; tries = 0;
+            connect();
+        }
     };
     function connect() {
         if (!url) { onStatus('nourl'); return; }
@@ -2067,7 +2098,7 @@ function makeWsNet(onStatus) {
     pingTimer = setInterval(() => {
         if (closedByUs) return;
         if (ws && ws.readyState === 1) {
-            if (Date.now() - lastRx > 50000) { try { ws.close(); } catch (e) {} return; }
+            if (Date.now() - lastRx > 25000) { try { ws.close(); } catch (e) {} return; }
             api.send({t: 'ping'});
         }
     }, 15000);
