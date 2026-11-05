@@ -1578,9 +1578,12 @@ if (typeof window !== 'undefined' && window.addEventListener) {
 function boot() {
     fit(); tgInit(); initMenu(); buildHelp();
     const u = tgUser();
-    const sp = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || queryParam('room') || (location.hash || '').replace('#', '');
-    const code = String(sp || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5);
-    if (code.length === 5) { $('codeInput').value = code; setTimeout(() => joinByInput(), 50); }
+    // комната подключается сама только по ссылке-приглашению с кодом ровно из 5 символов; сама по себе комната не создаётся.
+    // (в Telegram hash страницы выглядит как #tgWebAppData=..., его нельзя принимать за код)
+    const hashCode = (location.hash || '').replace('#', '');
+    const sp = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || queryParam('room') || (/^[A-Za-z0-9]{5}$/.test(hashCode) ? hashCode : '');
+    const code = /^[A-Za-z0-9]{5}$/.test(String(sp || '')) ? String(sp).toUpperCase() : '';
+    if (code) { $('codeInput').value = code; setTimeout(() => joinByInput(), 50); }
 }
 function initMenu() {
     const u = tgUser();
