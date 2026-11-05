@@ -83,15 +83,15 @@ input { font-family: inherit; }
 .icon-btn:active { transform: translateY(calc(var(--u)*2)); box-shadow: 0 calc(var(--u)*1) 0 var(--ink); }
 
 /* ───────── ШАПКА ───────── */
-.hud { position: absolute; left: 0; right: 0; top: 0; height: calc(calc(var(--u)*50) + var(--safe-t)); padding: var(--safe-t) calc(var(--u)*10) 0; display: flex; align-items: center; justify-content: space-between; gap: calc(var(--u)*6); z-index: 20; background: linear-gradient(180deg, var(--bg2), var(--bg)); border-bottom: calc(var(--u)*4) solid var(--ink); }
+.hud { position: absolute; left: 0; right: 0; top: 0; height: calc(calc(var(--u)*30) + var(--safe-t)); padding: var(--safe-t) calc(var(--u)*12) 0; display: flex; align-items: center; justify-content: space-between; gap: calc(var(--u)*8); z-index: 26; background: linear-gradient(180deg, var(--bg2), var(--bg)); border-bottom: calc(var(--u)*4) solid var(--ink); }
 .hud-info { display: flex; flex-direction: column; gap: calc(var(--u)*3); min-width: 0; }
 .hud > div:first-child { min-width: 0; flex: 1 1 auto; }
-.hud-line { font-size: calc(var(--u)*17); color: var(--bone2); white-space: nowrap; overflow: hidden; }
+.hud-line { flex: 1 1 auto; min-width: 0; font-size: calc(var(--u)*16); color: var(--bone2); white-space: nowrap; overflow: hidden; }
 .hud-line b { color: var(--gold); font-weight: normal; }
 .hud-btns { display: flex; gap: calc(var(--u)*6); }
 
 /* ───────── СТОЛ ───────── */
-.table-wrap { position: absolute; left: calc(var(--u)*14); right: calc(var(--u)*14); top: calc(calc(var(--u)*60) + var(--safe-t)); bottom: calc(calc(var(--u)*160) + var(--safe-b)); }
+.table-wrap { position: absolute; left: calc(var(--u)*14); right: calc(var(--u)*14); top: calc(calc(var(--u)*38) + var(--safe-t)); bottom: calc(calc(var(--u)*160) + var(--safe-b)); }
 .table {
   position: absolute; inset: 0; border-radius: calc(var(--u)*999); border: calc(var(--u)*4) solid var(--ink);
   background:
@@ -344,6 +344,31 @@ input { font-family: inherit; }
 .stk-note { margin-top: calc(var(--u)*5); font-size: calc(var(--u)*13); color: var(--bone2); }
 .opt-btn.more { color: var(--bone2); background: transparent; box-shadow: none; border-style: dashed; }
 
+/* ───────── выпадающая плашка сверху ───────── */
+.hud-toggle { flex: none; width: calc(var(--u)*34); height: calc(var(--u)*22); display: flex; align-items: center; justify-content: center; font-size: calc(var(--u)*16); color: var(--bone2); background: var(--bg3); border: calc(var(--u)*3) solid var(--ink); border-radius: calc(var(--u)*8); transition: transform .2s; }
+.hud.open .hud-toggle { transform: rotate(180deg); }
+.drawer { position: absolute; left: 0; right: 0; top: calc(calc(var(--u)*30) + var(--safe-t)); z-index: 25; display: flex; justify-content: space-around; gap: calc(var(--u)*4); padding: calc(var(--u)*8) calc(var(--u)*8) calc(var(--u)*10); background: linear-gradient(180deg, var(--bg), #120d33); border-bottom: calc(var(--u)*4) solid var(--ink); box-shadow: 0 calc(var(--u)*6) 0 rgba(18,13,51,.45); transform: translateY(-120%); visibility: hidden; transition: transform .2s, visibility 0s .2s; }
+.drawer.open { transform: none; visibility: visible; transition: transform .2s, visibility 0s; }
+.drawer button { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: calc(var(--u)*2); padding: calc(var(--u)*4) 0 calc(var(--u)*6); color: var(--bone); background: var(--bg3); border: calc(var(--u)*3) solid var(--ink); border-radius: calc(var(--u)*10); box-shadow: 0 calc(var(--u)*3) 0 var(--ink); }
+.drawer button:active { transform: translateY(calc(var(--u)*2)); box-shadow: 0 calc(var(--u)*1) 0 var(--ink); }
+.drawer i { font-style: normal; font-size: calc(var(--u)*22); line-height: 1.1; }
+.drawer span { font-size: calc(var(--u)*11); color: var(--bone2); white-space: nowrap; }
+/* ───────── история раздач ───────── */
+.h-row { display: flex; align-items: center; gap: calc(var(--u)*8); padding: calc(var(--u)*8) calc(var(--u)*4); border-bottom: calc(var(--u)*2) dotted rgba(246,239,210,.14); }
+.h-num { flex: none; min-width: calc(var(--u)*44); font-size: calc(var(--u)*15); color: var(--bone2); }
+.h-mid { flex: 1; min-width: 0; font-size: calc(var(--u)*15); line-height: 1.15; }
+.h-mid small { display: block; font-size: calc(var(--u)*12); color: var(--bone2); }
+.h-net { flex: none; font-size: calc(var(--u)*17); }
+.h-net.plus { color: var(--green); } .h-net.minus { color: var(--pink); } .h-net.zero { color: var(--bone2); }
+.h-board { display: flex; gap: calc(var(--u)*3); margin: calc(var(--u)*6) 0 calc(var(--u)*8); }
+.h-pl { display: flex; align-items: center; gap: calc(var(--u)*8); padding: calc(var(--u)*5) 0; border-bottom: calc(var(--u)*2) dotted rgba(246,239,210,.1); font-size: calc(var(--u)*15); }
+.h-pl .h-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.h-pl .h-cards { display: flex; gap: calc(var(--u)*2); flex: none; min-width: calc(var(--u)*56); }
+.h-pl .h-res { flex: none; font-size: calc(var(--u)*13); color: var(--bone2); text-align: right; max-width: calc(var(--u)*110); }
+.h-back { display: inline-block; padding: calc(var(--u)*6) calc(var(--u)*10); margin-bottom: calc(var(--u)*6); font-size: calc(var(--u)*15); color: var(--cyan); }
+.h-lines .log-entry { font-size: calc(var(--u)*14); }
+.h-empty { padding: calc(var(--u)*24) calc(var(--u)*8); text-align: center; font-size: calc(var(--u)*16); color: var(--bone2); }
+
 </style>
 </head>
 <body>
@@ -370,7 +395,7 @@ input { font-family: inherit; }
       </div>
       <div class="menu-msg" id="menuMsg"></div>
     </div>
-    <div class="menu-ver">v0.73</div>
+    <div class="menu-ver">v0.74</div>
   </div>
 
 
@@ -395,15 +420,16 @@ input { font-family: inherit; }
 
   <!-- ИГРА -->
   <div id="game" class="screen" style="display:none">
-    <div class="hud">
-      <div class="hud-info">
-        <div class="hud-line">Блайнды <b id="blinds">10/20</b> · Раздача <b id="handNum">1</b></div>
-      </div>
-      <div class="hud-btns">
-        <button class="icon-btn" onclick="openSheet('sheetLog')" title="Журнал">📜</button>
-        <button class="icon-btn" onclick="openSheet('sheetHelp')" title="Комбинации">❓</button>
-        <button class="icon-btn" onclick="openSheet('sheetSettings')" title="Настройки">⚙️</button>
-      </div>
+    <div class="hud" onclick="toggleHud()">
+      <div class="hud-line">Блайнды <b id="blinds">10/20</b> · Раздача <b id="handNum">1</b></div>
+      <div class="hud-toggle" id="hudToggle">▾</div>
+    </div>
+    <div class="drawer" id="hudDrawer">
+      <button onclick="openFromDrawer('sheetLog')"><i>📜</i><span>Журнал</span></button>
+      <button onclick="openFromDrawer('sheetHist')"><i>📊</i><span>История</span></button>
+      <button onclick="openFromDrawer('sheetHelp')"><i>❓</i><span>Комбинации</span></button>
+      <button onclick="openFromDrawer('sheetSettings')"><i>⚙️</i><span>Настройки</span></button>
+      <button onclick="hideHud();toggleAway()"><i id="drawAwayIcon">☕</i><span id="drawAwayLbl">Отойти</span></button>
     </div>
 
     <div class="table-wrap">
@@ -456,6 +482,10 @@ input { font-family: inherit; }
     <div class="sheet-title"><span>ЖУРНАЛ</span><button class="sheet-close" onclick="closeSheets()">✕</button></div>
     <div id="stacks"></div>
     <div class="sheet-body"><div id="log"></div></div>
+  </div>
+  <div class="sheet" id="sheetHist">
+    <div class="sheet-title"><span id="histTitle">ИСТОРИЯ РАЗДАЧ</span><button class="sheet-close" onclick="closeSheets()">✕</button></div>
+    <div class="sheet-body"><div id="histBody"></div></div>
   </div>
   <div class="sheet" id="sheetHelp">
     <div class="sheet-title"><span>КОМБИНАЦИИ</span><button class="sheet-close" onclick="closeSheets()">✕</button></div>
@@ -851,6 +881,8 @@ function createTable(opts) {
     for (let i = 0; i < SEATS; i++) game.players.push(emptySeat(i));
 
     const logs = [];
+    const history = [];       // итоги последних раздач (открытая информация: чужие карты только если их показали)
+    let handLogStart = 0;
     const events = [];
     let logSeq = 0, evSeq = 0;
     let dead = false;
@@ -1145,7 +1177,7 @@ function createTable(opts) {
         game.smallBlind = cash ? STAKES[game.opts.stake].sb : 10;
         game.bigBlind = cash ? STAKES[game.opts.stake].bb : 20;
         game.winner = null;
-        logs.length = 0;
+        logs.length = 0; history.length = 0;
         H.startHand();
         return {ok: true};
     }
@@ -1231,6 +1263,7 @@ function createTable(opts) {
         }
 
         game.handOver = false; game.uncontested = -1; game.lastAggressor = -1;
+        handLogStart = logSeq;
         game.deck = createDeck();
         game.pot = 0;
         game.currentBet = 0;
@@ -1332,6 +1365,7 @@ function createTable(opts) {
     function decideAction(p, ctx) {
         const char = BOT_CHARACTERS[p.character] || BOT_CHARACTERS['tag'];
         const {needToPay, street, eq, potOdds, nOpp, handValue, unopened, stackBB, read} = ctx;
+        const draw = ctx.draw || 0, inPos = !!ctx.inPos;
         const rnd = Math.random();
         const shouldBluff = Math.random() < char.bluffFreq;
 
@@ -1371,9 +1405,22 @@ function createTable(opts) {
 
         // ── ставить можно бесплатно (чек доступен) ──
         if (needToPay === 0) {
-            if (eq >= char.valueBet) return Math.random() < 0.5 + char.aggression * 0.45 ? 'bet' : 'check';   // сильная рука: ставим, иногда слоуплеим
-            if (eq >= 0.5 && Math.random() < char.aggression * 0.35) return 'bet';                              // тонкое велью / защита
-            if (eq < 0.32 && street !== 'river' && Math.random() < char.bluffFreq * 0.6) return 'bet';           // блеф
+            const multi = nOpp >= 3 ? 0.5 : (nOpp === 2 ? 0.75 : 1);          // в многоходовом банке блефуем и ставим тонко реже
+            const vb = char.valueBet + (nOpp - 1) * 0.03;
+            if (eq >= vb) return Math.random() < 0.5 + char.aggression * 0.45 ? 'bet' : 'check';   // сильная рука: ставим, иногда слоуплеим
+            const bluffy = {sizing: 'bluff'};
+            // продолжающая ставка: мы повышали до флопа / ставили на прошлой улице, соперников мало
+            if (ctx.initiative && street !== 'river' && nOpp <= 2 && (street === 'flop' || eq >= 0.3 || draw >= 8)) {
+                const cb = (ctx.dry ? 0.62 : 0.4) * Math.min(1, 0.45 + char.aggression * 0.45 + char.bluffFreq * 0.5) + (inPos ? 0.05 : 0) - (street === 'turn' ? 0.2 : 0);
+                if (Math.random() < cb * multi) { ctx.sizing = 'bluff'; return 'bet'; }
+            }
+            // полу-блеф с дро (стрит/флеш): есть шансы улучшиться, если не заплатят
+            if (draw >= 8 && street !== 'river' && Math.random() < (0.25 + char.aggression * 0.5) * multi) { ctx.sizing = 'bluff'; return 'bet'; }
+            if (eq >= 0.5 && Math.random() < char.aggression * 0.35) return 'bet';                    // тонкое велью / защита
+            // чистый блеф: с позиции охотнее, без позиции вдвое реже, на ривере только с совсем пустой рукой
+            const bluffBase = char.bluffFreq * (inPos ? 1 : 0.5) * multi;
+            if (eq < 0.32 && street !== 'river' && Math.random() < bluffBase * 0.7) { ctx.sizing = 'bluff'; return 'bet'; }
+            if (street === 'river' && eq < 0.2 && nOpp === 1 && Math.random() < bluffBase * 0.5) { ctx.sizing = 'bluff'; return 'bet'; }
             return 'check';
         }
 
@@ -1382,14 +1429,49 @@ function createTable(opts) {
         const raiseEq = Math.min(0.80, 1 / (nOpp + 1) + 0.32);
         if (canRaise(p) && eq >= raiseEq && Math.random() < 0.35 + char.aggression * 0.6) return 'raise';
         if (street === 'preflop' && handValue >= 8.5 && canRaise(p) && Math.random() < 0.7) return 'raise';
+        // полу-блеф рейзом с хорошим дро (не дорого относительно стека, соперников немного)
+        if (draw >= 8 && street !== 'river' && nOpp <= 2 && canRaise(p) && needToPay < p.chips * 0.4 && Math.random() < char.aggression * 0.35) { ctx.sizing = 'bluff'; return 'raise'; }
         if (eq >= need) return 'call';
+        // «флоат»: с позиции платим против одной небольшой ставки чуть слабее, чем требуют шансы
+        if (inPos && street !== 'river' && nOpp === 1 && needToPay < game.pot * 0.45 && eq >= need * 0.8 && Math.random() < 0.15 + char.callStation * 0.3) return 'call';
         // полу-блеф: рейз только когда он дёшев относительно стека и есть хоть какие-то шансы
         if (canRaise(p) && needToPay < p.chips * 0.3 && eq >= 0.28 && Math.random() < char.bluffFreq * 0.3) return 'raise';
         return 'fold';
     }
 
-    // Размер рейза бота (до какой суммы). Всегда в допустимых пределах.
-    function botRaiseTo(p, street, strength, shove) {
+    // позиция после флопа: ходим последними среди тех, кто остался в раздаче (дилер ходит последним)
+    function isInPosition(i) {
+        const late = j => (j - game.dealer - 1 + SEATS) % SEATS;
+        return contenders().every(q => q.idx === i || late(q.idx) < late(i));
+    }
+    // фактура стола: мокрая (флеш-дро, связанные карты) или сухая
+    function boardTexture(board) {
+        const suits = {}, ranks = board.map(c => RANK_VAL[c.rank]).sort((a, b) => a - b);
+        board.forEach(c => { suits[c.suit] = (suits[c.suit] || 0) + 1; });
+        const maxSuit = Math.max.apply(null, Object.keys(suits).map(k => suits[k]));
+        let close = 0;
+        for (let k = 0; k + 1 < ranks.length; k++) if (ranks[k + 1] - ranks[k] > 0 && ranks[k + 1] - ranks[k] <= 2) close++;
+        const paired = new Set(ranks).size < ranks.length;
+        return {wet: maxSuit >= 3 || close >= 2, paired: paired};
+    }
+    // сколько карт достроят стрит или флеш (дро); только с участием наших карт
+    function drawOuts(p) {
+        const nb = game.community.length;
+        if (nb < 3 || nb > 4) return 0;
+        const known = p.hand.concat(game.community), cur = getBestHand(known).rank;
+        if (cur >= 5) return 0;
+        const have = new Set(known.map(c => c.rank + c.suit));
+        let n = 0;
+        SUITS.forEach(su => RANKS.forEach(r => {
+            if (have.has(r + su)) return;
+            const b = getBestHand(known.concat([{rank: r, suit: su}]));
+            if (b.rank >= 5 && b.rank > cur && b.cards.some(c => p.hand.some(h => h.rank === c.rank && h.suit === c.suit))) n++;
+        }));
+        return n;
+    }
+
+    // Размер рейза бота (до какой суммы). Всегда в допустимых пределах. sizing: 'bluff' — ставка поменьше и без жадности
+    function botRaiseTo(p, street, strength, shove, sizing) {
         const max = p.chips + p.bet;
         const minTo = Math.min(max, game.currentBet + game.minRaise);
         if (shove) return max;
@@ -1400,7 +1482,7 @@ function createTable(opts) {
             else target = game.currentBet * (2.6 + Math.random() * 0.8);
         } else {
             const potAfterCall = game.pot + toCall;
-            const frac = 0.4 + (Math.min(strength, 100) / 100) * 0.4 + Math.random() * 0.15;
+            const frac = sizing === 'bluff' ? 0.45 + Math.random() * 0.25 : 0.4 + (Math.min(strength, 100) / 100) * 0.4 + Math.random() * 0.15;
             target = game.currentBet + potAfterCall * frac;
         }
         target = Math.round(target / game.smallBlind) * game.smallBlind;
@@ -1447,7 +1529,12 @@ function createTable(opts) {
             }
         }
 
-        let action = decideAction(p, {needToPay, street, eq, potOdds, nOpp, handValue, unopened, stackBB, read});
+        const post = street === 'flop' || street === 'turn';
+        const tex = street === 'preflop' ? null : boardTexture(game.community);
+        const ctx = {needToPay, street, eq, potOdds, nOpp, handValue, unopened, stackBB, read,
+            inPos: street === 'preflop' ? false : isInPosition(i), initiative: game.lastAggressor === i, dry: !!tex && !tex.wet && !tex.paired,
+            draw: post ? drawOuts(p) : 0};
+        let action = decideAction(p, ctx);
         const shove = action === 'allin';
         if (action === 'allin' || action === 'bet') action = 'raise';
         if (action === 'raise' && !canRaise(p)) action = needToPay > 0 ? 'call' : 'check';
@@ -1455,7 +1542,7 @@ function createTable(opts) {
         if (action === 'check' && needToPay > 0) action = 'fold';
 
         let raiseTo = 0;
-        if (action === 'raise') raiseTo = botRaiseTo(p, street, eq * 100, shove);
+        if (action === 'raise') raiseTo = botRaiseTo(p, street, eq * 100, shove, ctx.sizing);
         return {action, raiseTo, eq, street};
     }
 
@@ -1710,6 +1797,24 @@ function createTable(opts) {
         return {pots: result, payout: payout, handOf: handOf};
     }
 
+    // запись о раздаче: что было на столе, кто чем выиграл, ход торговли. Закрытые карты в запись не попадают
+    function recordHand(kind, handOf) {
+        const inHand = game.players.filter(p => p.inHand);
+        const entry = {
+            n: game.hand, kind: kind, pot: inHand.reduce((a, p) => a + p.invested, 0), board: game.community.slice(),
+            players: inHand.map(p => {
+                const open = kind === 'showdown' && !p.folded;
+                return {seat: p.idx, name: p.name, bot: p.userId == null, folded: p.folded, put: p.invested, won: p.won || 0,
+                    hole: p.hand.length === 2 ? p.hand.map((c, k) => (open || p.shown[k]) ? c : null) : [null, null],
+                    combo: open && handOf && handOf[p.idx] ? handOf[p.idx].name : ''};
+            }),
+            lines: logs.filter(l => l.id > handLogStart && l.to == null).map(l => l.text).slice(-90)
+        };
+        history.push(entry);
+        if (history.length > 40) history.shift();
+        ev('hand', {entry: entry});
+    }
+
     // Все, кроме одного, сфолдили — банк забирает оставшийся без вскрытия
     H.awardUncontested = function (w) {
         stopTimer();
@@ -1720,6 +1825,7 @@ function createTable(opts) {
         log(`🏆 ${nm(w)} выигрывает по фолду — банк ₽${game.pot}`, 'result');
         ev('payout', {seat: w.idx, amt: game.pot});
         game.handOver = true; game.uncontested = w.idx;
+        recordHand('fold', null);
         sound('win');
         render();
         botReactOnWin(game.pot);
@@ -1770,8 +1876,9 @@ function createTable(opts) {
         game.winningCards = firstContested ? firstContested.hand.cards : null;
 
         sound('win');
-        render();
         game.handOver = true;
+        recordHand('showdown', res.handOf);
+        render();
         botReactOnWin(game.players.reduce((a, p) => a + (p.won || 0), 0));
         sched(() => nextHand(), 7000);
     };
@@ -1850,6 +1957,7 @@ function createTable(opts) {
         };
         snap.logs = logs.filter(l => l.id > cursor.log && (l.to == null || l.to === viewer));
         snap.events = events.filter(e => e.id > cursor.ev);
+        if (!cursor.log && !cursor.ev) snap.history = history.slice(-30);     // при первом подключении отдаём недавние раздачи, дальше они приходят событиями
         snap.cursor = {log: logSeq, ev: evSeq};
         return snap;
     }
@@ -1882,7 +1990,7 @@ const E = PokerEngine;
 const {BOT_CHARACTERS, TURN_SECONDS, getBestHand} = E;
 const SERVER_URL = 'wss://pokertest-server.onrender.com';              // подставляется при сборке; ?server=wss://... переопределяет
 const BOT_LINK = 'https://t.me/bratishkapoker_bot';
-const APP_VERSION = '0.73';                       // должна совпадать с v в меню; build.py кладёт её в version.json
+const APP_VERSION = '0.74';                       // должна совпадать с v в меню; build.py кладёт её в version.json
 const tg = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
 const SUIT_CLASS = E.SUIT_CLASS;
 const SEAT_COLORS = ['#ff2d86', '#12dcef', '#ff8a00', '#8c4fe6', '#2fdc7a', '#f4ee1f'];
@@ -1906,6 +2014,7 @@ let firstSnap = true;
 let dealOnce = false;
 let lastTurnKey = '';
 let tickTimer = null;
+const HINTS_ENABLED = false;       // силомер временно выключен: доработаем и вернём
 const cfg = {sound: true, reactions: true, nick: '', mode: 'sng', hints: true};
 let audioCtx = null;
 
@@ -2003,6 +2112,7 @@ function boot() {
     document.addEventListener('visibilitychange', () => { if (document.hidden && walletLoaded) walletSave(); });
     window.addEventListener('pagehide', () => { if (walletLoaded) walletSave(); });
     setToggle('btnHints', cfg.hints);
+    if (!HINTS_ENABLED) { const hr = $('btnHints'); if (hr && hr.parentNode) hr.parentNode.style.display = 'none'; }
     renderModeSwitch();
     const sp = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || queryParam('room') || (/^[A-Za-z0-9]{5}$/.test(hashCode) ? hashCode : '');
     const code = /^[A-Za-z0-9]{5}$/.test(String(sp || '')) ? String(sp).toUpperCase() : '';
@@ -2293,16 +2403,71 @@ function onBonus() { const a = claimBonus(); if (a) { toast('Бонус +₽' + 
 function onRescue() { const a = claimRescue(); if (a) toast('Докинули ₽' + a); menuMsg(''); }
 
 // ───────── шторки ─────────
+// выпадающая плашка сверху: кнопки спрятаны, пока не нужны, и закрываются сами
+let hudTimer = null;
+function hideHud() { clearTimeout(hudTimer); const d = $('hudDrawer'), h = document.querySelector('.hud'); if (d) d.classList.remove('open'); if (h) h.classList.remove('open'); }
+function toggleHud(force) {
+    const d = $('hudDrawer'), h = document.querySelector('.hud'); if (!d) return;
+    const open = force === undefined ? !d.classList.contains('open') : force;
+    d.classList.toggle('open', open); if (h) h.classList.toggle('open', open);
+    clearTimeout(hudTimer);
+    if (open) hudTimer = setTimeout(hideHud, 6000);
+}
+function openFromDrawer(id) { hideHud(); openSheet(id); }
+if (typeof document !== 'undefined') document.addEventListener('click', e => { const d = $('hudDrawer'); if (d && d.classList.contains('open') && !e.target.closest('#hudDrawer') && !e.target.closest('.hud')) hideHud(); });
+
 function openSheet(id) {
     closeSheets();
+    if (id === 'sheetHist') { histOpen = null; renderHist(); }
     const el = $(id); if (!el) return;
     el.classList.add('open'); $('scrim').classList.add('on');
     if (id === 'sheetLog') renderLog();
 }
 function closeSheets() {
-    ['sheetLog', 'sheetHelp', 'sheetSettings'].forEach(id => { const el = $(id); if (el) el.classList.remove('open'); });
+    ['sheetLog', 'sheetHist', 'sheetHelp', 'sheetSettings'].forEach(id => { const el = $(id); if (el) el.classList.remove('open'); });
     const sc = $('scrim'); if (sc) sc.classList.remove('on');
 }
+
+// ───────── история раздач ─────────
+let histView = [], histOpen = null;
+function histAdd(e) {
+    if (!e || histView.some(x => x.n === e.n)) return;
+    const me = myPlayer();
+    if (me && me.hand && me.hand[0] && me.hand[1]) e.mine = me.hand.slice();     // свои карты запоминаем у себя: сервер их в историю не кладёт
+    histView.push(e);
+    if (histView.length > 40) histView.shift();
+}
+function histNet(e) {
+    const p = e.players.find(x => x.seat === (S ? S.me : -1));
+    return p ? p.won - p.put : null;
+}
+function cardsMini(cs, mine) { return (cs || []).map((c, k) => c ? cardHtml(c, 'xs') : (mine && mine[k] ? cardHtml(mine[k], 'xs') : backHtml('xs'))).join(''); }
+function renderHist() {
+    const body = $('histBody'); if (!body) return;
+    if (histOpen === null) {
+        setText('histTitle', 'ИСТОРИЯ РАЗДАЧ');
+        if (!histView.length) { body.innerHTML = '<div class="h-empty">Пока нет сыгранных раздач.<br>Здесь появятся итоги каждой.</div>'; return; }
+        body.innerHTML = histView.slice().reverse().map(e => {
+            const net = histNet(e), winners = e.players.filter(p => p.won > 0);
+            const win = winners.slice(0, 2).map(p => `${esc(p.name)} +₽${p.won}`).join(', ');
+            const netHtml = net === null ? '<span class="h-net zero">👁</span>' : `<span class="h-net ${net > 0 ? 'plus' : (net < 0 ? 'minus' : 'zero')}">${net > 0 ? '+' : (net < 0 ? '−' : '')}₽${Math.abs(net)}</span>`;
+            return `<div class="h-row" onclick="histShow(${e.n})"><div class="h-num">#${e.n}</div><div class="h-mid">🏆 ${win || '—'}<small>банк ₽${e.pot}${e.kind === 'fold' ? ' · без вскрытия' : ''}</small></div>${netHtml}</div>`;
+        }).join('');
+        return;
+    }
+    const e = histView.find(x => x.n === histOpen);
+    if (!e) { histOpen = null; renderHist(); return; }
+    setText('histTitle', 'РАЗДАЧА #' + e.n);
+    const board = e.board.length ? e.board.map(c => cardHtml(c, 'xs')).join('') : '<span class="h-res">до флопа</span>';
+    const pls = e.players.slice().sort((a, b) => b.won - a.won).map(p => {
+        const mine = S && p.seat === S.me ? e.mine : null;
+        const res = p.won > 0 ? `🏆 +₽${p.won}${p.combo ? ' · ' + p.combo : ''}` : (p.folded ? 'фолд' : (p.combo || 'проиграл'));
+        return `<div class="h-pl"><div class="h-name">${esc(p.name)}${S && p.seat === S.me ? ' (вы)' : ''}</div><div class="h-cards">${cardsMini(p.hole, mine)}</div><div class="h-res">${res}<br>вложил ₽${p.put}</div></div>`;
+    }).join('');
+    body.innerHTML = `<div class="h-back" onclick="histBack()">← к списку</div><div>Банк ₽${e.pot}</div><div class="h-board">${board}</div>${pls}<div class="help-note">Закрытые карты (сбросили или не показали) не раскрываются.</div><div class="h-lines">${e.lines.map(l => `<div class="log-entry">${fmtLog(l)}</div>`).join('')}</div>`;
+}
+function histShow(n) { histOpen = n; renderHist(); const b = $('histBody'); if (b && b.parentNode) b.parentNode.scrollTop = 0; }
+function histBack() { histOpen = null; renderHist(); }
 
 // ───────── справка по комбинациям ─────────
 const HELP_COMBOS = [
@@ -2358,6 +2523,7 @@ function chipStackHtml(amount) {
     return `<div class="chips">${cols.map(col).join('')}</div><div class="bet-tag">₽${amount}</div>`;
 }
 function handleEvent(e) {
+    if (e.k === 'hand') { histAdd(e.entry); const hs = $('sheetHist'); if (hs && hs.classList.contains('open')) renderHist(); return; }
     if (e.k === 'snd') sound(e.type);
     else if (e.k === 'fly') animateChipFly(viewSeat(e.seat), e.amt);
     else if (e.k === 'sweep') sweepChips(viewSeat(e.seat), e.amt);
@@ -2568,7 +2734,8 @@ function applySnapshot(s) {
     clockOffset = s.now - Date.now();
     walletOnSnapshot();
     if (!S) return;
-    if (s.status === 'playing' && prevStatus && prevStatus !== 'playing') logsView = [];   // новая игра: старый журнал не нужен
+    if (s.status === 'playing' && prevStatus && prevStatus !== 'playing') { logsView = []; histView = []; }   // новая игра: старый журнал не нужен
+    if (s.history) { histView = s.history.slice(); }
     s.logs.forEach(l => logsView.push({text: l.text, cls: l.cls}));
     if (logsView.length > 400) logsView.splice(0, logsView.length - 400);
     const evs = firstSnap ? [] : s.events;
@@ -2617,8 +2784,8 @@ function renderLobby() {
            <button class="opt-btn more" onclick="toggleLobbyMore()">⚙ Ещё ${lobbyMore ? '▴' : '▾'}</button>
            ${lobbyMore ? `${cash ? `<button class="opt-btn" onclick="cycleStake()">🎚 Ставки: ${stakeTxt}</button>` : `<button class="opt-btn" onclick="cycleBlinds()">⬆ Блайнды: ${blindTxt}</button>`}
            <button class="opt-btn" onclick="cycleTurn()">⏱ Время на ход: ${o.turnSeconds || 30} с</button>
-           <button class="opt-btn ${o.hints ? 'on' : ''}" onclick="setOpt({hints:${!o.hints}})">💪 Силомер: ${o.hints ? 'ВКЛ' : 'ВЫКЛ'}</button>` : ''}`
-        : `<div class="opt-line">${cash ? '💵 Кэш <b>' + stakeTxt + '</b>' : '🏆 Sit & Go · ⬆ Блайнды: <b>' + blindTxt + '</b>'} · 🤖 <b>${botsOn ? 'вкл' : 'выкл'}</b> · ⏱ <b>${o.turnSeconds || 30} с</b> · 💪 <b>${o.hints ? 'вкл' : 'выкл'}</b></div>`);
+           ${HINTS_ENABLED ? `<button class="opt-btn ${o.hints ? 'on' : ''}" onclick="setOpt({hints:${!o.hints}})">💪 Силомер: ${o.hints ? 'ВКЛ' : 'ВЫКЛ'}</button>` : ''}` : ''}`
+        : `<div class="opt-line">${cash ? '💵 Кэш <b>' + stakeTxt + '</b>' : '🏆 Sit & Go · ⬆ Блайнды: <b>' + blindTxt + '</b>'} · 🤖 <b>${botsOn ? 'вкл' : 'выкл'}</b> · ⏱ <b>${o.turnSeconds || 30} с</b>${HINTS_ENABLED ? ' · 💪 <b>' + (o.hints ? 'вкл' : 'выкл') + '</b>' : ''}</div>`);
     setText('lobbyNote', host
         ? (!botsOn ? (n < 2 ? 'Без ботов: ждём хотя бы одного друга.' : `За столом ${n} игроков, без ботов.`)
             : (n < 2 ? 'Пока вы один. Позовите друга или начните игру с ботами.' : `За столом ${n} из 6. Остальные места займут боты.`))
@@ -2738,7 +2905,7 @@ function onNetStatus(st) {
 
 function onServerMsg(m) {
     if (m.t === 'joined') {
-        currentRoom = m.code; rejoining = false;
+        currentRoom = m.code; rejoining = false; histView = [];
         if (m.seat >= 0) store(ROOM_KEY, m.code);
         watching = m.seat < 0;
         logsView = [];
@@ -2817,7 +2984,7 @@ function backToTable() {
 }
 // подсказки: шанс выиграть против случайных рук, выгода колла, аутсы
 function toggleHints() { cfg.hints = !cfg.hints; store('poker_hints', cfg.hints ? '1' : '0'); setToggle('btnHints', cfg.hints); if (S) render(); }
-function hintsOn() { return !!(S && S.opts && S.opts.hints && cfg.hints && S.me >= 0 && S.status === 'playing'); }
+function hintsOn() { return HINTS_ENABLED && !!(S && S.opts && S.opts.hints && cfg.hints && S.me >= 0 && S.status === 'playing'); }
 let hintCache = {key: '', html: ''};
 // силомер: только шанс выиграть в процентах (против случайных рук) на цветной шкале
 function hintHtml() {
@@ -2887,7 +3054,7 @@ function closeModal() { const m = document.querySelector('.modal'); if (m && m.r
 function resetToMenu(silent) {
     stopTick();
     if (net) { try { net.send({t: 'leave'}); } catch (e) {} const n = net; setTimeout(() => n.close(), 150); }
-    net = null; mode = null; S = null; currentRoom = ''; watching = false; rejoining = false; if (!silent) store(ROOM_KEY, ''); logsView = []; firstSnap = true; lastTurnKey = '';
+    net = null; mode = null; S = null; currentRoom = ''; watching = false; rejoining = false; if (!silent) store(ROOM_KEY, ''); logsView = []; histView = []; hideHud(); firstSnap = true; lastTurnKey = '';
     closeModal(); closeSheets(); hideConn();
     $('actions').classList.remove('visible');
     showScreen('menu');
@@ -3050,6 +3217,8 @@ function render() {
     $('specBadge').style.display = S.spectators > 0 ? 'block' : 'none';
     const rbtn = $('reactBtn'); if (rbtn) rbtn.style.display = S.me < 0 ? 'none' : '';
     setText('awayLabel', canPause() ? 'Пауза' : 'Отойти от стола');
+    setText('drawAwayIcon', isAway() ? '▶' : (canPause() ? '⏸' : '☕')); setText('drawAwayLbl', isAway() ? 'Вернуться' : (canPause() ? 'Пауза' : 'Отойти'));
+    const dab = $('hudDrawer').lastElementChild; if (dab) dab.style.display = S.me < 0 ? 'none' : '';
     setText('awayBtn', isAway() ? 'Вернуться' : (canPause() ? 'Пауза' : 'Отойти'));
     $('awayBtn').parentNode.style.display = S.me < 0 ? 'none' : '';
     setText('hintSmall', S.opts && !S.opts.hints ? 'За этим столом силомер выключен' : 'Шанс выиграть в процентах');
