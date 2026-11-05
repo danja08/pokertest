@@ -123,7 +123,6 @@ input { font-family: inherit; }
 .card.me { --cw: calc(var(--u)*54); }
 .card.f::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background-image: var(--dots); background-size: calc(var(--u)*4) calc(var(--u)*4); opacity: .18; -webkit-mask: linear-gradient(135deg, transparent 55%, #000 100%); mask: linear-gradient(135deg, transparent 55%, #000 100%); }
 .card .cr { position: absolute; left: calc(var(--u)*3); top: calc(var(--u)*1); font-size: calc(var(--cw) * .5); line-height: 1.1; }
-.card .cs { position: absolute; left: calc(var(--u)*4); top: calc(var(--cw) * .54); font-size: calc(var(--cw) * .34); line-height: 1; }
 .card .cbig { position: absolute; right: calc(var(--u)*3); bottom: calc(var(--u)*1); font-size: calc(var(--cw) * .72); line-height: 1; opacity: 1; }
 .card.s { color: #241a66; } .card.h { color: var(--red); } .card.d { color: var(--blue); } .card.c { color: #139a52; }
 .card.back { background-color: var(--pink); background-image: var(--cardback); background-size: cover; background-position: center; box-shadow: inset 0 0 0 calc(var(--u)*2) var(--bone), calc(var(--u)*2) calc(var(--u)*3) 0 var(--ink); }
@@ -210,7 +209,7 @@ input { font-family: inherit; }
 .raise-slider { -webkit-appearance: none; appearance: none; flex: 1; min-width: 0; height: calc(var(--u)*12); border-radius: calc(var(--u)*6); border: calc(var(--u)*3) solid var(--ink); background: linear-gradient(90deg, var(--green), var(--yellow), var(--orange), var(--red)); }
 .raise-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: calc(var(--u)*26); height: calc(var(--u)*26); border-radius: 50%; background: var(--gold); border: calc(var(--u)*4) solid var(--ink); box-shadow: 0 calc(var(--u)*3) 0 var(--ink); }
 .raise-slider::-moz-range-thumb { width: calc(var(--u)*20); height: calc(var(--u)*20); border-radius: 50%; background: var(--gold); border: calc(var(--u)*4) solid var(--ink); }
-.button-row { display: grid; grid-template-columns: 1fr 1.25fr 1.6fr; gap: calc(var(--u)*8); }
+.button-row { display: grid; grid-template-columns: 1fr 1.45fr 1.55fr; gap: calc(var(--u)*8); }
 .button-row .btn { min-width: 0; padding: 0 calc(var(--u)*4); font-size: calc(var(--u)*21); white-space: nowrap; }
 
 /* ───────── ШТОРКИ (лог, таблица, справка, настройки) ───────── */
@@ -327,7 +326,7 @@ input { font-family: inherit; }
       </div>
       <div class="menu-msg" id="menuMsg"></div>
     </div>
-    <div class="menu-ver">v0.62</div>
+    <div class="menu-ver">v0.63</div>
   </div>
 
 
@@ -481,33 +480,39 @@ const BOT_PROFILES = [
 const BOT_CHARACTERS = {
     'fish': {
         name: 'Рыба', icon: '🐟', color: '#4FC3F7', desc: 'Новичок, играет много рук',
-        vpip: 0.60, pfr: 0.10, aggression: 0.3, bluffFreq: 0.05, callStation: 0.85, foldToRaise: 0.2
+        vpip: 0.60, pfr: 0.10, aggression: 0.3, bluffFreq: 0.05, callStation: 0.85, foldToRaise: 0.2,
+        callK: 0.85, valueBet: 0.7
     },
     'rock': {
         name: 'Скала', icon: '🪨', color: '#9E9E9E', desc: 'Только премиум руки, осторожный',
-        vpip: 0.15, pfr: 0.12, aggression: 0.5, bluffFreq: 0.02, callStation: 0.3, foldToRaise: 0.7
+        vpip: 0.15, pfr: 0.12, aggression: 0.5, bluffFreq: 0.02, callStation: 0.3, foldToRaise: 0.7,
+        callK: 1.25, valueBet: 0.7
     },
     'tag': {
         name: 'Акула', icon: '🦈', color: '#66BB6A', desc: 'Хороший игрок, тайтово-агрессивный',
-        vpip: 0.25, pfr: 0.20, aggression: 0.65, bluffFreq: 0.15, callStation: 0.4, foldToRaise: 0.55
+        vpip: 0.25, pfr: 0.20, aggression: 0.65, bluffFreq: 0.15, callStation: 0.4, foldToRaise: 0.55,
+        callK: 1.1, valueBet: 0.62
     },
     'lag': {
         name: 'Агрессор', icon: '🎲', color: '#FFA726', desc: 'Лузово-агрессивный, много блефует',
-        vpip: 0.40, pfr: 0.32, aggression: 0.80, bluffFreq: 0.35, callStation: 0.5, foldToRaise: 0.35
+        vpip: 0.40, pfr: 0.32, aggression: 0.80, bluffFreq: 0.35, callStation: 0.5, foldToRaise: 0.35,
+        callK: 0.95, valueBet: 0.56
     },
     'pro': {
         name: 'Профи', icon: '🧠', color: '#AB47BC', desc: 'Мастер математики, pot odds',
         vpip: 0.28, pfr: 0.24, aggression: 0.70, bluffFreq: 0.20, callStation: 0.35, foldToRaise: 0.60,
-        useMath: true
+        callK: 1.0, valueBet: 0.6
     },
     'maniac': {
         name: 'Маньяк', icon: '🤪', color: '#EF5350', desc: 'Гипер-агрессия, частые all-in',
         vpip: 0.70, pfr: 0.50, aggression: 0.95, bluffFreq: 0.50, callStation: 0.8, foldToRaise: 0.15,
+        callK: 0.88, valueBet: 0.5,
         allInFreq: 0.15
     },
     'neutral': {
         name: 'Нейтрал', icon: '😐', color: '#90A4AE', desc: 'Сбалансированный, без явных тенденций',
-        vpip: 0.30, pfr: 0.15, aggression: 0.50, bluffFreq: 0.10, callStation: 0.55, foldToRaise: 0.50
+        vpip: 0.30, pfr: 0.15, aggression: 0.50, bluffFreq: 0.10, callStation: 0.55, foldToRaise: 0.50,
+        callK: 1.0, valueBet: 0.64
     }
 };
 
@@ -632,6 +637,142 @@ function emptySeat(i) {
 }
 
 // ═══════════════════════════ СТОЛ ═══════════════════════════
+// ───────────────────────── быстрая оценка рук и шансы (Монте-Карло) для ботов ─────────────────────────
+const SUIT_IDX = {};
+SUITS.forEach((s, i) => { SUIT_IDX[s] = i; });
+function cardInt(c) { return SUIT_IDX[c.suit] * 13 + (RANK_VAL[c.rank] - 2); }   // 0..51
+
+function straightHighOfMask(mask) {
+    if (mask & (1 << 14)) mask |= 1 << 1;                 // туз и как единица
+    for (let h = 14; h >= 5; h--) { const need = 31 << (h - 4); if ((mask & need) === need) return h; }
+    return 0;
+}
+function enc(cat, arr) { let s = cat; for (let i = 0; i < 5; i++) s = s * 15 + (arr[i] || 0); return s; }
+
+// число для сравнения: больше — сильнее. ids: 5–7 карт как числа 0..51
+function scoreCards(ids) {
+    const rc = new Array(15).fill(0), sc = [0, 0, 0, 0], sm = [0, 0, 0, 0];
+    for (let k = 0; k < ids.length; k++) { const id = ids[k], r = id % 13 + 2, s = (id / 13) | 0; rc[r]++; sc[s]++; sm[s] |= 1 << r; }
+    let fs = -1; for (let s = 0; s < 4; s++) if (sc[s] >= 5) fs = s;
+    if (fs >= 0) { const sf = straightHighOfMask(sm[fs]); if (sf) return enc(8, [sf]); }
+    const quads = [], trips = [], pairs = [], singles = [];
+    let mask = 0;
+    for (let r = 14; r >= 2; r--) {
+        const c = rc[r]; if (!c) continue;
+        mask |= 1 << r;
+        if (c === 4) quads.push(r); else if (c === 3) trips.push(r); else if (c === 2) pairs.push(r); else singles.push(r);
+    }
+    if (quads.length) {
+        let k = 0; for (let r = 14; r >= 2; r--) if (rc[r] && r !== quads[0]) { k = r; break; }
+        return enc(7, [quads[0], k]);
+    }
+    if (trips.length && (pairs.length || trips.length > 1)) return enc(6, [trips[0], Math.max(pairs[0] || 0, trips[1] || 0)]);
+    if (fs >= 0) { const arr = []; for (let r = 14; r >= 2 && arr.length < 5; r--) if (sm[fs] & (1 << r)) arr.push(r); return enc(5, arr); }
+    const st = straightHighOfMask(mask);
+    if (st) return enc(4, [st]);
+    if (trips.length) { const k = []; for (let r = 14; r >= 2 && k.length < 2; r--) if (rc[r] && r !== trips[0]) k.push(r); return enc(3, [trips[0], k[0], k[1]]); }
+    if (pairs.length >= 2) { let k = 0; for (let r = 14; r >= 2; r--) if (rc[r] && r !== pairs[0] && r !== pairs[1]) { k = r; break; } return enc(2, [pairs[0], pairs[1], k]); }
+    if (pairs.length === 1) { const k = []; for (let r = 14; r >= 2 && k.length < 3; r--) if (rc[r] && r !== pairs[0]) k.push(r); return enc(1, [pairs[0], k[0], k[1], k[2]]); }
+    return enc(0, singles.slice(0, 5));
+}
+
+// ценность стартовой руки по таблице (1.5 … 10). Раньше жила внутри createTable; вынесена, чтобы считать и по числам
+// оценка Чена (классическая формула): AA = 20, KK = 16, AKs = 12, JTs = 9, A6o = 5. Нужна как честная «линейка» диапазона соперника
+function chenScore(r1, r2, suited) {
+    const hi = Math.max(r1, r2), lo = Math.min(r1, r2);
+    const pts = r => r === 14 ? 10 : r === 13 ? 8 : r === 12 ? 7 : r === 11 ? 6 : r / 2;
+    let sc = pts(hi);
+    if (hi === lo) return Math.max(5, Math.ceil(sc * 2));
+    if (suited) sc += 2;
+    const gap = hi - lo - 1;
+    sc -= gap === 0 ? 0 : gap === 1 ? 1 : gap === 2 ? 2 : gap === 3 ? 4 : 5;
+    if (gap <= 1 && hi < 12) sc += 1;
+    return Math.ceil(sc);
+}
+
+function preflopValueRS(r1, r2, isSuited) {
+    const hi = Math.max(r1, r2), lo = Math.min(r1, r2), gap = hi - lo;
+    if (r1 === r2) {
+        if (hi >= 13) return 10;
+        if (hi >= 11) return 9;
+        if (hi >= 9) return 8;
+        if (hi >= 7) return 7;
+        if (hi >= 5) return 6;
+        return 5;
+    }
+    if (hi === 14 && lo === 13) return 9.5;
+    if (hi === 14 && lo === 12) return 8;
+    if (hi === 14 && lo === 11) return 7.5;
+    if (hi === 13 && lo === 12) return 7;
+    if (hi === 14 && lo === 10) return 7;
+    if (isSuited) {
+        if (hi === 14) return 6.5;
+        if (hi === 13 && lo >= 9) return 6.5;
+        if (hi >= 11 && lo >= 10) return 6;
+        if (gap <= 2 && lo >= 5) return 5.5;
+        if (gap <= 4 && lo >= 5) return 4.5;
+        if (hi >= 10) return 4;
+        return 3.5;
+    }
+    if (hi === 13 && lo === 11) return 6;
+    if (hi === 14 && lo <= 9) return 5.5;
+    if (hi === 13 && lo >= 9) return 5;
+    if (hi >= 12 && lo >= 10 && gap <= 2) return 4.5;
+    if (hi >= 11 && lo >= 9) return 3.5;
+    if (hi - lo <= 2 && lo >= 6) return 3;
+    if (hi >= 11) return 2.5;
+    return 1.5;
+}
+
+// шанс выиграть (ничья делится) против nOpp соперников. Если minOppVal > 0, соперники берутся только из рук
+// не слабее этого значения по шкале Чена: так учитывается, что тот, кто ставит или идёт ва-банк, играет не любыми картами
+function equityMC(hole, board, nOpp, samples, minOppVal) {
+    nOpp = Math.max(1, Math.min(5, nOpp | 0));
+    const hid = hole.map(cardInt), bid = board.map(cardInt);
+    const used = new Uint8Array(52);
+    hid.forEach(i => { used[i] = 1; }); bid.forEach(i => { used[i] = 1; });
+    const deck = []; for (let i = 0; i < 52; i++) if (!used[i]) deck.push(i);
+    const need = 5 - bid.length, draw = need + 2 * nOpp, L = deck.length;
+    const myCards = hid.concat(bid);
+    let total = 0;
+    for (let s = 0; s < samples; s++) {
+        for (let k = 0; k < draw; k++) { const j = k + Math.floor(Math.random() * (L - k)); const t = deck[k]; deck[k] = deck[j]; deck[j] = t; }
+        if (minOppVal > 0) {
+            for (let o = 0; o < nOpp; o++) {
+                const a = need + 2 * o, b = a + 1;
+                for (let tries = 0; tries < 10; tries++) {
+                    const v = chenScore(deck[a] % 13 + 2, deck[b] % 13 + 2, ((deck[a] / 13) | 0) === ((deck[b] / 13) | 0));
+                    if (v >= minOppVal) break;
+                    const ja = draw + Math.floor(Math.random() * (L - draw)), jb = draw + Math.floor(Math.random() * (L - draw));
+                    if (ja === jb) continue;
+                    let t = deck[a]; deck[a] = deck[ja]; deck[ja] = t;
+                    t = deck[b]; deck[b] = deck[jb]; deck[jb] = t;
+                }
+            }
+        }
+        const all = myCards.slice(); for (let k = 0; k < need; k++) all.push(deck[k]);
+        const mine = scoreCards(all);
+        let best = -1, ties = 0;
+        for (let o = 0; o < nOpp; o++) {
+            const oc = []; for (let k = 0; k < all.length - 2; k++) oc.push(all[2 + k]);   // общие карты
+            oc.push(deck[need + 2 * o], deck[need + 2 * o + 1]);
+            const sc = scoreCards(oc);
+            if (sc > best) { best = sc; ties = 1; } else if (sc === best) ties++;
+        }
+        if (mine > best) total += 1; else if (mine === best) total += 1 / (ties + 1);
+    }
+    return total / samples;
+}
+
+const PREFLOP_EQ_CACHE = new Map();
+function preflopEquity(hole, nOpp, minOppVal) {
+    const r1 = RANK_VAL[hole[0].rank], r2 = RANK_VAL[hole[1].rank], suited = hole[0].suit === hole[1].suit;
+    const key = Math.max(r1, r2) + '-' + Math.min(r1, r2) + '-' + (suited ? 's' : 'o') + '-' + nOpp + '-' + minOppVal;
+    let v = PREFLOP_EQ_CACHE.get(key);
+    if (v === undefined) { v = equityMC(hole, [], nOpp, 1500, minOppVal); PREFLOP_EQ_CACHE.set(key, v); }
+    return v;
+}
+
 function createTable(opts) {
     opts = opts || {};
     const setT = opts.setTimeout || setTimeout;
@@ -969,38 +1110,6 @@ function createTable(opts) {
 
     // ───── оценка силы руки (для ботов) ─────
 
-    function calcHandStrength(hole, community) {
-        const allCards = [...hole, ...community];
-        if (allCards.length < 5) return 0;
-
-        const myHand = getBestHand(allCards);
-        let strength = myHand.rank * 10;
-        if (myHand.values && myHand.values.length > 0) {
-            strength += (myHand.values[0] / 1.4);
-        }
-
-        if (community.length === 3) {
-            const counts = {};
-            allCards.forEach(c => counts[c.suit] = (counts[c.suit] || 0) + 1);
-            const flushDraw = Math.max(...Object.values(counts)) === 4 ? 8 : 0;
-            strength += flushDraw + countStraightOuts(hole, community);
-        }
-
-        if (community.length > 0) {
-            strength = Math.max(10, strength - 5);
-        }
-        return Math.min(100, strength);
-    }
-
-    function countStraightOuts(hole, community) {
-        const allRanks = [...hole, ...community].map(c => RANK_VAL[c.rank]).sort((a, b) => b - a);
-        let gaps = 0;
-        for (let i = 0; i < allRanks.length - 1; i++) {
-            if (allRanks[i] - allRanks[i + 1] === 2) gaps++;
-        }
-        return Math.min(gaps * 4, 8);
-    }
-
     // ───────────────────────── решения ботов ─────────────────────────
 
     // ОПРЕДЕЛЯЮ ПОЗИЦИЮ ИГРОКА (6-max: 0=BTN, 1=SB, 2=BB, 3=UTG, 4=MP, 5=CO)
@@ -1015,124 +1124,62 @@ function createTable(opts) {
     // ТАБЛИЦА СТАРТОВЫХ РУК
     function getPreflopHandValue(hole) {
         if (hole.length < 2) return 0;
-        const r1 = RANK_VAL[hole[0].rank];
-        const r2 = RANK_VAL[hole[1].rank];
-        const isSuited = hole[0].suit === hole[1].suit;
-        const hi = Math.max(r1, r2);
-        const lo = Math.min(r1, r2);
-        const gap = hi - lo;
-        const isPair = r1 === r2;
-
-        if (isPair) {
-            if (hi >= 13) return 10;
-            if (hi >= 11) return 9;
-            if (hi >= 9) return 8;
-            if (hi >= 7) return 7;
-            if (hi >= 5) return 6;
-            return 5;
-        }
-
-        if (hi === 14 && lo === 13) return 9.5;
-        if (hi === 14 && lo === 12) return 8;
-        if (hi === 14 && lo === 11) return 7.5;
-        if (hi === 13 && lo === 12) return 7;
-        if (hi === 14 && lo === 10) return 7;
-
-        if (isSuited) {
-            if (hi === 14) return 6.5;
-            if (hi === 13 && lo >= 9) return 6.5;
-            if (hi >= 11 && lo >= 10) return 6;
-            if (gap <= 2 && lo >= 5) return 5.5;
-            if (gap <= 4 && lo >= 5) return 4.5;
-            if (hi >= 10) return 4;
-            return 3.5;
-        }
-
-        if (hi === 13 && lo === 11) return 6;
-        if (hi === 14 && lo <= 9) return 5.5;
-        if (hi === 13 && lo >= 9) return 5;
-        if (hi >= 12 && lo >= 10 && gap <= 2) return 4.5;
-        if (hi >= 11 && lo >= 9) return 3.5;
-        if (hi - lo <= 2 && lo >= 6) return 3;
-        if (hi >= 11) return 2.5;
-        return 1.5;
+        return preflopValueRS(RANK_VAL[hole[0].rank], RANK_VAL[hole[1].rank], hole[0].suit === hole[1].suit);
     }
 
-    // 🎭 ДЕЙСТВИЕ ПО ХАРАКТЕРУ. Возвращает: fold | check | call | bet | raise | allin
-    function decideActionByCharacter(p, needToPay, street, strength, potOdds) {
+    // 🎭 РЕШЕНИЕ БОТА. Основа — покерная математика: шансы выиграть (equity, считаются перебором раздач) против
+    // цены колла (pot odds). Характер лишь сдвигает пороги: рыба платит дороже, скала требует запас, профи считает ровно.
+    // ctx: needToPay, street, eq (шанс выиграть против нужного числа соперников с учётом их диапазона), potOdds, nOpp, handValue, unopened
+    function decideAction(p, ctx) {
         const char = BOT_CHARACTERS[p.character] || BOT_CHARACTERS['tag'];
-        const handValue = street === 'preflop' ? getPreflopHandValue(p.hand) : 0;
+        const {needToPay, street, eq, potOdds, nOpp, handValue, unopened} = ctx;
         const rnd = Math.random();
-        const isAggressive = rnd < char.aggression;
-        const shouldBluff = rnd < char.bluffFreq;
+        const shouldBluff = Math.random() < char.bluffFreq;
 
-        if (char.allInFreq && Math.random() < char.allInFreq && p.chips > needToPay) return 'allin';
+        // маньяк иногда идёт ва-банк, но не с мусором
+        if (char.allInFreq && Math.random() < char.allInFreq && p.chips > needToPay && eq >= 0.42) return 'allin';
 
-        if (street === 'preflop') {
+        // ── префлоп: вход в банк, в котором ещё никто не повышал (есть только блайнды и, возможно, лимперы) ──
+        if (street === 'preflop' && unopened) {
             const position = getPlayerPosition(p.idx);
             const posBonus = position === 'late' ? 1.5 : (position === 'middle' ? 0.8 : (position === 'blind' ? 1.0 : 0));
-
             const entryThreshold = 6.8 - 5.8 * char.vpip;
-            const effectiveValue = handValue + posBonus * 0.6;
-            const playable = effectiveValue >= entryThreshold;
-
-            if (!playable) {
-                if (needToPay === 0) return 'check';
-                if (Math.random() < char.callStation && needToPay <= game.bigBlind * 2) return 'call';
-                return 'fold';
-            }
-
-            if (needToPay === 0) {
-                const openRaiseChance = char.pfr * 3 + (position === 'late' ? 0.25 : 0) + (position === 'middle' ? 0.1 : 0);
+            const playable = handValue + posBonus * 0.6 >= entryThreshold;
+            if (needToPay === 0) {                       // у большого блайнда есть опция
                 if (handValue >= 8) return 'raise';
                 if (handValue >= 6.5 && Math.random() < 0.85) return 'raise';
                 if (handValue >= 5 && Math.random() < 0.6) return 'raise';
-                if (Math.random() < openRaiseChance) return 'raise';
-                if (Math.random() < char.aggression * 0.5) return 'raise';
+                const openRaiseChance = char.pfr * 3 + (position === 'late' ? 0.25 : 0) + (position === 'middle' ? 0.1 : 0);
+                if (Math.random() < openRaiseChance * (playable ? 1 : 0.4)) return 'raise';
                 return 'check';
-            } else {
-                if (handValue >= 8.5) return Math.random() < 0.7 ? 'raise' : 'call';
-                if (handValue >= 7) {
-                    if (Math.random() < char.aggression * 0.7) return 'raise';
-                    return 'call';
-                }
-                const callCost = needToPay / (game.pot + needToPay + 1);
-                const handEquity = handValue / 10;
-                if (handEquity > callCost * 1.2) return 'call';
-                if (shouldBluff && Math.random() < char.bluffFreq * 0.5) return 'raise';
-                if (needToPay <= game.bigBlind * 3 && Math.random() < char.callStation + 0.3) return 'call';
-                return Math.random() < char.foldToRaise ? 'fold' : 'call';
             }
-        } else {
-            if (char.useMath) {
-                if (needToPay === 0) {
-                    if (strength > 70) return 'bet';
-                    if (strength > 45 && Math.random() < 0.6) return 'bet';
-                    return 'check';
-                } else {
-                    const equity = strength / 100;
-                    if (equity > potOdds * 1.5) { if (equity > 0.75) return 'raise'; return 'call'; }
-                    if (equity > potOdds) return 'call';
-                    return 'fold';
-                }
+            if (!playable) {
+                if (needToPay <= game.bigBlind * 0.5 && Math.random() < char.callStation) return 'call';   // дозвать малый блайнд дёшево
+                return 'fold';
             }
-            if (needToPay === 0) {
-                if (shouldBluff && Math.random() < 0.5) return 'bet';
-                if (strength > 75) return 'bet';
-                if (strength > 50 && isAggressive) return 'bet';
-                return 'check';
-            } else {
-                if (strength < 30) {
-                    if (shouldBluff && Math.random() < 0.3) return 'raise';
-                    if (Math.random() < char.foldToRaise) return 'fold';
-                    if (Math.random() < char.callStation * 0.5) return 'call';
-                    return 'fold';
-                }
-                if (strength > 70) return Math.random() < char.aggression ? 'raise' : 'call';
-                if (isAggressive && strength > 50) return 'raise';
-                return 'call';
-            }
+            if (handValue >= 8.5) return Math.random() < 0.75 ? 'raise' : 'call';
+            if (handValue >= 7) return Math.random() < char.aggression * 0.7 ? 'raise' : 'call';
+            if (shouldBluff && Math.random() < 0.3) return 'raise';
+            return 'call';
         }
+
+        // ── ставить можно бесплатно (чек доступен) ──
+        if (needToPay === 0) {
+            if (eq >= char.valueBet) return Math.random() < 0.5 + char.aggression * 0.45 ? 'bet' : 'check';   // сильная рука: ставим, иногда слоуплеим
+            if (eq >= 0.5 && Math.random() < char.aggression * 0.35) return 'bet';                              // тонкое велью / защита
+            if (eq < 0.32 && street !== 'river' && Math.random() < char.bluffFreq * 0.6) return 'bet';           // блеф
+            return 'check';
+        }
+
+        // ── нужно платить: сравниваем шансы с ценой ──
+        const need = Math.min(0.97, potOdds * char.callK);
+        const raiseEq = Math.min(0.80, 1 / (nOpp + 1) + 0.32);
+        if (canRaise(p) && eq >= raiseEq && Math.random() < 0.35 + char.aggression * 0.6) return 'raise';
+        if (street === 'preflop' && handValue >= 8.5 && canRaise(p) && Math.random() < 0.7) return 'raise';
+        if (eq >= need) return 'call';
+        // полу-блеф: рейз только когда он дёшев относительно стека и есть хоть какие-то шансы
+        if (canRaise(p) && needToPay < p.chips * 0.3 && eq >= 0.28 && Math.random() < char.bluffFreq * 0.3) return 'raise';
+        return 'fold';
     }
 
     // Размер рейза бота (до какой суммы). Всегда в допустимых пределах.
@@ -1156,19 +1203,37 @@ function createTable(opts) {
         return target;
     }
 
-    function botTurn() {
-        const i = game.active;
+    // что бот сделает сейчас: {action, raiseTo}. Отдельно от выполнения, чтобы решения можно было проверять тестами
+    function botChoose(i) {
         const p = game.players[i];
-        if (!p || isHumanSeat(p) || p.folded || p.chips <= 0 || !p.inHand) { moveToNextPlayer(); return; }
-
         const needToPay = Math.max(0, game.currentBet - p.bet);
         const street = game.community.length === 0 ? 'preflop'
                      : game.community.length === 3 ? 'flop'
                      : game.community.length === 4 ? 'turn' : 'river';
-        const strength = calcHandStrength(p.hand, game.community);
-        const potOdds = needToPay / (game.pot + needToPay + 1);
+        const nOpp = Math.max(1, contenders().length - 1);
+        const potOdds = needToPay / (game.pot + needToPay);
+        const handValue = street === 'preflop' ? getPreflopHandValue(p.hand) : 0;
+        const unopened = street === 'preflop' && game.currentBet <= game.bigBlind;
 
-        let action = decideActionByCharacter(p, needToPay, street, strength, potOdds);
+        let eq;
+        if (street === 'preflop') {
+            // кто повысил или пошёл ва-банк, играет не любыми картами: чем больше ставка, тем уже его диапазон
+            let minVal = 0;
+            if (!unopened) {
+                const shoved = game.players.some(q => q.inHand && !q.folded && q.allIn && q.bet >= game.currentBet);
+                const mult = game.currentBet / game.bigBlind;
+                minVal = shoved || mult > 8 ? 7 : (mult > 3.5 ? 6 : 5);   // шкала Чена: 7 ≈ лучшие 30% рук
+            }
+            eq = preflopEquity(p.hand, Math.min(nOpp, 5), minVal);
+        } else {
+            eq = equityMC(p.hand, game.community, Math.min(nOpp, 5), 200, 0);
+            if (needToPay > 0) {                          // тот, кто ставит, чаще сильнее случайной руки
+                const facing = needToPay / Math.max(1, game.pot - needToPay);
+                eq = Math.max(0, eq - Math.min(0.12, 0.08 * facing));
+            }
+        }
+
+        let action = decideAction(p, {needToPay, street, eq, potOdds, nOpp, handValue, unopened});
         const shove = action === 'allin';
         if (action === 'allin' || action === 'bet') action = 'raise';
         if (action === 'raise' && !canRaise(p)) action = needToPay > 0 ? 'call' : 'check';
@@ -1176,8 +1241,16 @@ function createTable(opts) {
         if (action === 'check' && needToPay > 0) action = 'fold';
 
         let raiseTo = 0;
-        if (action === 'raise') raiseTo = botRaiseTo(p, street, street === 'preflop' ? getPreflopHandValue(p.hand) * 11 : strength, shove);
-        H.doAction(i, action, raiseTo);
+        if (action === 'raise') raiseTo = botRaiseTo(p, street, eq * 100, shove);
+        return {action, raiseTo, eq, street};
+    }
+
+    function botTurn() {
+        const i = game.active;
+        const p = game.players[i];
+        if (!p || isHumanSeat(p) || p.folded || p.chips <= 0 || !p.inHand) { moveToNextPlayer(); return; }
+        const c = botChoose(i);
+        H.doAction(i, c.action, c.raiseTo);
     }
 
     // ───── единая обработка действия (человек и боты) ─────
@@ -1539,11 +1612,12 @@ function createTable(opts) {
         humanCount: humanCount, connectedCount: connectedCount,
         // для тестов
         _t: {buildPots: buildPots, computePayouts: computePayouts, contenders: contenders, nextActor: nextActor,
-             canRaise: canRaise, putChips: putChips, botTurn: botTurn, autoAct: autoAct}
+             canRaise: canRaise, putChips: putChips, botTurn: botTurn, botChoose: botChoose, autoAct: autoAct}
     };
 }
 
 return {
+    scoreCards: scoreCards, cardInt: cardInt, chenScore: chenScore, equityMC: equityMC, preflopEquity: preflopEquity,
     createTable: createTable, getBestHand: getBestHand, compareHands: compareHands, evalCombo: evalCombo,
     createDeck: createDeck, fmtCards: fmtCards, cleanName: cleanName, cleanPhoto: cleanPhoto,
     BOT_CHARACTERS: BOT_CHARACTERS, CHARACTER_KEYS: CHARACTER_KEYS, BOT_PROFILES: BOT_PROFILES,
@@ -1552,7 +1626,7 @@ return {
 };
 });
 
-// ═══════════════════════════ КЛИЕНТ v0.62 ═══════════════════════════
+// ═══════════════════════════ КЛИЕНТ v0.63 ═══════════════════════════
 // Экран ничего не решает: он рисует снимок состояния (S), который приходит
 // либо с сервера по WebSocket (игра с друзьями), либо от встроенного движка (игра с ботами).
 const E = PokerEngine;
@@ -1820,7 +1894,7 @@ function renderLog() {
 // ───────── карты, фишки ─────────
 function cardHtml(c, cls) {
     if (!c) return '';
-    return `<div class="card f ${SUIT_CLASS[c.suit]} ${cls || ''}"><span class="cr">${c.rank}</span><span class="cs">${c.suit}</span><span class="cbig">${c.suit}</span></div>`;
+    return `<div class="card f ${SUIT_CLASS[c.suit]} ${cls || ''}"><span class="cr">${c.rank}</span><span class="cbig">${c.suit}</span></div>`;
 }
 function backHtml(cls) { return `<div class="card back ${cls || ''}"></div>`; }
 function sameCard(a, b) { return a && b && a.rank === b.rank && a.suit === b.suit; }
@@ -1866,7 +1940,15 @@ function syncRaiseInputs() {
     setText('raiseAmount', '₽' + val);
     setText('raiseBB', (val / S.bigBlind).toFixed(1) + ' BB');
     const label = val >= max ? 'All-in' : (S.currentBet === 0 ? 'Bet' : 'Raise');
-    setText('raiseBtn', `${label} ${val}`);
+    fitBtn('raiseBtn', `${label} ${val}`);
+}
+// подпись на кнопке: если не помещается, уменьшаем шрифт, пока не влезет (длинные суммы, All-in)
+function fitBtn(id, text) {
+    const el = $(id); if (!el) return;
+    el.textContent = text; el.style.fontSize = '';
+    if (!el.clientWidth) return;                       // кнопка скрыта: подгоним, когда покажем
+    let f = parseFloat(getComputedStyle(el).fontSize) || 20, guard = 0;
+    while (el.scrollWidth > el.clientWidth && f > 9 && guard++ < 30) { f -= 1; el.style.fontSize = f + 'px'; }
 }
 function preset(t) {
     if (!iAmActive()) return;
@@ -1886,8 +1968,8 @@ function updateActionPanel(resetSlider) {
     const cr = canRaise(me);
     $('checkBtn').style.display = toCall === 0 ? 'flex' : 'none';
     $('callBtn').style.display = toCall > 0 ? 'flex' : 'none';
-    setText('callBtn', `Call ₽${Math.min(toCall, me.chips)}` + (toCall >= me.chips ? ' (all-in)' : ''));
     $('raiseBtn').style.display = cr ? 'flex' : 'none';
+    fitBtn('callBtn', (toCall >= me.chips ? 'All-in ₽' : 'Call ₽') + Math.min(toCall, me.chips));
     $('raiseRow').style.display = cr ? 'flex' : 'none';
     if (cr) {
         const {min, max} = raiseBounds();
