@@ -396,7 +396,7 @@ input { font-family: inherit; }
       </div>
       <div class="menu-msg" id="menuMsg"></div>
     </div>
-    <div class="menu-ver">v0.76</div>
+    <div class="menu-ver">v0.77</div>
   </div>
 
 
@@ -2023,7 +2023,7 @@ const E = PokerEngine;
 const {BOT_CHARACTERS, TURN_SECONDS, getBestHand} = E;
 const SERVER_URL = 'wss://pokertest-server.onrender.com';              // подставляется при сборке; ?server=wss://... переопределяет
 const BOT_LINK = 'https://t.me/bratishkapoker_bot';
-const APP_VERSION = '0.76';                       // должна совпадать с v в меню; build.py кладёт её в version.json
+const APP_VERSION = '0.77';                       // должна совпадать с v в меню; build.py кладёт её в version.json
 const tg = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
 const SUIT_CLASS = E.SUIT_CLASS;
 const SEAT_COLORS = ['#ff2d86', '#12dcef', '#ff8a00', '#8c4fe6', '#2fdc7a', '#f4ee1f'];
@@ -2047,7 +2047,7 @@ let firstSnap = true;
 let dealOnce = false;
 let lastTurnKey = '';
 let tickTimer = null;
-const TEST_TOPUP = true;           // ВРЕМЕННО, на время тестов: кнопка «+₽1000» в меню. Потом убрать (поставить false или удалить)
+const TEST_TOPUP = true;           // ВРЕМЕННО, на время тестов: кнопка «+₽1000» в меню, видна только при нулевом балансе. Потом убрать (поставить false или удалить)
 const HINTS_ENABLED = false;       // силомер временно выключен: доработаем и вернём
 const cfg = {sound: true, reactions: true, nick: '', mode: 'sng', hints: true};
 let audioCtx = null;
@@ -2426,7 +2426,7 @@ function rebuyNow() {
 }
 function renderWallet() {
     const el = $('walletRow'); if (!el) return;
-    const today = dayKey(), parts = [`<div class="w-main">💰 <b>₽${wallet.balance}</b>${TEST_TOPUP ? ' <button class="w-test" onclick="testTopUp()">🧪 +₽1000</button>' : ''}</div>`];
+    const today = dayKey(), parts = [`<div class="w-main">💰 <b>₽${wallet.balance}</b>${TEST_TOPUP && wallet.balance === 0 ? ' <button class="w-test" onclick="testTopUp()">🧪 +₽1000</button>' : ''}</div>`];
     if (bonusAvailable(today)) parts.push(`<button class="w-btn" onclick="onBonus()">🎁 Бонус дня +₽${bonusAmount(today)}</button>`);
     else if (rescueAvailable(today)) parts.push(`<button class="w-btn" onclick="onRescue()">🆘 Докинуть до ₽${BUY_IN}</button>`);
     else if (!canBuyIn()) parts.push('<div class="w-note">Не хватает на вход. Бонус завтра.</div>');
