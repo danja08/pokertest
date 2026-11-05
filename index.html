@@ -176,6 +176,7 @@ input { font-family: inherit; }
 .combo { position: relative; z-index: 5; margin-top: calc(var(--u)*4); max-width: calc(var(--u)*110); overflow: hidden; padding: calc(var(--u)*3) calc(var(--u)*8) calc(var(--u)*4); font-size: calc(var(--u)*15*var(--tz,1)); line-height: 1; background: var(--gold); color: var(--ink); border: calc(var(--u)*3) solid var(--ink); border-radius: calc(var(--u)*8); box-shadow: calc(var(--u)*2) calc(var(--u)*3) 0 var(--ink); white-space: nowrap; transform: rotate(-1.5deg); }
 .combo.mine { background: var(--ink); color: var(--gold); border-color: var(--gold); }
 .seat[data-seat="0"] .combo { max-width: calc(var(--u)*130); position: absolute; top: calc(var(--u)*88); left: calc(50% + calc(var(--u)*38)); margin: 0; transform: rotate(-1.5deg); z-index: 9; }
+.seat[data-seat="1"] .win-tag, .seat[data-seat="5"] .win-tag { top: calc(var(--u)*4); }   /* у нижних боковых мест плашка уходит от общих карт */
 .seat[data-seat="0"] .win-tag { top: calc(var(--u)*88); left: calc(50% - calc(var(--u)*40)); transform: translateX(-100%) rotate(-3deg); }
 .win-tag { position: absolute; top: calc(var(--u)*-26); left: 50%; transform: translateX(-50%) rotate(-3deg); z-index: 9; white-space: nowrap; font-size: calc(var(--u)*16*var(--tz,1)); padding: calc(var(--u)*4) calc(var(--u)*8) calc(var(--u)*5); background: var(--gold); color: var(--ink); border: calc(var(--u)*3) solid var(--ink); border-radius: calc(var(--u)*8); box-shadow: calc(var(--u)*3) calc(var(--u)*3) 0 var(--ink); animation: pop .35s cubic-bezier(.3,1.6,.5,1) both; }
 
@@ -374,6 +375,33 @@ input { font-family: inherit; }
 .h-empty { padding: calc(var(--u)*24) calc(var(--u)*8); text-align: center; font-size: calc(var(--u)*16*var(--tz,1)); color: var(--bone2); }
 .w-test { margin-left: calc(var(--u)*6); min-height: calc(var(--u)*34); padding: calc(var(--u)*4) calc(var(--u)*10) calc(var(--u)*6); font-family: var(--font); font-size: calc(var(--u)*15*var(--tz,1)); color: var(--bone2); background: var(--bg3); border: calc(var(--u)*2.5) dashed var(--violet); border-radius: calc(var(--u)*8); vertical-align: middle; }
 
+/* ───────── заранее выбранные действия и быстрые реакции ───────── */
+.pre-row { display: flex; gap: calc(var(--u)*6); justify-content: center; margin-top: calc(var(--u)*6); }
+.pre-btn { flex: 1; min-width: 0; max-width: calc(var(--u)*118); min-height: calc(var(--u)*38); padding: calc(var(--u)*4) calc(var(--u)*2) calc(var(--u)*6); font-family: var(--font); font-size: calc(var(--u)*14*var(--tz,1)); color: var(--bone); background: var(--bg3); border: calc(var(--u)*3) solid var(--ink); border-radius: calc(var(--u)*10); box-shadow: 0 calc(var(--u)*3) 0 var(--ink); white-space: nowrap; overflow: hidden; }
+.pre-btn.on { color: var(--ink); background: var(--gold); }
+.pre-btn:active { transform: translateY(calc(var(--u)*2)); box-shadow: 0 calc(var(--u)*1) 0 var(--ink); }
+.quick-row { display: flex; gap: calc(var(--u)*6); justify-content: center; margin-top: calc(var(--u)*6); }
+.quick-row button { min-height: calc(var(--u)*36); padding: calc(var(--u)*2) calc(var(--u)*8) calc(var(--u)*4); font-family: var(--font); font-size: calc(var(--u)*15*var(--tz,1)); color: var(--bone); background: var(--violet); border: calc(var(--u)*2.5) solid var(--ink); border-radius: calc(var(--u)*10); white-space: nowrap; }
+.quick-row .q-emo { min-width: calc(var(--u)*40); font-size: calc(var(--u)*22*var(--tz,1)); background: var(--bg3); }
+.quick-row button:active { transform: translateY(calc(var(--u)*2)); }
+.rp-tabs .star { flex: none; width: calc(var(--u)*40); font-size: calc(var(--u)*18*var(--tz,1)); }
+.rp-tabs .star.on { background: var(--gold); }
+.rp-hint { margin-bottom: calc(var(--u)*6); font-size: calc(var(--u)*13*var(--tz,1)); color: var(--bone2); }
+
+/* ───────── ва-банк: шансы ───────── */
+.eq-tag { position: absolute; left: 50%; top: calc(var(--u)*-34); transform: translateX(-50%); z-index: 8; padding: calc(var(--u)*1) calc(var(--u)*8) calc(var(--u)*3); font-size: calc(var(--u)*18*var(--tz,1)); color: var(--ink); background: var(--bone); border: calc(var(--u)*3) solid var(--ink); border-radius: calc(var(--u)*10); box-shadow: 0 calc(var(--u)*3) 0 var(--ink); animation: popS .3s cubic-bezier(.3,1.6,.5,1); }
+.eq-tag.hi { background: var(--green); } .eq-tag.lo { background: var(--pink); color: #fff; }
+/* ───────── тур и словарик ───────── */
+#tour { position: absolute; inset: 0; z-index: 70; }
+.tour-hole { position: absolute; border-radius: calc(var(--u)*14); box-shadow: 0 0 0 2000px rgba(10,6,30,.74); border: calc(var(--u)*3) dashed var(--gold); pointer-events: none; transition: all .25s; }
+.tour-card { position: absolute; left: calc(var(--u)*14); right: calc(var(--u)*14); padding: calc(var(--u)*12) calc(var(--u)*14); background: var(--bg2); border: calc(var(--u)*4) solid var(--ink); border-radius: calc(var(--u)*14); box-shadow: calc(var(--u)*4) calc(var(--u)*5) 0 var(--ink); }
+.tour-text { font-size: calc(var(--u)*18*var(--tz,1)); line-height: 1.2; color: var(--bone); margin-bottom: calc(var(--u)*10); }
+.tour-btns { display: flex; align-items: center; gap: calc(var(--u)*12); }
+.tour-step { font-size: calc(var(--u)*14*var(--tz,1)); color: var(--bone2); }
+.gl-title { margin: calc(var(--u)*14) 0 calc(var(--u)*6); font-family: var(--font-h); font-size: calc(var(--u)*11*var(--tz,1)); color: var(--cyan); }
+.gl-row { padding: calc(var(--u)*5) 0; font-size: calc(var(--u)*15*var(--tz,1)); line-height: 1.2; color: var(--bone2); border-bottom: calc(var(--u)*2) dotted rgba(246,239,210,.12); }
+.gl-row b { color: var(--gold); font-weight: normal; }
+
 </style>
 </head>
 <body>
@@ -400,7 +428,7 @@ input { font-family: inherit; }
       </div>
       <div class="menu-msg" id="menuMsg"></div>
     </div>
-    <div class="menu-ver">v0.79</div>
+    <div class="menu-ver">v0.81</div>
   </div>
 
 
@@ -509,6 +537,7 @@ input { font-family: inherit; }
     <div class="sheet-body">
       <div class="set-row"><div>Звук и вибрация</div><button class="toggle" id="btnSound" onclick="toggleSound()">ВКЛ</button></div>
       <div class="set-row"><div>Реакции игроков<small>Эмодзи и фразы над местами</small></div><button class="toggle" id="btnReact" onclick="toggleReactions()">ВКЛ</button></div>
+      <div class="set-row" id="rowTour"><div>Обучение<small>Показать подсказки по экрану</small></div><button class="btn btn-check" style="min-height:calc(var(--u)*40);font-size:calc(var(--u)*18*var(--tz,1))" onclick="closeSheets();startTour()">Показать</button></div>
       <div class="set-row" id="rowSpeed"><div>Скорость игры<small>Боты и паузы вдвое быстрее</small></div><button class="toggle off" id="btnSpeed" onclick="toggleSpeed()">ОБЫЧНАЯ</button></div>
       <div class="set-row"><div>Крупный текст<small>Шрифт побольше</small></div><button class="toggle off" id="btnBig" onclick="toggleBigText()">ВЫКЛ</button></div>
       <div class="set-row"><div>Стек в блайндах<small>Вместо ₽ показывать BB</small></div><button class="toggle off" id="btnStackBB" onclick="toggleStackBB()">ВЫКЛ</button></div>
@@ -614,6 +643,18 @@ const BOT_CHARACTERS = {
         callK: 1.0, valueBet: 0.64
     }
 };
+
+// Реплики ботов по характеру (номера реакций из REACTIONS): при выигрыше, при ва-банке, при крупном проигрыше
+const BOT_LINES = {
+    fish:    {win: ['e0', 'e1', 'p0'],        shove: ['e3', 'p3'],         lose: ['e7', 'p7']},
+    rock:    {win: ['e4', 'p1'],              shove: ['e8', 'e9'],         lose: ['e2', 'p5']},
+    tag:     {win: ['e10', 'p15', 'e1'],      shove: ['e17', 'p11'],       lose: ['e8', 'p7']},
+    lag:     {win: ['e12', 'e6', 'p8'],       shove: ['e18', 'p11', 'p9'], lose: ['e2', 'e15']},
+    pro:     {win: ['e1', 'e5', 'p1'],        shove: ['e19', 'p14'],       lose: ['e8', 'p6']},
+    maniac:  {win: ['e17', 'e18', 'p12', 'p15'], shove: ['e18', 'e12', 'p11', 'p14'], lose: ['e2', 'e13']},
+    neutral: {win: ['e4', 'e5'],              shove: ['e9'],               lose: ['e8']}
+};
+const BOT_SHOVE_TALK = {maniac: 0.35, lag: 0.2, fish: 0.12, tag: 0.08, pro: 0.06, rock: 0.05, neutral: 0.04};
 
 // Список для случайного выбора
 const CHARACTER_KEYS = [
@@ -888,7 +929,7 @@ function createTable(opts) {
         sb: null, bb: null, phase: 'preflop', community: [], hand: 0,
         lastActors: new Set(),
         smallBlind: 10, bigBlind: 20,
-        opts: {bots: true, blindEvery: 5, turnSeconds: 30, mode: 'sng', stake: 1, hints: false, speed: 0}, rematch: [], paused: false, skipVotes: [],
+        opts: {bots: true, blindEvery: 5, turnSeconds: 30, mode: 'sng', stake: 1, hints: false, speed: 0}, rematch: [], paused: false, skipVotes: [], reveal: false, equity: null,
         gid: '', waiting: false, sngN: 0, result: null,   // настройки стола (меняет хозяин в лобби); blindEvery 0 = блайнды не растут
         turnOpen: false, deadline: 0,
         winningCards: null, potBreakdown: null, winner: null,
@@ -971,6 +1012,18 @@ function createTable(opts) {
         ev('show', {seat: w.idx});
         render();
     }
+    // бот в своём характере комментирует ва-банк (не чаще раза в 10 секунд)
+    function botTalk(p, kind) {
+        if (isHumanSeat(p) || !p.character) return;
+        const t = now();
+        if (p.talkAt && t - p.talkAt < 10000) return;
+        if (Math.random() >= (BOT_SHOVE_TALK[p.character] || 0.04)) return;
+        const pool = (BOT_LINES[p.character] || BOT_LINES.neutral)[kind];
+        if (!pool) return;
+        p.talkAt = t;
+        const rid = pool[Math.floor(Math.random() * pool.length)];
+        sched(() => { if (game.status === 'playing') { ev('react', {seat: p.idx, rid: rid}); render(); } }, 350 + Math.random() * 500);
+    }
     // боты иногда реагируют на выигрыш крупного банка
     function botReactOnWin(potSize) {
         if (potSize < game.bigBlind * 4) return;
@@ -978,8 +1031,8 @@ function createTable(opts) {
         const winnerBot = bots.find(p => p.isWinner);
         const pick = a => a[Math.floor(Math.random() * a.length)];
         let who = null, id = null;
-        if (winnerBot && Math.random() < 0.45) { who = winnerBot; id = pick(['e1', 'e6', 'e0', 'p1', 'p7', 'e10', 'e12', 'p12']); }
-        else if (!winnerBot && bots.length && Math.random() < 0.3) { who = pick(bots.filter(p => !p.folded || Math.random() < 0.3).concat(bots)); id = pick(['e2', 'e7', 'e8', 'p6', 'p3', 'e15', 'p13']); }
+        if (winnerBot && Math.random() < 0.45) { who = winnerBot; id = pick((BOT_LINES[winnerBot.character] || BOT_LINES.neutral).win); }
+        else if (!winnerBot && bots.length && Math.random() < 0.3) { who = pick(bots.filter(p => !p.folded || Math.random() < 0.3).concat(bots)); id = pick((BOT_LINES[who.character] || BOT_LINES.neutral).lose); }
         if (who) sched(() => { if (game.status === 'playing') { ev('react', {seat: who.idx, rid: id}); render(); } }, 700 + Math.random() * 800);
     }
     function render() { if (!dead) onUpdate(); }
@@ -1331,7 +1384,7 @@ function createTable(opts) {
             log(`⬆ БЛАЙНДЫ ↑ ₽${game.smallBlind}/₽${game.bigBlind}`);
         }
 
-        game.handOver = false; game.uncontested = -1; game.lastAggressor = -1; game.skipVotes = [];
+        game.handOver = false; game.uncontested = -1; game.lastAggressor = -1; game.skipVotes = []; game.reveal = false; game.equity = null;
         handLogStart = logSeq;
         game.deck = createDeck();
         game.pot = 0;
@@ -1665,6 +1718,7 @@ function createTable(opts) {
                 else if (wasBet) log(`${nm(p)} ставка ₽${p.bet} (${(p.bet / game.bigBlind).toFixed(1)} BB) → стек ₽${p.chips}`);
                 else log(`${nm(p)} рейз до ₽${p.bet} (${(p.bet / game.bigBlind).toFixed(1)} BB) → стек ₽${p.chips}`);
                 sound('raise');
+                if (p.allIn) botTalk(p, 'shove');
                 moveToNextPlayer();
                 return;
             }
@@ -1760,6 +1814,14 @@ function createTable(opts) {
 
         if (noBetting || closed) {
             if (game.phase === 'river') showdown();
+            else if (noBetting && cont.length >= 2 && !game.reveal) {           // ва-банк: открываем карты и показываем шансы, потом выкатываем стол
+                game.reveal = true;
+                log('🎬 Ва-банк: все карты открыты', 'result');
+                ev('reveal', {});
+                revealEquities();
+                render();
+                sched(() => nextPhase(), 2200);
+            }
             else nextPhase();
             return;
         }
@@ -1784,6 +1846,24 @@ function createTable(opts) {
         }
     };
 
+    // ва-банк без дальнейших торгов: карты открыты, считаем шансы каждого (перебор оставшихся карт стола)
+    function revealEquities() {
+        const hs = contenders().filter(p => p.hand.length === 2).map(p => ({seat: p.idx, ids: p.hand.map(cardInt)}));
+        const bid = game.community.map(cardInt), used = new Uint8Array(52);
+        hs.forEach(h => h.ids.forEach(i => { used[i] = 1; })); bid.forEach(i => { used[i] = 1; });
+        const deck = []; for (let i = 0; i < 52; i++) if (!used[i]) deck.push(i);
+        const need = 5 - bid.length, N = need === 0 ? 1 : 1500, wins = {};
+        hs.forEach(h => { wins[h.seat] = 0; });
+        for (let t = 0; t < N; t++) {
+            for (let k = 0; k < need; k++) { const j = k + Math.floor(Math.random() * (deck.length - k)); const x = deck[k]; deck[k] = deck[j]; deck[j] = x; }
+            const board = bid.concat(deck.slice(0, need));
+            let best = -1, win = [];
+            hs.forEach(h => { const sc = scoreCards(h.ids.concat(board)); if (sc > best) { best = sc; win = [h.seat]; } else if (sc === best) win.push(h.seat); });
+            win.forEach(seat => { wins[seat] += 1 / win.length; });
+        }
+        const eq = {}; hs.forEach(h => { eq[h.seat] = Math.round(100 * wins[h.seat] / N); });
+        game.equity = eq;
+    }
     function nextPhase() {
         if (game.phase === 'preflop') {
             game.community = [game.deck.pop(), game.deck.pop(), game.deck.pop()];
@@ -1812,8 +1892,9 @@ function createTable(opts) {
         const first = nextActor(game.dealer);
         game.active = first === -1 ? game.dealer : first;
 
+        if (game.reveal) revealEquities();
         render();
-        sched(() => H.actionPhase(), 1200);
+        sched(() => H.actionPhase(), game.reveal ? 2600 : 1200);     // при вскрытых картах выкатываем стол медленнее: интрига
     }
     H.nextPhase = nextPhase;
 
@@ -1943,6 +2024,7 @@ function createTable(opts) {
         });
         const firstContested = res.pots.find(x => x.elig.length > 1);
         game.winningCards = firstContested ? firstContested.hand.cards : null;
+        game.equity = null;
 
         sound('win');
         game.handOver = true;
@@ -2006,7 +2088,7 @@ function createTable(opts) {
             currentBet: game.currentBet, minRaise: game.minRaise,
             smallBlind: game.smallBlind, bigBlind: game.bigBlind,
             dealer: game.dealer, sb: game.sb, bb: game.bb, active: game.active,
-            turnOpen: game.turnOpen, deadline: game.turnOpen && !game.paused ? game.deadline : 0, now: now(), paused: game.paused, skip: game.skipVotes.slice(),
+            turnOpen: game.turnOpen, deadline: game.turnOpen && !game.paused ? game.deadline : 0, now: now(), paused: game.paused, skip: game.skipVotes.slice(), reveal: game.reveal, equity: game.equity,
             community: game.community.slice(), winningCards: game.winningCards,
             potBreakdown: game.potBreakdown, winner: game.winner,
             opts: {bots: game.opts.bots, blindEvery: game.opts.blindEvery, turnSeconds: game.opts.turnSeconds, mode: game.opts.mode, stake: game.opts.stake, hints: game.opts.hints, speed: game.opts.speed, buyIn: game.opts.mode === 'cash' ? STAKES[game.opts.stake].buyIn : SNG_BUYIN},
@@ -2022,7 +2104,7 @@ function createTable(opts) {
                 winCards: showAll ? p.winCards : null,
                 connected: p.connected, sitOut: p.sitOut, afk: p.afk,
                 shown: p.shown.slice(), place: p.place, leaving: p.leaving,
-                hand: p.hand.map((c, k) => (p.idx === viewer || (showAll && p.inHand && !p.folded) || p.shown[k]) ? c : null)
+                hand: p.hand.map((c, k) => (p.idx === viewer || (showAll && p.inHand && !p.folded) || (game.reveal && p.inHand && !p.folded) || p.shown[k]) ? c : null)
             }))
         };
         snap.logs = logs.filter(l => l.id > cursor.log && (l.to == null || l.to === viewer));
@@ -2047,7 +2129,7 @@ return {
     scoreCards: scoreCards, cardInt: cardInt, chenScore: chenScore, equityMC: equityMC, preflopEquity: preflopEquity,
     createTable: createTable, getBestHand: getBestHand, compareHands: compareHands, evalCombo: evalCombo,
     createDeck: createDeck, fmtCards: fmtCards, cleanName: cleanName, cleanPhoto: cleanPhoto,
-    BOT_CHARACTERS: BOT_CHARACTERS, CHARACTER_KEYS: CHARACTER_KEYS, BOT_PROFILES: BOT_PROFILES,
+    BOT_LINES: BOT_LINES, BOT_CHARACTERS: BOT_CHARACTERS, CHARACTER_KEYS: CHARACTER_KEYS, BOT_PROFILES: BOT_PROFILES,
     SUITS: SUITS, RANKS: RANKS, RANK_VAL: RANK_VAL, SUIT_CLASS: SUIT_CLASS,
     STAKES: STAKES, SNG_BUYIN: SNG_BUYIN, sngPrize: sngPrize, REACTIONS: REACTIONS, SEATS: SEATS, START_CHIPS: START_CHIPS, TURN_SECONDS: TURN_SECONDS
 };
@@ -2060,7 +2142,7 @@ const E = PokerEngine;
 const {BOT_CHARACTERS, TURN_SECONDS, getBestHand} = E;
 const SERVER_URL = 'wss://pokertest-server.onrender.com';              // подставляется при сборке; ?server=wss://... переопределяет
 const BOT_LINK = 'https://t.me/bratishkapoker_bot';
-const APP_VERSION = '0.79';                       // должна совпадать с v в меню; build.py кладёт её в version.json
+const APP_VERSION = '0.81';                       // должна совпадать с v в меню; build.py кладёт её в version.json
 const tg = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
 const SUIT_CLASS = E.SUIT_CLASS;
 const SEAT_COLORS = ['#ff2d86', '#12dcef', '#ff8a00', '#8c4fe6', '#2fdc7a', '#f4ee1f'];
@@ -2191,7 +2273,7 @@ function boot() {
     const hashCode = (location.hash || '').replace('#', '');
     checkForUpdate();
     cfg.mode = store('poker_mode') === 'cash' ? 'cash' : 'sng';
-    cfg.hints = store('poker_hints') !== '0';
+    cfg.hints = store('poker_hints') !== '0'; favLoad();
     cfg.bigText = store('poker_bigtext') === '1'; cfg.stackBB = store('poker_stackbb') === '1';
     applyBigText(); setToggle('btnBig', cfg.bigText); setToggle('btnStackBB', cfg.stackBB);
     document.addEventListener('visibilitychange', () => { if (document.hidden && walletLoaded) walletSave(); });
@@ -2320,12 +2402,36 @@ function toggleReactions() { cfg.reactions = !cfg.reactions; setToggle('btnReact
 // ───────── реакции: эмодзи и короткие фразы ─────────
 let reactCooldown = 0, lastSnapAt = Date.now(), syncAskedAt = 0, reconAt = 0;
 let reactPage = 0;     // 0 — дружеские, 1 — жёсткие
+// быстрые слоты: по 2 любимых эмодзи и фразы, лежат под рукой, пока вы ждёте своего хода
+let fav = {e: ['e1', 'e6'], p: ['p1', 'p6']}, favEdit = false;
+function favLoad() {
+    try {
+        const j = JSON.parse(store('poker_fav') || 'null');
+        const okId = (id, k) => typeof id === 'string' && id[0] === k && reactText(id);
+        if (j && Array.isArray(j.e) && Array.isArray(j.p) && j.e.length === 2 && j.p.length === 2 && j.e.every(i => okId(i, 'e')) && j.p.every(i => okId(i, 'p'))) fav = {e: j.e.slice(), p: j.p.slice()};
+    } catch (e) {}
+}
+function favSet(id) {
+    const k = id[0] === 'e' ? 'e' : 'p';
+    if (fav[k].indexOf(id) >= 0) { toast('Уже в быстрых слотах'); return; }
+    fav[k] = [fav[k][1], id];
+    store('poker_fav', JSON.stringify(fav));
+    toast('Любимая: ' + reactText(id).text);
+    buildReactPanel();
+}
+function toggleFavEdit() { favEdit = !favEdit; buildReactPanel(); }
+function quickHtml() {
+    if (!cfg.reactions || !S || S.me < 0 || S.status !== 'playing') return '';
+    const b = (id, cls) => `<button class="${cls}" onclick="sendReact('${id}')">${esc(reactText(id).text)}</button>`;
+    return `<div class="quick-row">${fav.e.map(id => b(id, 'q-emo')).join('')}${fav.p.map(id => b(id, 'q-phr')).join('')}</div>`;
+}
 function buildReactPanel() {
     const R = E.REACTIONS, eo = reactPage * R.pageEmoji, po = reactPage * R.pagePhrases;
     $('reactPanel').innerHTML =
-        `<div class="rp-tabs"><button class="${reactPage === 0 ? 'on' : ''}" onclick="event.stopPropagation();setReactPage(0)">😎 Дружеские</button><button class="${reactPage === 1 ? 'on' : ''}" onclick="event.stopPropagation();setReactPage(1)">😈 Жёсткие</button></div>` +
-        '<div class="rp-emoji">' + R.emoji.slice(eo, eo + R.pageEmoji).map((x, i) => `<button onclick="sendReact('e${eo + i}')">${x}</button>`).join('') + '</div>' +
-        '<div class="rp-phrases">' + R.phrases.slice(po, po + R.pagePhrases).map((x, i) => `<button onclick="sendReact('p${po + i}')">${esc(x)}</button>`).join('') + '</div>';
+        `<div class="rp-tabs"><button class="${reactPage === 0 ? 'on' : ''}" onclick="event.stopPropagation();setReactPage(0)">😎 Дружеские</button><button class="${reactPage === 1 ? 'on' : ''}" onclick="event.stopPropagation();setReactPage(1)">😈 Жёсткие</button><button class="star ${favEdit ? 'on' : ''}" onclick="event.stopPropagation();toggleFavEdit()">⭐</button></div>` +
+        (favEdit ? '<div class="rp-hint">Нажмите реакцию, чтобы сделать её любимой (по 2 эмодзи и 2 фразы)</div>' : '') +
+        '<div class="rp-emoji">' + R.emoji.slice(eo, eo + R.pageEmoji).map((x, i) => `<button onclick="sendReact('e${eo + i}', event)">${x}</button>`).join('') + '</div>' +
+        '<div class="rp-phrases">' + R.phrases.slice(po, po + R.pagePhrases).map((x, i) => `<button onclick="sendReact('p${po + i}', event)">${esc(x)}</button>`).join('') + '</div>';
 }
 function setReactPage(n) { reactPage = n ? 1 : 0; buildReactPanel(); }
 function toggleReactPanel(force) {
@@ -2335,7 +2441,8 @@ function toggleReactPanel(force) {
     p.classList.toggle('on', open);
 }
 if (typeof document !== 'undefined') document.addEventListener('click', e => { const p = $('reactPanel'); if (p && p.classList.contains('on') && !e.target.closest('#reactPanel') && !e.target.closest('#reactBtn')) p.classList.remove('on'); });
-function sendReact(id) {
+function sendReact(id, ev) {
+    if (favEdit && $('reactPanel').classList.contains('on')) { if (ev && ev.stopPropagation) ev.stopPropagation(); favSet(id); return; }
     if (!net || !S || S.me < 0) return;
     const t = Date.now();
     if (t - reactCooldown < 1300) { toast('Не так часто 🙂'); return; }
@@ -2379,7 +2486,7 @@ function toggleSpeed() {
 function updateSettingsRows() {
     const inGame = !!(S && S.status !== 'lobby' && mode), seated = !!(S && S.me >= 0);
     const show = (id, on) => { const e = $(id); if (e) e.style.display = on ? '' : 'none'; };
-    show('rowAway', inGame && seated); show('rowExit', inGame); show('rowSpeed', inGame && S.host === S.me);
+    show('rowTour', inGame && seated); show('rowAway', inGame && seated); show('rowExit', inGame); show('rowSpeed', inGame && S.host === S.me);
     const bs = $('btnSpeed'); if (bs && S && S.opts) { bs.textContent = S.opts.speed ? 'БЫСТРАЯ' : 'ОБЫЧНАЯ'; bs.classList.toggle('off', !S.opts.speed); }
 }
 function toggleSound() { cfg.sound = !cfg.sound; setToggle('btnSound', cfg.sound); }
@@ -2531,6 +2638,39 @@ function closeSheets() {
     const sc = $('scrim'); if (sc) sc.classList.remove('on');
 }
 
+// ───────── обучающий тур при первом запуске ─────────
+const TOUR_STEPS = [
+    {sel: '#seat0 .hand', text: 'Это ваши две карты. Их видите только вы.'},
+    {sel: '#community', text: 'Сюда выкладываются общие карты стола. Из двух своих и пяти общих собирается лучшая комбинация.'},
+    {sel: '.panel', text: 'Когда придёт ваш ход, здесь появятся кнопки: Fold сбросить карты, Call уравнять ставку, Raise повысить. Пока ходят другие, можно заранее выбрать действие.'},
+    {sel: '.hud', text: 'Нажмите на верхнюю плашку: там журнал, история раздач, словарик с комбинациями и настройки.'}
+];
+let tourI = -1, tourPaused = false, tourOffered = false;
+function renderTour() {
+    const app = $('app'); let ov = $('tour');
+    if (tourI < 0 || tourI >= TOUR_STEPS.length) { if (ov) ov.remove(); return; }
+    if (!ov) { ov = document.createElement('div'); ov.id = 'tour'; app.appendChild(ov); }
+    const st = TOUR_STEPS[tourI], el = document.querySelector(st.sel), ar = app.getBoundingClientRect();
+    const r = el ? el.getBoundingClientRect() : {left: ar.left + 20, top: ar.top + 100, width: ar.width - 40, height: 60};
+    const pad = 6, x = r.left - ar.left - pad, y = r.top - ar.top - pad, w = r.width + pad * 2, h = Math.max(r.height, 30) + pad * 2;
+    const below = (y + h / 2) < ar.height / 2;
+    ov.innerHTML = `<div class="tour-hole" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px"></div>
+        <div class="tour-card" style="${below ? 'top:' + Math.min(ar.height - 190, y + h + 14) + 'px' : 'top:' + Math.max(10, y - 176) + 'px'}">
+            <div class="tour-text">${esc(st.text)}</div>
+            <div class="tour-btns"><button class="show-btn" onclick="tourNext()">${tourI === TOUR_STEPS.length - 1 ? 'Понятно!' : 'Дальше ▶'}</button><span class="tour-step">${tourI + 1} / ${TOUR_STEPS.length}</span><span class="link" onclick="endTour()">пропустить</span></div>
+        </div>`;
+}
+function startTour() {
+    tourI = 0; renderTour();
+    if (mode === 'solo' && net && S && !S.paused) { net.send({t: 'pause', on: true}); tourPaused = true; }
+}
+function tourNext() { tourI++; if (tourI >= TOUR_STEPS.length) endTour(); else renderTour(); }
+function endTour() {
+    tourI = -1; renderTour(); store('poker_tour', '1');
+    if (tourPaused && net) { net.send({t: 'pause', on: false}); }
+    tourPaused = false;
+}
+
 // ───────── история раздач ─────────
 let histView = [], histOpen = null;
 function histAdd(e) {
@@ -2586,9 +2726,24 @@ const HELP_COMBOS = [
     ['Старшая карта', 'Нет комбинации', 'AS JD 8H 5C 2S']
 ];
 function parseCard(s) { return {rank: s.slice(0, -1), suit: {S: '♠', H: '♥', D: '♦', C: '♣'}[s.slice(-1)]}; }
+const GLOSSARY = [
+    ['Блайнды', 'две обязательные ставки до раздачи (малый SB и большой BB). Они запускают торговлю.'],
+    ['Дилер (D)', 'кнопка по кругу; с дилера отсчитывается порядок ходов, он ходит последним после флопа.'],
+    ['Чек', 'пропустить ход без ставки, если ставить никто не стал.'],
+    ['Колл', 'уравнять текущую ставку.'],
+    ['Рейз / Ставка', 'повысить ставку (первая ставка в круге называется «ставка»).'],
+    ['Фолд', 'сбросить карты и выйти из раздачи; уже поставленное остаётся в банке.'],
+    ['All-in (ва-банк)', 'поставить все фишки. После ва-банка карты открываются и показан шанс каждого.'],
+    ['Банк', 'все фишки, которые сейчас лежат на кону.'],
+    ['Флоп, тёрн, ривер', 'три, четвёртая и пятая общие карты стола.'],
+    ['Вскрытие', 'показ карт в конце: выигрывает лучшая комбинация из пяти карт.'],
+    ['Стек', 'фишки, которые есть у игрока; в блайндах (BB) удобно сравнивать.'],
+    ['Позиция', 'чем позже вы ходите, тем больше знаете о соперниках; кнопка дилера лучшая.']
+];
 function buildHelp() {
     const html = HELP_COMBOS.map(c => `<div class="help-row"><div class="help-name">${c[0]}<small>${c[1]}</small></div><div class="help-cards">${c[2].split(' ').map(x => cardHtml(parseCard(x), 'xs')).join('')}</div></div>`).join('')
-        + '<div class="help-note">Туз может быть младшей картой в стрите: A-2-3-4-5. Сверху вниз комбинации от сильной к слабой.</div>';
+        + '<div class="help-note">Туз может быть младшей картой в стрите: A-2-3-4-5. Сверху вниз комбинации от сильной к слабой.</div>'
+        + '<div class="gl-title">СЛОВАРИК</div>' + GLOSSARY.map(g => `<div class="gl-row"><b>${g[0]}</b> ${g[1]}</div>`).join('');
     setHtml('helpBody', html);
 }
 
@@ -2810,6 +2965,54 @@ function play(action) {
     sendAct(action, action === 'raise' ? parseInt($('raiseInput').value) : 0);
 }
 
+// ───────── заранее выбранные действия ─────────
+// Пока ходят другие, можно выбрать: «Чек/Фолд», «Колл ₽X» (только на ту же сумму) или «Колл до N BB». Когда дойдёт очередь, действие
+// выполнится само; если ставка выросла или раздача сменилась, выбор сбрасывается и решаете вы.
+let preAct = null;
+const PRE_BB = [5, 10, 25];
+function toCallNow() { const me = myPlayer(); return me ? Math.max(0, S.currentBet - me.bet) : 0; }
+function preAvail() {
+    const me = myPlayer();
+    return !!(S && me && S.status === 'playing' && !S.handOver && !S.paused && S.phase !== 'showdown' && me.inHand && !me.folded && !me.allIn && me.chips > 0 && !iAmActive() && !isAway());
+}
+function setPre(kind) {
+    if (!preAvail()) return;
+    if (kind === 'max') {
+        const i = preAct && preAct.kind === 'max' ? PRE_BB.indexOf(preAct.bb) + 1 : 0;
+        preAct = i >= PRE_BB.length ? null : {kind: 'max', bb: PRE_BB[i], hand: S.hand};
+    } else if (preAct && preAct.kind === kind) preAct = null;
+    else preAct = {kind: kind, amt: toCallNow(), hand: S.hand};
+    haptic('light'); updateWaitText();
+}
+function validatePre() {
+    if (!preAct) return;
+    const me = myPlayer();
+    if (!S || !me || preAct.hand !== S.hand || S.status !== 'playing' || S.handOver || !me.inHand || me.folded) { preAct = null; return; }
+    if (iAmActive()) return;
+    const tc = toCallNow();
+    if (preAct.kind === 'call' && tc !== preAct.amt) { preAct = null; toast('Ставка изменилась: выбор сброшен'); }
+    else if (preAct.kind === 'max' && tc > preAct.bb * S.bigBlind) { preAct = null; toast('Ставка выше лимита: решайте сами'); }
+}
+function runPre() {
+    if (!preAct || !iAmActive()) return false;
+    const tc = toCallNow(), p = preAct; preAct = null;
+    let act = null;
+    if (p.kind === 'cf') act = tc === 0 ? 'check' : 'fold';
+    else if (p.kind === 'call') act = tc === p.amt ? (tc === 0 ? 'check' : 'call') : null;
+    else if (p.kind === 'max') act = tc === 0 ? 'check' : (tc <= p.bb * S.bigBlind ? 'call' : null);
+    if (!act) { toast('Ставка изменилась: решайте сами'); return false; }
+    toast('Авто: ' + ({check: 'чек', fold: 'фолд', call: 'колл'}[act])); haptic('light');
+    sendAct(act, 0);
+    return true;
+}
+function preHtml() {
+    if (!preAvail()) return '';
+    const me = myPlayer(), tc = Math.min(toCallNow(), me.chips), sel = k => !!preAct && preAct.kind === k;
+    const callLbl = sel('call') ? (preAct.amt > 0 ? 'Колл ₽' + preAct.amt : 'Чек') : (tc > 0 ? 'Колл ₽' + tc : 'Чек');
+    const maxLbl = sel('max') ? 'Колл до ' + preAct.bb + ' BB' : 'Колл до…';
+    return `<div class="pre-row"><button class="pre-btn ${sel('cf') ? 'on' : ''}" onclick="setPre('cf')">Чек/Фолд</button><button class="pre-btn ${sel('call') ? 'on' : ''}" onclick="setPre('call')">${callLbl}</button><button class="pre-btn ${sel('max') ? 'on' : ''}" onclick="setPre('max')">${maxLbl}</button></div>`;
+}
+
 // ───────── таймер хода ─────────
 function remainingSec() {
     if (!S || !S.deadline) return 0;
@@ -2853,6 +3056,8 @@ function applySnapshot(s) {
     if (S.me >= 0) { watching = false; if (currentRoom) store(ROOM_KEY, currentRoom); }      // сели вместо бота: теперь мы игрок
     walletOnSnapshot();
     if (!S) return;
+    validatePre(); if (iAmActive()) runPre();
+    if (mode === 'solo' && S.status === 'playing' && !tourOffered && store('poker_tour') !== '1') { tourOffered = true; setTimeout(() => { if (S && S.status === 'playing' && mode === 'solo') startTour(); }, 1300); }
     if (s.status === 'playing' && prevStatus && prevStatus !== 'playing') { logsView = []; histView = []; }   // новая игра: старый журнал не нужен
     if (s.history) { histView = s.history.slice(); }
     s.logs.forEach(l => logsView.push({text: l.text, cls: l.cls}));
@@ -3186,7 +3391,7 @@ function startSolo() {
 // ───────── выход ─────────
 function closeModal() { const m = document.querySelector('.modal'); if (m && m.remove) m.remove(); }
 function resetToMenu(silent) {
-    stopTick();
+    stopTick(); preAct = null;
     if (net) { try { net.send({t: 'leave'}); } catch (e) {} const n = net; setTimeout(() => n.close(), 150); }
     net = null; mode = null; S = null; currentRoom = ''; watching = false; rejoining = false; if (!silent) store(ROOM_KEY, ''); logsView = []; histView = []; hideHud(); syncClosing(); firstSnap = true; lastTurnKey = '';
     closeModal(); closeSheets(); hideConn();
@@ -3205,6 +3410,28 @@ function exitGame() {
 }
 
 // ───────── конец игры ─────────
+// итоги партии по записанным раздачам
+function myStatsHtml() {
+    const me = S.me; let played = 0, won = 0, bestPot = 0, bestIdx = 99, bestName = '';
+    histView.forEach(e => {
+        const p = e.players.find(x => x.seat === me); if (!p) return;
+        played++;
+        if (p.won > 0) {
+            won++; bestPot = Math.max(bestPot, e.pot);
+            const k = HELP_COMBOS.findIndex(c => c[0] === p.combo);
+            if (k >= 0 && k < bestIdx) { bestIdx = k; bestName = p.combo; }
+        }
+    });
+    if (!played) return '';
+    return `<div class="line">📊 В раздачах: <b>${played}</b> · выиграно: <b>${won}</b></div>` + (won ? `<div class="line">💰 Лучший банк: <b>₽${bestPot}</b>${bestName ? ' · ' + bestName : ''}</div>` : '');
+}
+function shareResult() {
+    const me = myPlayer(), w = me && S.winner === S.me;
+    const text = (w ? '🏆 Выиграл партию в БРАТАНЧИК ПОКЕР! ' : '♠ Сыграл партию в БРАТАНЧИК ПОКЕР. ') + (lastSettle && lastSettle.place ? `Место ${lastSettle.place}. ` : '') + 'Заходи, сыграем!';
+    try { if (tg && tg.openTelegramLink) { tg.openTelegramLink('https://t.me/share/url?url=' + encodeURIComponent(BOT_LINK) + '&text=' + encodeURIComponent(text)); return; } } catch (e) {}
+    try { if (navigator.share) { navigator.share({title: 'Покер', text: text, url: BOT_LINK}); return; } } catch (e) {}
+    toast('Скопируйте ссылку: ' + BOT_LINK);
+}
 function showGameOver() {
     if (document.querySelector('.modal')) return;
     const me = myPlayer();
@@ -3224,7 +3451,9 @@ function showGameOver() {
             ${me ? `<div class="line">Ваш стек: <b>₽${me.chips}</b></div>` : '<div class="line">👁 Вы наблюдали за игрой</div>'}
             ${lastSettle ? `<div class="line">🏅 Место: <b>${lastSettle.place || '—'}</b> · приз <b>₽${lastSettle.prize}</b></div><div class="line">💰 Баланс: <b>₽${lastSettle.balance}</b> <span class="${lastSettle.delta >= 0 ? 'w-plus' : 'w-minus'}">(${lastSettle.delta >= 0 ? '+' : ''}${lastSettle.delta})</span></div>` : ''}
             <div class="dim">Раздач сыграно: ${S.hand}</div>
+            ${me ? myStatsHtml() : ''}
             ${again}
+            ${me ? '<div class="link" onclick="shareResult()">📨 поделиться результатом</div>' : ''}
             <div class="link" onclick="this.closest('.modal').remove()">закрыть и посмотреть журнал</div>
             <div class="link" onclick="resetToMenu()">выйти в меню</div>
         </div>`;
@@ -3260,7 +3489,8 @@ function seatHtml(p, i) {
     const known = p.hand.length > 0 && p.hand.every(c => c);
     const sd = S.phase === 'showdown';
     const isShowdown = sd && known && p.inHand && !p.folded;
-    const sz = isMe ? 'me' : (sd ? 'sm' : 'xs');
+    const rv = !!S.reveal && !sd && known && p.inHand && !p.folded;      // ва-банк: карты открыты, торгов больше нет
+    const sz = isMe ? 'me' : ((sd || rv) ? 'sm' : 'xs');
     let hand = '';
     if (p.inHand && p.hand.length) {
         hand = p.hand.map(c => {
@@ -3274,7 +3504,7 @@ function seatHtml(p, i) {
         if (isMe && !sd) {
             if (S.community.length >= 3) combo = `<div class="combo mine">${getBestHand([...p.hand, ...S.community]).name}</div>`;
             else if (p.hand[0].rank === p.hand[1].rank) combo = '<div class="combo mine">Пара</div>';
-        } else if (sd) {
+        } else if ((sd || rv) && (sd || S.community.length >= 3)) {
             combo = `<div class="combo">${getBestHand([...p.hand, ...S.community]).name}</div>`;
         }
     }
@@ -3284,12 +3514,14 @@ function seatHtml(p, i) {
     if (i === S.bb) marks.push('<i class="mk bb">BB</i>');
     const out = !p.inHand && p.chips === 0;
     const win = p.isWinner ? `<div class="win-tag">👑 +₽${p.won}</div>` : '';
+    const eqv = S.equity && S.equity[i] !== undefined && p.inHand && !p.folded ? S.equity[i] : null;
+    const eq = eqv === null ? '' : `<div class="eq-tag ${eqv >= 60 ? 'hi' : (eqv <= 30 ? 'lo' : '')}">${eqv}%</div>`;
     const zz = (!p.bot && p.afk) ? '<span class="zz">☕</span>' : ((!p.bot && !p.connected) ? '<span class="zz">💤</span>' : '');
     return `${win}
         <div class="av-wrap">${avatarHtml(p, i)}<div class="mk-row">${marks.join('')}</div>${out ? '<div class="sticker st-fold">ВЫЛЕТ</div>' : stickerFor(p)}</div>
         <div class="hand">${hand}</div>
         <div class="plate"><b class="nm" style="font-weight:normal">${esc(p.name)}${zz}</b><span class="stk">${cfg.stackBB ? (p.chips / S.bigBlind).toFixed(1) + ' BB' : '₽' + p.chips}</span></div>
-        ${combo}`;
+        ${combo}${eq}`;
 }
 
 function updateWaitText() {
@@ -3316,15 +3548,16 @@ function waitButtonsHtml() {
     const me = myPlayer(), show = showCardsHtml(), rb = rebuyHtml();
     const btn = (label, fn) => `<div class="show-row"><button class="show-btn" onclick="${fn}">${label}</button></div>`;
     let extra = '';
+    const pre = preHtml();
     if (S.paused) extra = btn('▶ Продолжить', 'backToTable()');
     else if (me && me.afk) extra = btn('🙋 Я вернулся', 'backToTable()');
-    else if (me && S.status === 'playing' && !show && !rb && me.chips > 0 && !me.leaving) extra = btn(canPause() ? '⏸ Пауза' : '☕ Отойти', 'goAway()');
+    else if (me && S.status === 'playing' && !show && !rb && !pre && me.chips > 0 && !me.leaving && !S.handOver) extra = btn(canPause() ? '⏸ Пауза' : '☕ Отойти', 'goAway()');
     else if (!me && canSit() && wallet.balance >= S.opts.buyIn) extra = btn('🪑 Сесть за стол (₽' + S.opts.buyIn + ')', 'sitDown()');
     if (S.handOver && S.status === 'playing' && me && !S.paused) {
         const voted = (S.skip || []).indexOf(S.me) >= 0;
         extra += voted ? '<div class="w-note" style="margin-top:4px">⏳ Ждём остальных…</div>' : btn('⏭ Дальше', 'skipHand()');
     }
-    return show + rb + extra;
+    return show + rb + pre + extra + (me && !S.paused && !(me && me.afk) ? quickHtml() : '');
 }
 // кнопки «показать карты»: после раздачи тем, кто сбросил, и тому, кто забрал банк без вскрытия
 function rebuyHtml() {
@@ -3369,7 +3602,7 @@ function render() {
     const roundBets = S.players.reduce((s, p) => s + (p.bet || 0), 0);
     setText('potRound', (S.phase === 'showdown' && S.potBreakdown && S.potBreakdown.length > 1)
         ? 'банки: ' + S.potBreakdown.map(a => '₽' + a).join(' + ')
-        : ((roundBets > 0 && S.phase !== 'showdown') ? `в круге ₽${roundBets}` : ''));
+        : (S.reveal && S.phase !== 'showdown' ? '🎬 ВА-БАНК: карты открыты' : ((roundBets > 0 && S.phase !== 'showdown') ? `в круге ₽${roundBets}` : '')));
     // стеки и рост блайндов: наверху журнала
     const ranked = S.players.map((p, idx) => ({p, idx})).filter(r => !r.p.empty).sort((a, b) => b.p.chips - a.p.chips);
     const grow = S.opts && S.opts.mode === 'cash' ? 'блайнды не растут' : (S.blindsIn > 0 ? 'блайнды вырастут через ' + S.blindsIn + ' разд.' : 'блайнды не растут');
