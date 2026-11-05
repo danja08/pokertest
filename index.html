@@ -88,7 +88,6 @@ input { font-family: inherit; }
 .hud > div:first-child { min-width: 0; flex: 1 1 auto; }
 .hud-line { font-size: calc(var(--u)*17); color: var(--bone2); white-space: nowrap; overflow: hidden; }
 .hud-line b { color: var(--gold); font-weight: normal; }
-.hud-phase { font-family: var(--font-h); font-size: calc(var(--u)*13); color: var(--cyan); letter-spacing: calc(var(--u)*.5); }
 .hud-btns { display: flex; gap: calc(var(--u)*6); }
 
 /* ───────── СТОЛ ───────── */
@@ -338,6 +337,12 @@ input { font-family: inherit; }
 .react-panel { width: calc(var(--u)*250); }
 #specBadge { display: none; position: absolute; right: calc(var(--u)*2); top: calc(var(--u)*-2); z-index: 15; padding: calc(var(--u)*2) calc(var(--u)*8) calc(var(--u)*4); font-size: calc(var(--u)*15); color: var(--bone); background: var(--bg2); border: calc(var(--u)*3) solid var(--ink); border-radius: calc(var(--u)*10); }
 #menu { transition: transform .2s; }
+#stacks { flex: none; padding: calc(var(--u)*6) calc(var(--u)*12) calc(var(--u)*8); border-bottom: calc(var(--u)*2) dotted rgba(246,239,210,.14); }
+.stk-row { display: flex; flex-wrap: wrap; gap: calc(var(--u)*5); }
+.stk-pill { padding: calc(var(--u)*2) calc(var(--u)*8) calc(var(--u)*4); font-size: calc(var(--u)*14); color: var(--bone); background: var(--bg3); border: calc(var(--u)*2.5) solid var(--ink); border-radius: calc(var(--u)*10); }
+.stk-pill.you { color: var(--ink); background: var(--gold); } .stk-pill.gone { opacity: .5; text-decoration: line-through; }
+.stk-note { margin-top: calc(var(--u)*5); font-size: calc(var(--u)*13); color: var(--bone2); }
+.opt-btn.more { color: var(--bone2); background: transparent; box-shadow: none; border-style: dashed; }
 
 </style>
 </head>
@@ -363,10 +368,9 @@ input { font-family: inherit; }
         <input id="codeInput" type="text" maxlength="5" placeholder="КОД" autocomplete="off" autocapitalize="characters" spellcheck="false">
         <button class="btn btn-check" onclick="joinByInput()">ВОЙТИ</button>
       </div>
-      <button class="link-btn" onclick="watchByInput()">👁 смотреть игру по коду</button>
       <div class="menu-msg" id="menuMsg"></div>
     </div>
-    <div class="menu-ver">v0.71</div>
+    <div class="menu-ver">v0.72</div>
   </div>
 
 
@@ -394,11 +398,9 @@ input { font-family: inherit; }
     <div class="hud">
       <div class="hud-info">
         <div class="hud-line">Блайнды <b id="blinds">10/20</b> · Раздача <b id="handNum">1</b></div>
-        <div class="hud-phase" id="phase">PREFLOP</div>
       </div>
       <div class="hud-btns">
         <button class="icon-btn" onclick="openSheet('sheetLog')" title="Журнал">📜</button>
-        <button class="icon-btn" onclick="openSheet('sheetBoard')" title="Таблица лидеров">🏆</button>
         <button class="icon-btn" onclick="openSheet('sheetHelp')" title="Комбинации">❓</button>
         <button class="icon-btn" onclick="openSheet('sheetSettings')" title="Настройки">⚙️</button>
       </div>
@@ -452,11 +454,8 @@ input { font-family: inherit; }
 
   <div class="sheet" id="sheetLog">
     <div class="sheet-title"><span>ЖУРНАЛ</span><button class="sheet-close" onclick="closeSheets()">✕</button></div>
+    <div id="stacks"></div>
     <div class="sheet-body"><div id="log"></div></div>
-  </div>
-  <div class="sheet" id="sheetBoard">
-    <div class="sheet-title"><span>ЛИДЕРЫ</span><button class="sheet-close" onclick="closeSheets()">✕</button></div>
-    <div class="sheet-body"><div id="leaderboard"></div><div class="help-note">Блайнды вырастут через: <span id="blindTimer">5 раздач</span></div></div>
   </div>
   <div class="sheet" id="sheetHelp">
     <div class="sheet-title"><span>КОМБИНАЦИИ</span><button class="sheet-close" onclick="closeSheets()">✕</button></div>
@@ -1883,7 +1882,7 @@ const E = PokerEngine;
 const {BOT_CHARACTERS, TURN_SECONDS, getBestHand} = E;
 const SERVER_URL = 'wss://pokertest-server.onrender.com';              // подставляется при сборке; ?server=wss://... переопределяет
 const BOT_LINK = 'https://t.me/bratishkapoker_bot';
-const APP_VERSION = '0.71';                       // должна совпадать с v в меню; build.py кладёт её в version.json
+const APP_VERSION = '0.72';                       // должна совпадать с v в меню; build.py кладёт её в version.json
 const tg = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
 const SUIT_CLASS = E.SUIT_CLASS;
 const SEAT_COLORS = ['#ff2d86', '#12dcef', '#ff8a00', '#8c4fe6', '#2fdc7a', '#f4ee1f'];
@@ -2259,7 +2258,7 @@ function rebuyNow() {
 }
 function renderWallet() {
     const el = $('walletRow'); if (!el) return;
-    const today = dayKey(), parts = [`<div class="w-main">💰 <b>₽${wallet.balance}</b><span>${wallet.games ? ` · партий ${wallet.games} · побед ${wallet.wins}` : ''}</span></div>`];
+    const today = dayKey(), parts = [`<div class="w-main">💰 <b>₽${wallet.balance}</b></div>`];
     if (bonusAvailable(today)) parts.push(`<button class="w-btn" onclick="onBonus()">🎁 Бонус дня +₽${bonusAmount(today)}</button>`);
     else if (rescueAvailable(today)) parts.push(`<button class="w-btn" onclick="onRescue()">🆘 Докинуть до ₽${BUY_IN}</button>`);
     else if (!canBuyIn()) parts.push('<div class="w-note">Не хватает на вход. Бонус завтра.</div>');
@@ -2277,7 +2276,7 @@ function openSheet(id) {
     if (id === 'sheetLog') renderLog();
 }
 function closeSheets() {
-    ['sheetLog', 'sheetBoard', 'sheetHelp', 'sheetSettings'].forEach(id => { const el = $(id); if (el) el.classList.remove('open'); });
+    ['sheetLog', 'sheetHelp', 'sheetSettings'].forEach(id => { const el = $(id); if (el) el.classList.remove('open'); });
     const sc = $('scrim'); if (sc) sc.classList.remove('on');
 }
 
@@ -2590,10 +2589,11 @@ function renderLobby() {
     const blindTxt = BLIND_LABEL[o.blindEvery] || 'каждые ' + o.blindEvery + ' раздач';
     setHtml('lobbyOpts', host
         ? `<button class="opt-btn on" onclick="setOpt({mode:'${cash ? 'sng' : 'cash'}'})">${cash ? '💵 Режим: КЭШ' : '🏆 Режим: SIT & GO'}</button>
-           ${cash ? `<button class="opt-btn" onclick="cycleStake()">🎚 Ставки: ${stakeTxt}</button>` : `<button class="opt-btn" onclick="cycleBlinds()">⬆ Блайнды: ${blindTxt}</button>`}
            <button class="opt-btn ${botsOn ? 'on' : ''}" onclick="setOpt({bots:${!botsOn}})">🤖 Боты: ${botsOn ? 'ВКЛ' : 'ВЫКЛ'}</button>
+           <button class="opt-btn more" onclick="toggleLobbyMore()">⚙ Ещё ${lobbyMore ? '▴' : '▾'}</button>
+           ${lobbyMore ? `${cash ? `<button class="opt-btn" onclick="cycleStake()">🎚 Ставки: ${stakeTxt}</button>` : `<button class="opt-btn" onclick="cycleBlinds()">⬆ Блайнды: ${blindTxt}</button>`}
            <button class="opt-btn" onclick="cycleTurn()">⏱ Время на ход: ${o.turnSeconds || 30} с</button>
-           <button class="opt-btn ${o.hints ? 'on' : ''}" onclick="setOpt({hints:${!o.hints}})">💪 Силомер: ${o.hints ? 'ВКЛ' : 'ВЫКЛ'}</button>`
+           <button class="opt-btn ${o.hints ? 'on' : ''}" onclick="setOpt({hints:${!o.hints}})">💪 Силомер: ${o.hints ? 'ВКЛ' : 'ВЫКЛ'}</button>` : ''}`
         : `<div class="opt-line">${cash ? '💵 Кэш <b>' + stakeTxt + '</b>' : '🏆 Sit & Go · ⬆ Блайнды: <b>' + blindTxt + '</b>'} · 🤖 <b>${botsOn ? 'вкл' : 'выкл'}</b> · ⏱ <b>${o.turnSeconds || 30} с</b> · 💪 <b>${o.hints ? 'вкл' : 'выкл'}</b></div>`);
     setText('lobbyNote', host
         ? (!botsOn ? (n < 2 ? 'Без ботов: ждём хотя бы одного друга.' : `За столом ${n} игроков, без ботов.`)
@@ -2601,6 +2601,8 @@ function renderLobby() {
         : (S.me < 0 ? '👁 Вы наблюдаете за столом' : 'Ждём, пока хозяин начнёт игру…'));
     $('lobbySit').style.display = canSit() ? 'flex' : 'none';
 }
+let lobbyMore = false;
+function toggleLobbyMore() { lobbyMore = !lobbyMore; if (S) renderLobby(); }
 const BLIND_LABEL = {0: 'не растут', 3: 'каждые 3 раздачи', 5: 'каждые 5 раздач', 10: 'каждые 10 раздач'};
 function setOpt(o) { if (net && S && S.status === 'lobby' && S.host === S.me) net.send(Object.assign({t: 'cfg'}, o)); }
 function cycleStake() { setOpt({stake: ((S.opts && S.opts.stake !== undefined ? S.opts.stake : 1) + 1) % E.STAKES.length}); }
@@ -2763,16 +2765,6 @@ function joinByInput() {
     n.queue({t: 'join', room: code});
 }
 
-function watchByInput() {
-    menuMsg('');
-    const code = ($('codeInput').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if (code.length !== 5) { menuMsg('Введите код стола из 5 символов.'); return; }
-    getAudio();
-    const n = ensureOnline(); if (!n) return;
-    showConn('Подключаемся к столу ' + code + '…', 'Если сервер спал, подождите до минуты');
-    watching = true;
-    n.queue({t: 'join', room: code, spectate: true});
-}
 // зритель садится за стол: в лобби или за кэш-стол при свободном месте (вход списывается как у остальных)
 function canSit() {
     if (!S || S.me >= 0 || !S.opts || !S.players.some(p => p.empty)) return false;
@@ -3019,11 +3011,8 @@ function canShowMyCards() {
 function showCardsHtml() {
     if (!canShowMyCards()) return '';
     const sh = myPlayer().shown || [false, false];
-    const b = [];
-    if (!sh[0] && !sh[1]) b.push('<button class="show-btn" onclick="showCards(2)">👁 Показать обе</button>');
-    if (!sh[0]) b.push('<button class="show-btn" onclick="showCards(0)">1-ю</button>');
-    if (!sh[1]) b.push('<button class="show-btn" onclick="showCards(1)">2-ю</button>');
-    return '<div class="show-row">' + b.join('') + '</div>';
+    const which = !sh[0] && !sh[1] ? 2 : (!sh[0] ? 0 : 1);
+    return `<div class="show-row"><button class="show-btn" onclick="showCards(${which})">👁 Показать${which === 2 ? '' : ' вторую'}</button></div>`;
 }
 function showCards(which) { if (net && canShowMyCards()) { net.send({t: 'show', which: which}); haptic('light'); } }
 
@@ -3031,7 +3020,6 @@ function render() {
     if (!S) return;
     setText('blinds', `${S.smallBlind}/${S.bigBlind}`);
     fitText(document.querySelector('.hud-line'), 11);
-    setText('phase', (PHASE_NAMES[S.phase] || 'PREFLOP') + (S.opts ? (S.opts.mode === 'cash' ? ' · КЭШ' : ' · SIT&GO') : '') );
     setText('specBadge', S.spectators > 0 ? '👁 ' + S.spectators : '');
     $('specBadge').style.display = S.spectators > 0 ? 'block' : 'none';
     const rbtn = $('reactBtn'); if (rbtn) rbtn.style.display = S.me < 0 ? 'none' : '';
@@ -3047,18 +3035,10 @@ function render() {
     setText('potRound', (S.phase === 'showdown' && S.potBreakdown && S.potBreakdown.length > 1)
         ? 'банки: ' + S.potBreakdown.map(a => '₽' + a).join(' + ')
         : ((roundBets > 0 && S.phase !== 'showdown') ? `в круге ₽${roundBets}` : ''));
-    setText('blindTimer', S.opts && S.opts.mode === 'cash' ? 'не растут (кэш)' : (S.blindsIn > 0 ? S.blindsIn + ' раздач' : 'не растут'));
-
-    // таблица лидеров
+    // стеки и рост блайндов: наверху журнала
     const ranked = S.players.map((p, idx) => ({p, idx})).filter(r => !r.p.empty).sort((a, b) => b.p.chips - a.p.chips);
-    setHtml('leaderboard', ranked.map((r, k) => {
-        const p = r.p;
-        const medal = ['🥇', '🥈', '🥉'][k] || (k + 1);
-        return `<div class="lb-row${r.idx === S.me ? ' you' : ''}${p.chips === 0 ? ' gone' : ''}">
-            <div class="lb-pos">${medal}</div>
-            <div class="lb-name">${esc(p.name)}${p.chips === 0 ? ' — вылет' : ''}</div>
-            <div class="lb-stack">₽${p.chips}<span>${(p.chips / S.bigBlind).toFixed(1)} BB</span></div></div>`;
-    }).join(''));
+    const grow = S.opts && S.opts.mode === 'cash' ? 'блайнды не растут' : (S.blindsIn > 0 ? 'блайнды вырастут через ' + S.blindsIn + ' разд.' : 'блайнды не растут');
+    setHtml('stacks', '<div class="stk-row">' + ranked.map(r => `<span class="stk-pill${r.idx === S.me ? ' you' : ''}${r.p.chips === 0 ? ' gone' : ''}">${esc(r.p.name)} ₽${r.p.chips}</span>`).join('') + `</div><div class="stk-note">${grow}</div>`);
 
     // общие карты
     let com = '';
