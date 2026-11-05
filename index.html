@@ -185,8 +185,9 @@ input { font-family: inherit; }
 .bet[data-seat="0"] { left: 50%; top: calc(100% - calc(var(--u)*222)); } .bet[data-seat="1"] { left: 34%; top: 62%; } .bet[data-seat="2"] { left: 22%; top: 40%; }
 .bet[data-seat="3"] { left: 50%; top: 22%; } .bet[data-seat="4"] { left: 78%; top: 40%; flex-direction: row-reverse; } .bet[data-seat="5"] { left: 66%; top: 62%; flex-direction: row-reverse; }
 .bet-tag { font-size: calc(var(--u)*16); line-height: 1; padding: calc(var(--u)*3) calc(var(--u)*6) calc(var(--u)*4); background: var(--ink); color: var(--gold); border: calc(var(--u)*2.5) solid var(--violet); border-radius: calc(var(--u)*7); }
-.chips { position: relative; width: calc(var(--u)*30); height: calc(var(--u)*30); }
-.chip { position: absolute; left: calc(var(--u)*2); bottom: calc(var(--i) * calc(var(--u)*4)); width: calc(var(--u)*26); height: calc(var(--u)*18); border-radius: 50%; border: calc(var(--u)*2.5) solid var(--ink); --cc: var(--bone); background: var(--cc); box-shadow: 0 calc(var(--u)*3) 0 var(--cd, #b9b08a), 0 calc(var(--u)*3) 0 calc(var(--u)*1.5) var(--ink); }
+.chips { display: flex; align-items: flex-end; gap: calc(var(--u)*1); height: calc(var(--u)*34); }
+.chips .col { position: relative; width: calc(var(--u)*26); height: calc(var(--u)*34); }
+.chip { position: absolute; left: 0; bottom: calc(var(--i) * calc(var(--u)*4)); width: calc(var(--u)*26); height: calc(var(--u)*18); border-radius: 50%; border: calc(var(--u)*2.5) solid var(--ink); --cc: var(--bone); background: var(--cc); box-shadow: 0 calc(var(--u)*3) 0 var(--cd, #b9b08a), 0 calc(var(--u)*3) 0 calc(var(--u)*1.5) var(--ink); }
 .chip::before { content: ''; position: absolute; inset: calc(var(--u)*2) calc(var(--u)*3); border-radius: 50%; border: calc(var(--u)*2) dashed rgba(255,255,255,.85); mix-blend-mode: soft-light; }
 .chip::after { content: ''; position: absolute; inset: calc(var(--u)*4.5) calc(var(--u)*8); border-radius: 50%; background: rgba(18,13,51,.28); }
 .c-bone { --cc: var(--bone); --cd: #b9b08a; } .c-red { --cc: var(--red); --cd: #a3102a; } .c-yellow { --cc: var(--yellow); --cd: #a39e10; }
@@ -333,7 +334,7 @@ input { font-family: inherit; }
       </div>
       <div class="menu-msg" id="menuMsg"></div>
     </div>
-    <div class="menu-ver">v0.65</div>
+    <div class="menu-ver">v0.66</div>
   </div>
 
 
@@ -1459,6 +1460,7 @@ function createTable(opts) {
         }
         sound('deal');
 
+        game.players.forEach(p => { if (p.bet > 0) ev('sweep', {seat: p.idx, amt: p.bet}); });
         game.players.forEach(p => {
             p.bet = 0;
             p.noRaise = false;
@@ -1532,6 +1534,7 @@ function createTable(opts) {
         w.won = game.pot;
         w.isWinner = true;
         log(`🏆 ${nm(w)} выигрывает по фолду — банк ₽${game.pot}`, 'result');
+        ev('payout', {seat: w.idx, amt: game.pot});
         game.handOver = true; game.uncontested = w.idx;
         sound('win');
         render();
@@ -1575,6 +1578,7 @@ function createTable(opts) {
             if (res.payout[p.idx] > 0) {
                 p.chips += res.payout[p.idx];
                 p.won = res.payout[p.idx];
+                ev('payout', {seat: p.idx, amt: p.won});
             }
             if (p.isWinner && res.handOf[p.idx]) p.winCards = res.handOf[p.idx].cards;
         });
@@ -1672,14 +1676,14 @@ return {
 };
 });
 
-// ═══════════════════════════ КЛИЕНТ v0.65 ═══════════════════════════
+// ═══════════════════════════ КЛИЕНТ v0.66 ═══════════════════════════
 // Экран ничего не решает: он рисует снимок состояния (S), который приходит
 // либо с сервера по WebSocket (игра с друзьями), либо от встроенного движка (игра с ботами).
 const E = PokerEngine;
 const {BOT_CHARACTERS, TURN_SECONDS, getBestHand} = E;
 const SERVER_URL = 'wss://pokertest-server.onrender.com';              // подставляется при сборке; ?server=wss://... переопределяет
 const BOT_LINK = 'https://t.me/bratishkapoker_bot';
-const APP_VERSION = '0.65';                       // должна совпадать с v в меню; build.py кладёт её в version.json
+const APP_VERSION = '0.66';                       // должна совпадать с v в меню; build.py кладёт её в version.json
 const tg = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
 const SUIT_CLASS = E.SUIT_CLASS;
 const SEAT_COLORS = ['#ff2d86', '#12dcef', '#ff8a00', '#8c4fe6', '#2fdc7a', '#f4ee1f'];
@@ -1963,11 +1967,81 @@ function cardHtml(c, cls) {
 }
 function backHtml(cls) { return `<div class="card back ${cls || ''}"></div>`; }
 function sameCard(a, b) { return a && b && a.rank === b.rank && a.suit === b.suit; }
+// ставка столбиками по номиналам: до трёх колонок (старшие номиналы), в колонке до шести фишек
 function chipStackHtml(amount) {
-    let rem = amount; const list = [];
-    for (const [d, c] of CHIP_DENOMS) while (rem >= d && list.length < 5) { list.push(c); rem -= d; }
-    if (!list.length) list.push('bone');
-    return `<div class="chips">${list.map((c, i) => `<i class="chip c-${c}" style="--i:${i}"></i>`).join('')}</div><div class="bet-tag">₽${amount}</div>`;
+    const cols = []; let rem = amount;
+    for (const [d, c] of CHIP_DENOMS) {
+        const n = Math.floor(rem / d);
+        if (n > 0) { cols.push([c, Math.min(n, 6)]); rem -= n * d; }
+        if (cols.length >= 3) break;
+    }
+    if (!cols.length) cols.push(['bone', 1]);
+    const col = ([c, n]) => `<div class="col">${Array.from({length: n}, (_, i) => `<i class="chip c-${c}" style="--i:${i}"></i>`).join('')}</div>`;
+    return `<div class="chips">${cols.map(col).join('')}</div><div class="bet-tag">₽${amount}</div>`;
+}
+function handleEvent(e) {
+    if (e.k === 'snd') sound(e.type);
+    else if (e.k === 'fly') animateChipFly(viewSeat(e.seat), e.amt);
+    else if (e.k === 'sweep') sweepChips(viewSeat(e.seat), e.amt);
+    else if (e.k === 'payout') payoutChips(viewSeat(e.seat), e.amt);
+    else if (e.k === 'react') showReaction(e.seat, e.rid);
+}
+// число летящих фишек по размеру суммы: 1 … 6
+function chipCount(amt) { return Math.max(1, Math.min(6, Math.round(Math.log2(Math.max(1, amt) / 20 + 1)) + 1)); }
+function flyChips(from, to, n, opts) {
+    try {
+        const app = $('app'); if (!app) return;
+        const a = app.getBoundingClientRect();
+        const sx = from.left - a.left + from.width / 2, sy = from.top - a.top + from.height / 2;
+        const tx = to.left - a.left + to.width / 2 - sx, ty = to.top - a.top + to.height / 2 - sy;
+        for (let i = 0; i < n; i++) {
+            const chip = document.createElement('div');
+            chip.className = 'flychip';
+            chip.style.left = (sx + (Math.random() - .5) * 16) + 'px'; chip.style.top = (sy + (Math.random() - .5) * 10) + 'px';
+            chip.style.setProperty('--tx', tx + 'px'); chip.style.setProperty('--ty', ty + 'px');
+            chip.style.animation = `fly ${(opts && opts.ms) || 650}ms ${i * 70 + ((opts && opts.delay) || 0)}ms cubic-bezier(.4,.1,.6,1) both`;
+            app.appendChild(chip);
+            setTimeout(() => { if (chip.remove) chip.remove(); }, ((opts && opts.ms) || 650) + i * 70 + ((opts && opts.delay) || 0) + 100);
+        }
+    } catch (e) {}
+}
+// ставки круга уезжают в банк
+function sweepChips(dispSeat, amt) {
+    const el = $('bet' + dispSeat), pot = $('potBox'); if (!el || !pot) return;
+    flyChips(el.getBoundingClientRect(), pot.getBoundingClientRect(), chipCount(amt), {ms: 500});
+}
+// банк уезжает победителю (после вскрытия чуть позже, чтобы успели увидеть карты)
+function payoutChips(dispSeat, amt) {
+    const el = $('seat' + dispSeat), pot = $('potBox'); if (!el || !pot) return;
+    flyChips(pot.getBoundingClientRect(), el.getBoundingClientRect(), chipCount(amt) + 2, {ms: 800, delay: 350});
+}
+// раздача: карты вылетают от центра стола по очереди; новые общие карты выкатываются на стол
+let commSeen = 0;
+function animateNewCards(dealt) {
+    try {
+        if (!S || !document.body.animate) return;
+        const wrap = document.querySelector('.table-wrap'), pot = $('potBox'); if (!wrap || !pot) return;
+        const src = pot.getBoundingClientRect(), sx = src.left + src.width / 2, sy = src.top + src.height / 2;
+        const fly = (el, delay) => {
+            const r = el.getBoundingClientRect(); if (!r.width) return;
+            el.animate([
+                {transform: `translate(${sx - r.left - r.width / 2}px, ${sy - r.top - r.height / 2}px) rotate(-50deg) scale(.35)`, opacity: 0},
+                {opacity: 1, offset: .25}], {duration: 420, delay: delay, easing: 'cubic-bezier(.3,1.3,.5,1)', fill: 'backwards'});
+        };
+        if (dealt) {
+            commSeen = 0;
+            // порядок как за столом: сначала по одной карте каждому, потом вторые карты
+            const seats = [0, 1, 2, 3, 4, 5].map(d => $('seat' + d)).filter(e => e && e.style.display !== 'none');
+            let k = 0;
+            for (let round = 0; round < 2; round++) seats.forEach(sEl => { const c = sEl.querySelectorAll('.hand .card')[round]; if (c) fly(c, 40 + (k++) * 70); });
+        }
+        const n = S.community.length;
+        if (n > commSeen) {
+            const cards = document.querySelectorAll('#community .card');
+            for (let i = commSeen; i < n && i < cards.length; i++) fly(cards[i], (i - commSeen) * 130);
+        }
+        commSeen = n;
+    } catch (e) {}
 }
 function animateChipFly(dispSeat, amount) {
     if (!amount) return;
@@ -2127,11 +2201,8 @@ function applySnapshot(s) {
         if (s.status === 'over') showGameOver(); else closeModal();
     }
     dealOnce = false;
-    evs.forEach(e => {
-        if (e.k === 'snd') sound(e.type);
-        else if (e.k === 'fly') animateChipFly(viewSeat(e.seat), e.amt);
-        else if (e.k === 'react') showReaction(e.seat, e.rid);
-    });
+    evs.forEach(handleEvent);
+    animateNewCards(evs.some(e => e.k === 'deal'));
     const log = $('sheetLog');
     if (log && log.classList.contains('open')) renderLog();
     startTick();
@@ -2424,7 +2495,6 @@ function seatHtml(p, i) {
     if (p.inHand && p.hand.length) {
         hand = p.hand.map(c => {
             let cls = sz;
-            if (dealOnce && S.phase === 'preflop' && isMe) cls += ' deal-anim';
             if (isShowdown && p.isWinner && p.winCards) cls += p.winCards.some(w => sameCard(w, c)) ? ' combo-part' : ' dim';
             return c ? cardHtml(c, cls) : backHtml(cls);
         }).join('');
