@@ -370,7 +370,7 @@ input { font-family: inherit; }
       </div>
       <div class="menu-msg" id="menuMsg"></div>
     </div>
-    <div class="menu-ver">v0.72</div>
+    <div class="menu-ver">v0.73</div>
   </div>
 
 
@@ -1882,7 +1882,7 @@ const E = PokerEngine;
 const {BOT_CHARACTERS, TURN_SECONDS, getBestHand} = E;
 const SERVER_URL = 'wss://pokertest-server.onrender.com';              // подставляется при сборке; ?server=wss://... переопределяет
 const BOT_LINK = 'https://t.me/bratishkapoker_bot';
-const APP_VERSION = '0.72';                       // должна совпадать с v в меню; build.py кладёт её в version.json
+const APP_VERSION = '0.73';                       // должна совпадать с v в меню; build.py кладёт её в version.json
 const tg = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
 const SUIT_CLASS = E.SUIT_CLASS;
 const SEAT_COLORS = ['#ff2d86', '#12dcef', '#ff8a00', '#8c4fe6', '#2fdc7a', '#f4ee1f'];
@@ -2000,12 +2000,28 @@ function boot() {
     checkForUpdate();
     cfg.mode = store('poker_mode') === 'cash' ? 'cash' : 'sng';
     cfg.hints = store('poker_hints') !== '0';
+    document.addEventListener('visibilitychange', () => { if (document.hidden && walletLoaded) walletSave(); });
+    window.addEventListener('pagehide', () => { if (walletLoaded) walletSave(); });
     setToggle('btnHints', cfg.hints);
     renderModeSwitch();
-    walletLoad();
     const sp = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || queryParam('room') || (/^[A-Za-z0-9]{5}$/.test(hashCode) ? hashCode : '');
     const code = /^[A-Za-z0-9]{5}$/.test(String(sp || '')) ? String(sp).toUpperCase() : '';
-    if (code) { $('codeInput').value = code; setTimeout(() => joinByInput(), 50); }
+    // приложение могли закрыть или свернуть с перезагрузкой: после загрузки кошелька возвращаемся за свой стол (или за стол по приглашению)
+    walletLoad(() => {
+        if (code && code !== store(ROOM_KEY)) { $('codeInput').value = code; joinByInput(); }
+        else rejoinSaved(code);
+    });
+}
+const ROOM_KEY = 'poker_room';
+let rejoining = false;
+function rejoinSaved(inviteCode) {
+    const saved = String(store(ROOM_KEY) || '');
+    if (!/^[A-Z0-9]{5}$/.test(saved)) { settleStale(); return; }
+    if (!serverUrl()) return;
+    rejoining = true;
+    const n = ensureOnline(); if (!n) { rejoining = false; return; }
+    showConn('Возвращаемся за стол ' + saved + '…', 'Если сервер спал, подождите до минуты');
+    n.queue({t: 'join', room: saved});
 }
 // Telegram и браузер любят надолго запоминать страницу: если рядом лежит свежий version.json с другой версией,
 // перезагружаемся на адрес с ?v=<версия> (для кеша это новый адрес). hash (данные Telegram) и остальные параметры сохраняем.
@@ -2162,7 +2178,7 @@ function toggleSound() { cfg.sound = !cfg.sound; setToggle('btnSound', cfg.sound
 // Хранится в Telegram CloudStorage (на аккаунте пользователя, без нашего сервера); вне Telegram запасной вариант localStorage.
 // Правила: турнир (Sit & Go): вход ₽1000 списывается при старте, в конце приз по месту. Кэш: вход ₽buyIn при посадке, выход когда угодно со своим стеком, докупка после вылета.
 const WALLET_START = 5000, BUY_IN = 1000, BONUS_BASE = 1000, BONUS_STEP = 200, BONUS_MAX_STREAK = 5;
-let wallet = {v: 1, balance: WALLET_START, games: 0, wins: 0, best: WALLET_START, streak: 0, bonusDay: '', rescueDay: '', sess: ''};
+let wallet = {v: 1, balance: WALLET_START, games: 0, wins: 0, best: WALLET_START, streak: 0, bonusDay: '', rescueDay: '', sess: '', sm: 'sng', stk: 0};
 let walletLoaded = false, lastSettle = null;
 function pad2(n) { return (n < 10 ? '0' : '') + n; }
 function dayKey(d) { d = d || new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
@@ -2172,7 +2188,7 @@ function walletNormalize(w) {
     const n = x => (typeof x === 'number' && isFinite(x) && x >= 0 ? Math.floor(x) : 0);
     return {v: 1, balance: n(w.balance), games: n(w.games), wins: n(w.wins), best: n(w.best), streak: n(w.streak),
         bonusDay: /^\d{4}-\d{2}-\d{2}$/.test(w.bonusDay) ? w.bonusDay : '', rescueDay: /^\d{4}-\d{2}-\d{2}$/.test(w.rescueDay) ? w.rescueDay : '',
-        sess: typeof w.sess === 'string' ? w.sess.slice(0, 40) : ''};
+        sess: typeof w.sess === 'string' ? w.sess.slice(0, 40) : '', sm: w.sm === 'cash' ? 'cash' : 'sng', stk: n(w.stk)};
 }
 function walletLoad(done) {
     const finish = raw => {
@@ -2206,13 +2222,20 @@ function claimRescue(today) {
     const add = BUY_IN - wallet.balance; wallet.balance = BUY_IN; wallet.rescueDay = today; walletSave(); return add;
 }
 // сессия = одна партия или один кэш-стол (по идентификатору gid с сервера): вход списывается один раз, даже если приложение переоткрыли
-function walletEnter(gid, buyIn) {
+function walletEnter(gid, buyIn, m) {
     if (wallet.sess === gid) return true;
     if (wallet.balance < buyIn) return false;
-    wallet.balance -= buyIn; wallet.sess = gid; walletSave(); return true;
+    wallet.balance -= buyIn; wallet.sess = gid; wallet.sm = m === 'cash' ? 'cash' : 'sng'; wallet.stk = wallet.sm === 'cash' ? buyIn : 0; walletSave(); return true;
+}
+// закрыли приложение посреди партии и не вернулись за тот же стол: кэш возвращает последний известный стек, турнир сгорает
+function settleStale() {
+    if (!wallet.sess || (S && S.gid === wallet.sess)) return;
+    const back = wallet.sm === 'cash' ? wallet.stk : 0;
+    walletExit(back, false);
+    if (back > 0) toast('Вернули ₽' + back + ' с прошлого стола');
 }
 function walletExit(back, won) {
-    wallet.balance += Math.max(0, Math.floor(back)); wallet.sess = '';
+    wallet.balance += Math.max(0, Math.floor(back)); wallet.sess = ''; wallet.stk = 0;
     wallet.games++; if (won) wallet.wins++;
     wallet.best = Math.max(wallet.best, wallet.balance);
     walletSave();
@@ -2230,9 +2253,10 @@ function ensureBuyIn() {
 function walletOnSnapshot() {
     if (!S || S.me < 0 || !S.gid || !S.opts) return;
     if (S.status === 'playing' && wallet.sess !== S.gid) {
-        if (!walletEnter(S.gid, S.opts.buyIn)) { const need = S.opts.buyIn; resetToMenu(); menuMsg(`Не хватает фишек: для этого стола нужно ₽${need}.`); return; }
+        if (!walletEnter(S.gid, S.opts.buyIn, S.opts.mode)) { const need = S.opts.buyIn; resetToMenu(); menuMsg(`Не хватает фишек: для этого стола нужно ₽${need}.`); return; }
         lastSettle = null;
     }
+    if (S.status === 'playing' && wallet.sess === S.gid && S.opts.mode === 'cash') wallet.stk = S.players[S.me].chips;   // сохранится при сворачивании приложения
     if (S.status === 'over' && wallet.sess === S.gid) {
         const r = (S.result || []).find(x => x.seat === S.me);
         const prize = r ? r.prize : 0;
@@ -2714,7 +2738,8 @@ function onNetStatus(st) {
 
 function onServerMsg(m) {
     if (m.t === 'joined') {
-        currentRoom = m.code;
+        currentRoom = m.code; rejoining = false;
+        if (m.seat >= 0) store(ROOM_KEY, m.code);
         watching = m.seat < 0;
         logsView = [];
         firstSnap = true;
@@ -2726,7 +2751,8 @@ function onServerMsg(m) {
     if (m.t === 'err') {
         const text = ERR_TEXT[m.code];
         if (m.code === 'replaced') { currentRoom = ''; if (net) net.close(); net = null; resetToMenu(true); toast(text); return; }
-        if (m.code === 'room_closed') { currentRoom = ''; resetToMenu(true); toast(text); return; }
+        if (m.code === 'room_closed') { currentRoom = ''; store(ROOM_KEY, ''); resetToMenu(true); toast(text); return; }
+        if (rejoining && (m.code === 'no_room' || m.code === 'busy' || m.code === 'auth')) { rejoining = false; if (m.code === 'no_room') { store(ROOM_KEY, ''); settleStale(); } }
         if (m.code === 'no_room' || m.code === 'started' || m.code === 'full' || m.code === 'auth' || m.code === 'busy') {
             hideConn();
             if (!S) { menuMsg(text); resetToMenu(true); }
@@ -2747,7 +2773,7 @@ function ensureOnline() {
     return net;
 }
 function createRoom() {
-    menuMsg('');
+    menuMsg(''); settleStale();
     if (!ensureBuyIn()) return;
     getAudio();
     const n = ensureOnline(); if (!n) return;
@@ -2755,7 +2781,7 @@ function createRoom() {
     n.queue({t: 'create', mode: cfg.mode});
 }
 function joinByInput() {
-    menuMsg('');
+    menuMsg(''); settleStale();
     const code = ($('codeInput').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (code.length !== 5) { menuMsg('Введите код стола из 5 символов.'); return; }
     if (!ensureBuyIn()) return;
@@ -2819,7 +2845,7 @@ function renderHints() {
 
 // ───────── сеть: одиночная игра на встроенном движке ─────────
 function startSolo() {
-    menuMsg('');
+    menuMsg(''); settleStale();
     if (!ensureBuyIn()) return;
     readNick();
     getAudio();
@@ -2861,7 +2887,7 @@ function closeModal() { const m = document.querySelector('.modal'); if (m && m.r
 function resetToMenu(silent) {
     stopTick();
     if (net) { try { net.send({t: 'leave'}); } catch (e) {} const n = net; setTimeout(() => n.close(), 150); }
-    net = null; mode = null; S = null; currentRoom = ''; watching = false; logsView = []; firstSnap = true; lastTurnKey = '';
+    net = null; mode = null; S = null; currentRoom = ''; watching = false; rejoining = false; if (!silent) store(ROOM_KEY, ''); logsView = []; firstSnap = true; lastTurnKey = '';
     closeModal(); closeSheets(); hideConn();
     $('actions').classList.remove('visible');
     showScreen('menu');
