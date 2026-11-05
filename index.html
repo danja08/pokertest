@@ -118,29 +118,29 @@ input { font-family: inherit; }
 
 /* ───────── КАРТЫ ───────── */
 .card { --cw: calc(var(--u)*46); position: relative; width: var(--cw); height: calc(var(--cw) * 1.4); border: calc(var(--u)*3) solid var(--ink); border-radius: calc(var(--u)*8); background: var(--bone); box-shadow: calc(var(--u)*2) calc(var(--u)*3) 0 var(--ink); font-family: var(--font); flex: none; }
-.card.sm { --cw: calc(var(--u)*30); border-width: calc(var(--u)*2.5); border-radius: calc(var(--u)*6); }
-.card.xs { --cw: calc(var(--u)*24); border-width: calc(var(--u)*2); border-radius: calc(var(--u)*5); box-shadow: calc(var(--u)*1) calc(var(--u)*2) 0 var(--ink); }
+.card.sm { --cw: calc(var(--u)*34); border-width: calc(var(--u)*2.5); border-radius: calc(var(--u)*6); }
+.card.xs { --cw: calc(var(--u)*27); border-width: calc(var(--u)*2); border-radius: calc(var(--u)*5); box-shadow: calc(var(--u)*1) calc(var(--u)*2) 0 var(--ink); }
 .card.me { --cw: calc(var(--u)*54); }
 .card.f::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background-image: var(--dots); background-size: calc(var(--u)*4) calc(var(--u)*4); opacity: .18; -webkit-mask: linear-gradient(135deg, transparent 55%, #000 100%); mask: linear-gradient(135deg, transparent 55%, #000 100%); }
-.card .cr { position: absolute; left: calc(var(--u)*4); top: calc(var(--u)*1); font-size: calc(var(--cw) * .42); line-height: 1.1; }
-.card .cs { position: absolute; left: calc(var(--u)*4); top: calc(var(--cw) * .46); font-size: calc(var(--cw) * .3); line-height: 1; }
-.card .cbig { position: absolute; right: calc(var(--u)*3); bottom: calc(var(--u)*1); font-size: calc(var(--cw) * .72); line-height: 1; opacity: .95; }
+.card .cr { position: absolute; left: calc(var(--u)*3); top: calc(var(--u)*1); font-size: calc(var(--cw) * .5); line-height: 1.1; }
+.card .cs { position: absolute; left: calc(var(--u)*4); top: calc(var(--cw) * .54); font-size: calc(var(--cw) * .34); line-height: 1; }
+.card .cbig { position: absolute; right: calc(var(--u)*3); bottom: calc(var(--u)*1); font-size: calc(var(--cw) * .72); line-height: 1; opacity: 1; }
 .card.s { color: #241a66; } .card.h { color: var(--red); } .card.d { color: var(--blue); } .card.c { color: #139a52; }
 .card.back { background-color: var(--pink); background-image: var(--cardback); background-size: cover; background-position: center; box-shadow: inset 0 0 0 calc(var(--u)*2) var(--bone), calc(var(--u)*2) calc(var(--u)*3) 0 var(--ink); }
 .card.deal-anim { animation: dealCard .45s cubic-bezier(.3,1.5,.5,1) both; }
 @keyframes dealCard { from { transform: translateY(calc(var(--u)*-70)) rotate(-40deg) scale(.3); opacity: 0; } to { transform: none; opacity: 1; } }
 .card.combo-part { transform: translateY(calc(var(--u)*-8)) scale(1.08); border-color: var(--gold); box-shadow: 0 0 0 calc(var(--u)*3) var(--ink), 0 0 calc(var(--u)*14) calc(var(--u)*4) var(--gold); z-index: 3; animation: glow .6s ease-in-out infinite alternate; }
-.card.dim { opacity: .45; filter: grayscale(.6); }
+.card.dim { opacity: .62; filter: grayscale(.3); }
 @keyframes glow { from { box-shadow: 0 0 0 calc(var(--u)*3) var(--ink), 0 0 calc(var(--u)*8) calc(var(--u)*2) var(--gold); } to { box-shadow: 0 0 0 calc(var(--u)*3) var(--ink), 0 0 calc(var(--u)*18) calc(var(--u)*6) var(--gold); } }
 
 /* ───────── МЕСТА ИГРОКОВ ───────── */
 .seat { position: absolute; width: calc(var(--u)*82); transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; z-index: 6; transition: opacity .2s; }
 .seat[data-seat="0"] { left: 50%; top: 86%; width: calc(var(--u)*150); z-index: 8; }
-.seat[data-seat="1"] { left: 11%; top: 66%; }
+.seat[data-seat="1"] { left: 11%; top: 70%; }
 .seat[data-seat="2"] { left: 11%; top: 27%; }
 .seat[data-seat="3"] { left: 50%; top: 10%; }
 .seat[data-seat="4"] { left: 89%; top: 27%; }
-.seat[data-seat="5"] { left: 89%; top: 66%; }
+.seat[data-seat="5"] { left: 89%; top: 70%; }
 .seat.folded { opacity: .5; filter: saturate(.5); }
 .seat.out { opacity: .28; filter: grayscale(.8); }
 .av-wrap { position: relative; z-index: 6; }
@@ -151,6 +151,7 @@ input { font-family: inherit; }
 @keyframes turnPulse { from { transform: scale(1); } to { transform: scale(1.07); } }
 .seat.winner .avatar { box-shadow: 0 0 0 calc(var(--u)*3) var(--gold), 0 0 0 calc(var(--u)*6) var(--ink), 0 0 calc(var(--u)*20) calc(var(--u)*9) var(--gold); animation: turnPulse .5s ease-in-out infinite alternate; }
 .mk-row { position: absolute; right: calc(var(--u)*-14); top: calc(var(--u)*-6); display: flex; flex-direction: column; gap: calc(var(--u)*2); z-index: 4; }
+.seat[data-seat="1"] .mk-row, .seat[data-seat="2"] .mk-row, .seat[data-seat="3"] .mk-row { right: auto; left: calc(var(--u)*-14); }
 .mk { display: flex; align-items: center; justify-content: center; width: calc(var(--u)*22); height: calc(var(--u)*22); border-radius: 50%; border: calc(var(--u)*2.5) solid var(--ink); font-style: normal; font-size: calc(var(--u)*11); line-height: 1; color: var(--ink); box-shadow: calc(var(--u)*1) calc(var(--u)*2) 0 var(--ink); }
 .mk.d { background: var(--bone); } .mk.sb { background: var(--cyan); } .mk.bb { background: var(--pink); color: #fff; }
 .sticker { position: absolute; left: calc(var(--u)*-10); top: calc(var(--u)*-13); transform: rotate(-8deg); z-index: 5; white-space: nowrap; font-size: calc(var(--u)*14); line-height: 1; padding: calc(var(--u)*3) calc(var(--u)*6) calc(var(--u)*4); border: calc(var(--u)*2.5) solid var(--ink); border-radius: calc(var(--u)*6); color: #fff; text-shadow: calc(var(--u)*1) calc(var(--u)*1) 0 var(--ink); box-shadow: calc(var(--u)*2) calc(var(--u)*2) 0 var(--ink); background: var(--violet); animation: popS .25s cubic-bezier(.3,1.6,.5,1); }
@@ -163,18 +164,18 @@ input { font-family: inherit; }
 .seat:nth-child(even) .plate { transform: rotate(.8deg); }
 .plate .nm { display: block; font-size: calc(var(--u)*15); line-height: 1.1; color: var(--bone); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .plate .stk { display: block; font-size: calc(var(--u)*17); line-height: 1.1; color: var(--gold); }
-.hand { position: absolute; z-index: 2; display: flex; top: calc(var(--u)*6); }
-.seat[data-seat="1"] .hand, .seat[data-seat="2"] .hand, .seat[data-seat="3"] .hand { left: calc(var(--u)*60); }
-.seat[data-seat="4"] .hand, .seat[data-seat="5"] .hand { right: calc(var(--u)*60); }
+.hand { position: absolute; z-index: 7; display: flex; top: calc(var(--u)*6); }
+.seat[data-seat="1"] .hand, .seat[data-seat="2"] .hand, .seat[data-seat="3"] .hand { left: calc(var(--u)*74); }
+.seat[data-seat="4"] .hand, .seat[data-seat="5"] .hand { right: calc(var(--u)*74); }
 .hand .card { margin: 0 calc(var(--u)*-3); }
 .hand .card:first-child { transform: rotate(-7deg); } .hand .card:last-child { transform: rotate(7deg); }
 .hand .card.combo-part { transform: translateY(calc(var(--u)*-8)) scale(1.1); } .hand .card.combo-part:first-child { transform: translateY(calc(var(--u)*-8)) rotate(-7deg) scale(1.1); } .hand .card.combo-part:last-child { transform: translateY(calc(var(--u)*-8)) rotate(7deg) scale(1.1); }
-.seat[data-seat="0"] .hand { position: relative; top: 0; order: -1; margin: 0 0 calc(var(--u)*-4); }
+.seat[data-seat="0"] .hand { position: relative; top: 0; order: -1; margin: 0 0 calc(var(--u)*8); z-index: 3; }
 .seat[data-seat="0"] .hand .card { margin: 0 calc(var(--u)*-4); }
 .seat[data-seat="0"] .plate { min-width: calc(var(--u)*110); max-width: calc(var(--u)*140); }
 .combo { position: relative; z-index: 5; margin-top: calc(var(--u)*4); padding: calc(var(--u)*3) calc(var(--u)*8) calc(var(--u)*4); font-size: calc(var(--u)*15); line-height: 1; background: var(--gold); color: var(--ink); border: calc(var(--u)*3) solid var(--ink); border-radius: calc(var(--u)*8); box-shadow: calc(var(--u)*2) calc(var(--u)*3) 0 var(--ink); white-space: nowrap; transform: rotate(-1.5deg); }
 .combo.mine { background: var(--ink); color: var(--gold); border-color: var(--gold); }
-.seat[data-seat="0"] .combo { position: absolute; top: calc(var(--u)*-12); left: 50%; margin: 0; transform: translateX(-50%) rotate(-1.5deg); z-index: 9; }
+.seat[data-seat="0"] .combo { position: absolute; top: calc(var(--u)*88); left: calc(50% + calc(var(--u)*38)); margin: 0; transform: rotate(-1.5deg); z-index: 9; }
 .win-tag { position: absolute; top: calc(var(--u)*-26); left: 50%; transform: translateX(-50%) rotate(-3deg); z-index: 9; white-space: nowrap; font-size: calc(var(--u)*16); padding: calc(var(--u)*4) calc(var(--u)*8) calc(var(--u)*5); background: var(--gold); color: var(--ink); border: calc(var(--u)*3) solid var(--ink); border-radius: calc(var(--u)*8); box-shadow: calc(var(--u)*3) calc(var(--u)*3) 0 var(--ink); animation: pop .35s cubic-bezier(.3,1.6,.5,1) both; }
 
 /* ───────── СТАВКИ (фишки) ───────── */
@@ -269,6 +270,12 @@ input { font-family: inherit; }
 .ls-name { flex: 1; font-size: calc(var(--u)*20); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ls-tag { font-size: calc(var(--u)*13); padding: calc(var(--u)*2) calc(var(--u)*6) calc(var(--u)*3); border-radius: calc(var(--u)*6); background: var(--gold); color: var(--ink); white-space: nowrap; }
 .ls-tag.off { background: #6a6a8a; color: #fff; }
+.lobby-opts { width: 100%; display: flex; flex-direction: column; gap: calc(var(--u)*8); }
+.opt-btn { width: 100%; min-height: calc(var(--u)*44); font-family: var(--font); font-size: calc(var(--u)*19); color: var(--bone); background: var(--bg2); border: calc(var(--u)*3) solid var(--ink); border-radius: calc(var(--u)*12); box-shadow: calc(var(--u)*3) calc(var(--u)*4) 0 var(--ink); padding: 0 calc(var(--u)*12); text-align: left; }
+.opt-btn.on { background: var(--bg3); border-color: var(--green); }
+.opt-line { font-size: calc(var(--u)*16); color: var(--bone2); text-align: center; }
+.opt-line b { color: var(--gold); font-weight: normal; }
+.code-btns .btn.wide { flex: 1; }
 .lobby-note { font-size: calc(var(--u)*15); color: var(--bone2); text-align: center; line-height: 1.3; min-height: calc(var(--u)*20); }
 #lobby .btn.big { width: 100%; }
 .link-btn { font-size: calc(var(--u)*16); color: var(--bone2); text-decoration: underline; padding: calc(var(--u)*4) calc(var(--u)*10); }
@@ -306,7 +313,7 @@ input { font-family: inherit; }
       </div>
       <div class="menu-msg" id="menuMsg"></div>
     </div>
-    <div class="menu-ver">v0.61</div>
+    <div class="menu-ver">v0.62</div>
   </div>
 
 
@@ -314,13 +321,14 @@ input { font-family: inherit; }
   <div id="lobby" class="screen" style="display:none">
     <div class="lobby-title">СТОЛ ДЛЯ ИГРЫ</div>
     <div class="code-box">
-      <small>Код стола — скажите его другу</small>
+      <small>Нажмите «Позвать», выберите друга в Telegram — он войдёт сам. Код — запасной вариант.</small>
       <div class="code-val" id="lobbyCode">·····</div>
       <div class="code-btns">
-        <button class="btn btn-check" onclick="shareRoom()">📨 ПОЗВАТЬ</button>
-        <button class="btn btn-call" onclick="copyCode()">📋 КОД</button>
+        <button class="btn btn-check wide" onclick="shareRoom()">📨 ПОЗВАТЬ В TELEGRAM</button>
+        <button class="btn btn-call" onclick="copyCode()">📋</button>
       </div>
     </div>
+    <div class="lobby-opts" id="lobbyOpts"></div>
     <div class="lobby-seats" id="lobbySeats"></div>
     <div class="lobby-note" id="lobbyNote"></div>
     <button class="btn btn-start big" id="lobbyStart" onclick="hostStart()">▶ НАЧАТЬ ИГРУ</button>
@@ -612,6 +620,7 @@ function createTable(opts) {
         sb: null, bb: null, phase: 'preflop', community: [], hand: 0,
         lastActors: new Set(),
         smallBlind: 10, bigBlind: 20,
+        opts: {bots: true, blindEvery: 5},   // настройки стола (меняет хозяин в лобби); blindEvery 0 = блайнды не растут
         turnOpen: false, deadline: 0,
         winningCards: null, potBreakdown: null, winner: null
     };
@@ -716,9 +725,27 @@ function createTable(opts) {
     function humanCount() { return game.players.filter(isHumanSeat).length; }
     function connectedCount() { return game.players.filter(p => isHumanSeat(p) && p.connected).length; }
 
+    const BLIND_STEPS = [0, 3, 5, 10];
+    function configure(userId, cfg) {
+        if (game.status !== 'lobby') return {ok: false, err: 'already'};
+        if (String(userId) !== game.hostId) return {ok: false, err: 'not_host'};
+        if (!cfg || typeof cfg !== 'object') return {ok: false, err: 'bad_msg'};
+        if (cfg.bots !== undefined) {
+            if (typeof cfg.bots !== 'boolean') return {ok: false, err: 'bad_msg'};
+            game.opts.bots = cfg.bots;
+        }
+        if (cfg.blindEvery !== undefined) {
+            if (BLIND_STEPS.indexOf(cfg.blindEvery) < 0) return {ok: false, err: 'bad_msg'};
+            game.opts.blindEvery = cfg.blindEvery;
+        }
+        render();
+        return {ok: true};
+    }
+
     function start(userId) {
         if (game.status !== 'lobby') return {ok: false, err: 'already'};
         if (String(userId) !== game.hostId) return {ok: false, err: 'not_host'};
+        if (!game.opts.bots && humanCount() < 2) return {ok: false, err: 'need_players'};
         const used = new Set(game.players.filter(p => !p.empty).map(p => p.name));
         const pool = BOT_PROFILES.filter(b => !used.has(b.name));
         for (let k = pool.length - 1; k > 0; k--) {
@@ -726,7 +753,7 @@ function createTable(opts) {
             [pool[k], pool[j]] = [pool[j], pool[k]];
         }
         game.players.forEach((p, i) => {
-            if (!p.empty) return;
+            if (!p.empty || !game.opts.bots) return;
             const b = pool.pop() || {name: 'Bot' + i, flag: '🤖', city: ''};
             Object.assign(p, emptySeat(i), {
                 empty: false, userId: null, name: b.name, flag: b.flag, city: b.city,
@@ -737,7 +764,8 @@ function createTable(opts) {
         game.players.forEach(p => { if (isHumanSeat(p)) p.chips = START_CHIPS; });
         game.status = 'playing';
         game.hand = 1;
-        game.dealer = Math.floor(Math.random() * SEATS);
+        const seated = game.players.filter(p => !p.empty);
+        game.dealer = seated[Math.floor(Math.random() * seated.length)].idx;
         game.smallBlind = 10;
         game.bigBlind = 20;
         game.winner = null;
@@ -804,7 +832,7 @@ function createTable(opts) {
         stopTimer();
         hideActions();
 
-        if (game.hand % 5 === 0 && game.hand > 1) {
+        if (game.opts.blindEvery > 0 && game.hand % game.opts.blindEvery === 0 && game.hand > 1) {
             game.smallBlind *= 2;
             game.bigBlind *= 2;
             log(`⬆ БЛАЙНДЫ ↑ ₽${game.smallBlind}/₽${game.bigBlind}`);
@@ -1430,7 +1458,8 @@ function createTable(opts) {
             turnOpen: game.turnOpen, deadline: game.turnOpen ? game.deadline : 0, now: now(),
             community: game.community.slice(), winningCards: game.winningCards,
             potBreakdown: game.potBreakdown, winner: game.winner,
-            blindsIn: 5 - (game.hand % 5),
+            opts: {bots: game.opts.bots, blindEvery: game.opts.blindEvery},
+            blindsIn: game.opts.blindEvery > 0 ? game.opts.blindEvery - (game.hand % game.opts.blindEvery) : 0,
             players: game.players.map(p => ({
                 idx: p.idx, empty: p.empty, name: p.name, photo: p.photo, flag: p.flag,
                 bot: !p.empty && p.userId == null, character: p.character,
@@ -1449,7 +1478,7 @@ function createTable(opts) {
 
     return {
         game: game, H: H, snapshot: snapshot,
-        join: join, leave: leave, setConnected: setConnected, start: start, restart: restart,
+        join: join, leave: leave, setConnected: setConnected, start: start, configure: configure, restart: restart,
         act: act, destroy: destroy, seatOf: seatOf,
         humanCount: humanCount, connectedCount: connectedCount,
         // для тестов
@@ -1467,7 +1496,7 @@ return {
 };
 });
 
-// ═══════════════════════════ КЛИЕНТ v0.61 ═══════════════════════════
+// ═══════════════════════════ КЛИЕНТ v0.62 ═══════════════════════════
 // Экран ничего не решает: он рисует снимок состояния (S), который приходит
 // либо с сервера по WebSocket (игра с друзьями), либо от встроенного движка (игра с ботами).
 const E = PokerEngine;
@@ -1482,7 +1511,7 @@ const PHASE_NAMES = {preflop: 'PREFLOP', flop: 'FLOP', turn: 'TURN', river: 'RIV
 const ERR_TEXT = {
     no_room: 'Стол не найден. Проверьте код.', started: 'За этим столом игра уже идёт.', full: 'Стол заполнен (6 мест).',
     auth: 'Не удалось войти через Telegram.', busy: 'Сервер занят, попробуйте позже.', room_closed: 'Стол закрыт.',
-    replaced: 'Игра открыта в другом окне.', rate: 'Слишком много нажатий.', not_host: 'Начать может только хозяин стола.',
+    replaced: 'Игра открыта в другом окне.', rate: 'Слишком много нажатий.', not_host: 'Это может только хозяин стола.', need_players: 'Без ботов нужно минимум 2 игрока.',
     server: 'Ошибка сервера.', bad_msg: 'Ошибка запроса.'
 };
 
@@ -1825,8 +1854,10 @@ function applySnapshot(s) {
 function renderLobby() {
     setText('lobbyCode', S.code || '·····');
     const n = S.players.filter(p => !p.empty).length;
+    const o = S.opts || {bots: true, blindEvery: 5};
+    const botsOn = o.bots;
     setHtml('lobbySeats', S.players.map((p, i) => {
-        if (p.empty) return `<div class="ls-row empty"><div class="avatar" style="background:var(--bg3)">·</div><div class="ls-name">свободно — займёт бот</div></div>`;
+        if (p.empty) return `<div class="ls-row empty"><div class="avatar" style="background:var(--bg3)">·</div><div class="ls-name">${botsOn ? 'свободно — займёт бот' : 'свободно'}</div></div>`;
         const tags = [];
         if (i === S.host) tags.push('<span class="ls-tag">ХОЗЯИН</span>');
         if (i === S.me) tags.push('<span class="ls-tag" style="background:var(--green)">ВЫ</span>');
@@ -1835,9 +1866,23 @@ function renderLobby() {
     }).join(''));
     const host = S.host === S.me;
     $('lobbyStart').style.display = host ? 'flex' : 'none';
+    $('lobbyStart').disabled = !botsOn && n < 2;
+    $('lobbyStart').style.opacity = (!botsOn && n < 2) ? '.5' : '';
+    const blindTxt = BLIND_LABEL[o.blindEvery] || 'каждые ' + o.blindEvery + ' раздач';
+    $('lobbyOpts').innerHTML = host
+        ? `<button class="opt-btn ${botsOn ? 'on' : ''}" onclick="setOpt({bots:${!botsOn}})">🤖 Боты: ${botsOn ? 'ВКЛ' : 'ВЫКЛ'}</button>
+           <button class="opt-btn" onclick="cycleBlinds()">⬆ Блайнды: ${blindTxt}</button>`
+        : `<div class="opt-line">🤖 Боты: <b>${botsOn ? 'вкл' : 'выкл'}</b> · ⬆ Блайнды: <b>${blindTxt}</b></div>`;
     setText('lobbyNote', host
-        ? (n < 2 ? 'Пока вы один. Позовите друга или начните игру с ботами.' : `За столом ${n} из 6. Остальные места займут боты.`)
+        ? (!botsOn ? (n < 2 ? 'Без ботов: ждём хотя бы одного друга.' : `За столом ${n} игроков, без ботов.`)
+            : (n < 2 ? 'Пока вы один. Позовите друга или начните игру с ботами.' : `За столом ${n} из 6. Остальные места займут боты.`))
         : 'Ждём, пока хозяин начнёт игру…');
+}
+const BLIND_LABEL = {0: 'не растут', 3: 'каждые 3 раздачи', 5: 'каждые 5 раздач', 10: 'каждые 10 раздач'};
+function setOpt(o) { if (net && S && S.status === 'lobby' && S.host === S.me) net.send(Object.assign({t: 'cfg'}, o)); }
+function cycleBlinds() {
+    const steps = [3, 5, 10, 0], cur = (S.opts && S.opts.blindEvery) !== undefined ? S.opts.blindEvery : 5;
+    setOpt({blindEvery: steps[(steps.indexOf(cur) + 1) % steps.length]});
 }
 function hostStart() { if (net && S && S.status === 'lobby' && S.host === S.me) net.send({t: 'start'}); }
 function copyCode() {
@@ -2136,7 +2181,7 @@ function render() {
     setText('potRound', (S.phase === 'showdown' && S.potBreakdown && S.potBreakdown.length > 1)
         ? 'банки: ' + S.potBreakdown.map(a => '₽' + a).join(' + ')
         : ((roundBets > 0 && S.phase !== 'showdown') ? `в круге ₽${roundBets}` : ''));
-    setText('blindTimer', S.blindsIn + ' раздач');
+    setText('blindTimer', S.blindsIn > 0 ? S.blindsIn + ' раздач' : 'не растут');
 
     // таблица лидеров
     const ranked = S.players.map((p, idx) => ({p, idx})).filter(r => !r.p.empty).sort((a, b) => b.p.chips - a.p.chips);
@@ -2165,7 +2210,9 @@ function render() {
     S.players.forEach((p, i) => {
         const d = viewSeat(i);
         const seat = $('seat' + d);
-        if (seat) {
+        if (seat && p.empty) { seat.innerHTML = ''; seat.style.display = 'none'; }
+        else if (seat) {
+            seat.style.display = '';
             seat.innerHTML = seatHtml(p, i);
             const out = !p.inHand && p.chips === 0;
             seat.classList.toggle('active', i === S.active && p.inHand && !p.folded && S.phase !== 'showdown');
