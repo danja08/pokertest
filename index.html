@@ -1806,6 +1806,7 @@ button.sr.term { min-height: calc(var(--u)*44); align-items: center; }
       <div class="set-group">TELEGRAM</div>
       <div class="set-row" id="rowNotify" style="display:none"><div>Уведомления «ваш ход»<small>Бот напишет, если вы свернули игру</small></div><button class="toggle off" id="btnNotify" onclick="toggleNotify()">ВЫКЛ</button></div>
       <div class="set-row" id="rowPriv" style="display:none"><div><span id="privLbl"></span><small id="privSmall"></small></div><button class="toggle off" id="btnPriv" onclick="privTap()"></button></div>
+      <div class="set-row" id="rowWeb" style="display:none"><div><span id="webLbl"></span><small id="webSmall"></small></div><button class="btn btn-check" style="min-height:calc(var(--u)*40);font-size:calc(var(--u)*18*var(--tz,1)*var(--fx,1))" id="btnWeb" onclick="webLoginTap()"></button></div>
       <div class="set-row" id="rowHome" style="display:none"><div>Ярлык на экран<small>Запуск игры в один тап</small></div><button class="btn btn-check" style="min-height:calc(var(--u)*40);font-size:calc(var(--u)*18*var(--tz,1)*var(--fx,1))" onclick="addHome()">Добавить</button></div>
       <div class="set-group">ПРОЧЕЕ</div>
       <div class="set-row" id="rowLang"><div><span data-i="set.lang">Язык</span></div><div class="lang-btns"><button class="toggle" id="langRu" onclick="setLang('ru')">РУС</button><button class="toggle off" id="langEn" onclick="setLang('en')">ENG</button></div></div>
@@ -4255,7 +4256,7 @@ const E = PokerEngine;
 const {BOT_CHARACTERS, TURN_SECONDS, bestHand} = E;
 const SERVER_URL = 'wss://pokertest-server.onrender.com';              // подставляется при сборке; ?server=wss://... переопределяет
 let BOT_LINK = 'https://t.me/bratishkapoker_bot';      // имя бота присылает сервер в hello (переменная BOT_USERNAME на Render), это запасное
-const APP_VERSION = '0.99.1';                       // должна совпадать с v в меню; build.py кладёт её в version.json
+const APP_VERSION = '0.99.2';                       // должна совпадать с v в меню; build.py кладёт её в version.json
 const tg = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
 const SUIT_CLASS = E.SUIT_CLASS;
 const SEAT_COLORS = ['#d64535', '#4a90c8', '#e8821a', '#a89a80', '#4fb060', '#ffe27a'];
@@ -4554,7 +4555,7 @@ const I18N = {
         'wh.item': 'Вещь из магазина', 'wh.empty': 'Пусто', 'wh.won': 'Колесо: +{n} фишек', 'wh.gotBoost': 'Колесо: бустер опыта на 1 ч (в запасе)', 'wh.gotSpin': 'Колесо: ещё один спин', 'wh.gotItem': 'Колесо: «{name}» в снаряжении', 'wh.gotNothing': 'Пусто. Повезёт в следующий раз',
         'err.low_cr': 'Не хватает кристаллов.', 'err.ex_limit': 'Обмен на сегодня закончился.', 'err.wheel_done': 'Спины на сегодня закончились.', 'err.boost_active': 'Бустер уже действует.', 'v.allin': 'Ва-банк', 'v.call': 'Колл {n}', 'v.raise': 'Рейз', 'v.mode': 'Режим', 'v.holdem': 'Холдем', 'v.aof': 'Всё или ничего', 'v.short': 'Шорт-дек', 'v.omaha': 'Омаха', 'v.joker': 'Джокеры',
         'v.holdemD': 'обычный техасский холдем', 'v.aofD': 'только фолд или ва-банк', 'v.shortD': 'колода 36 карт, флеш старше фулла, сет старше стрита', 'v.omahaD': '4 карты на руках, комбинация из 2 своих и 3 общих', 'v.jokerD': 'в колоде 2 джокера, джокер заменяет любую карту',
-        'hud.blinds': 'Блайнды', 'hm.hm_play': 'Сыграйте 15 раздач', 'hm.hm_win': 'Выиграйте 5 раздач', 'hm.hm_show': 'Выиграйте на вскрытии 2 раза', 'hm.hm_big': 'Выиграйте банк от 20 блайндов', 'hm.hm_flop': 'Увидьте флоп 8 раз', 'hm.hm_raise': 'Сделайте рейз до флопа 5 раз', 'hm.hm_steal': 'Заберите банк без вскрытия 3 раза', 'hm.hm_allin': 'Выиграйте ва-банк', 'hm.hm_twop': 'Выиграйте на вскрытии с двумя парами или сильнее 2 раза', 'hm.hm_set': 'Выиграйте на вскрытии с сетом или сильнее', 'hm.hm_profit': 'Выиграйте за день 30 блайндов', 'priv.title': 'Скрыть статистику', 'priv.sub': 'Другие игроки не увидят вашу статистику', 'priv.buySub': 'Другие игроки не увидят вашу статистику. Покупка навсегда', 'priv.on': 'СКРЫТА', 'priv.off': 'ВИДНА', 'priv.buyQ': 'Скрыть статистику от других навсегда за {n} кристаллов? Включать и выключать потом бесплатно.', 'pl.hidden': 'Игрок скрыл статистику', 'pl.hands': 'Раздач сыграно', 'pl.winPct': 'Процент побед', 'pl.bestPot': 'Лучший банк', 'pl.allins': 'Ва-банков', 'pl.sng': 'Побед в турнирах', 'pl.rated': 'Рейтинговых партий', 'pl.streak': 'Лучшая серия побед', 'pl.fav': 'Любимая комбинация', 'pl.won': 'Всего выиграно', 'hm.left': 'Обновятся через {h} ч {m} мин · раздачи в этом зале за кэш-столами', 'v.aofR': 'только фолд или ва-банк', 'v.shortR': 'колода 36 карт, сет старше стрита, флеш старше фулла, A-6-7-8-9 — стрит', 'v.omahaR': 'комбинация ровно из 2 своих карт и 3 со стола', 'v.jokerR': 'джокер заменяет любую карту'
+        'hud.blinds': 'Блайнды', 'hm.hm_play': 'Сыграйте 15 раздач', 'hm.hm_win': 'Выиграйте 5 раздач', 'hm.hm_show': 'Выиграйте на вскрытии 2 раза', 'hm.hm_big': 'Выиграйте банк от 20 блайндов', 'hm.hm_flop': 'Увидьте флоп 8 раз', 'hm.hm_raise': 'Сделайте рейз до флопа 5 раз', 'hm.hm_steal': 'Заберите банк без вскрытия 3 раза', 'hm.hm_allin': 'Выиграйте ва-банк', 'hm.hm_twop': 'Выиграйте на вскрытии с двумя парами или сильнее 2 раза', 'hm.hm_set': 'Выиграйте на вскрытии с сетом или сильнее', 'hm.hm_profit': 'Выиграйте за день 30 блайндов', 'priv.title': 'Скрыть статистику', 'priv.sub': 'Другие игроки не увидят вашу статистику', 'priv.buySub': 'Другие игроки не увидят вашу статистику. Покупка навсегда', 'web.on': 'Вы вошли через Telegram', 'web.off': 'Вход через Telegram', 'web.onSub': 'Профиль, магазин и друзья с вами', 'web.offSub': 'Профиль, магазин и друзья как в Telegram', 'web.in': 'Войти', 'web.out': 'Выйти', 'web.err': 'Не удалось войти', 'priv.on': 'СКРЫТА', 'priv.off': 'ВИДНА', 'priv.buyQ': 'Скрыть статистику от других навсегда за {n} кристаллов? Включать и выключать потом бесплатно.', 'pl.hidden': 'Игрок скрыл статистику', 'pl.hands': 'Раздач сыграно', 'pl.winPct': 'Процент побед', 'pl.bestPot': 'Лучший банк', 'pl.allins': 'Ва-банков', 'pl.sng': 'Побед в турнирах', 'pl.rated': 'Рейтинговых партий', 'pl.streak': 'Лучшая серия побед', 'pl.fav': 'Любимая комбинация', 'pl.won': 'Всего выиграно', 'hm.left': 'Обновятся через {h} ч {m} мин · раздачи в этом зале за кэш-столами', 'v.aofR': 'только фолд или ва-банк', 'v.shortR': 'колода 36 карт, сет старше стрита, флеш старше фулла, A-6-7-8-9 — стрит', 'v.omahaR': 'комбинация ровно из 2 своих карт и 3 со стола', 'v.jokerR': 'джокер заменяет любую карту'
     },
     en: {
         'lang.name': 'English', 'set.lang': 'Language', 'news.new': 'new', 'h.back': 'refund {n}', 'share.won': '🏆 Won a game of BROTHERHOOD OF POKER! ', 'share.played': '♠ Played a game of BROTHERHOOD OF POKER. ', 'share.place': 'Place {n}. ', 'share.cta': "Come on in, let's play!", 'share.title': 'Poker', 'share.copy': 'Copy the link: ', 'share.ref': 'Join and get 500 bonus chips!\nBrotherhood of Poker - your buddy is already playing!', 'share.table': "♠ Let's play poker! Table code: {c}", 'mini.close': 'Close', 'mini.sent': 'Request sent', 'mini.accept': 'ACCEPT REQUEST', 'mini.add': 'ADD FRIEND', 'mini.player': 'Player', 'mini.lvl': 'Lv {n}', 'mini.elo': 'Elo {n}', 'mini.on': 'online', 'mini.hands': 'hands', 'mini.win': 'wins', 'mini.pot': 'best pot', 'mini.more': 'More ›', 'bot.is': 'Bot', 'bot.note': 'Plays at the table instead of a live player',
@@ -4601,7 +4602,7 @@ const I18N = {
         'wh.item': 'An item from the shop', 'wh.empty': 'Nothing', 'wh.won': 'Wheel: +{n} chips', 'wh.gotBoost': 'Wheel: 1 h XP booster (in stock)', 'wh.gotSpin': 'Wheel: one more spin', 'wh.gotItem': 'Wheel: "{name}" added to your gear', 'wh.gotNothing': 'Nothing. Better luck next time',
         'err.low_cr': 'Not enough crystals.', 'err.ex_limit': 'No more exchanges today.', 'err.wheel_done': 'No more spins today.', 'err.boost_active': 'A booster is already on.', 'v.allin': 'All-in', 'v.call': 'Call {n}', 'v.raise': 'Raise', 'v.mode': 'Mode', 'v.holdem': "Hold'em", 'v.aof': 'All-in or Fold', 'v.short': 'Short Deck', 'v.omaha': 'Omaha', 'v.joker': 'Jokers',
         'v.holdemD': "classic Texas Hold'em", 'v.aofD': 'only fold or all-in', 'v.shortD': '36-card deck, flush beats full house, trips beat a straight', 'v.omahaD': '4 hole cards, use exactly 2 of them and 3 from the board', 'v.jokerD': '2 jokers in the deck, a joker replaces any card',
-        'hud.blinds': 'Blinds', 'hm.hm_play': 'Play 15 hands', 'hm.hm_win': 'Win 5 hands', 'hm.hm_show': 'Win at showdown 2 times', 'hm.hm_big': 'Win a pot of 20 blinds or more', 'hm.hm_flop': 'See the flop 8 times', 'hm.hm_raise': 'Raise before the flop 5 times', 'hm.hm_steal': 'Take a pot without a showdown 3 times', 'hm.hm_allin': 'Win an all-in', 'hm.hm_twop': 'Win at showdown with two pair or better 2 times', 'hm.hm_set': 'Win at showdown with three of a kind or better', 'hm.hm_profit': 'Win 30 blinds in a day', 'priv.title': 'Hide my stats', 'priv.sub': 'Other players will not see your stats', 'priv.buySub': 'Other players will not see your stats. A one-time purchase', 'priv.on': 'HIDDEN', 'priv.off': 'VISIBLE', 'priv.buyQ': 'Hide your stats from others forever for {n} crystals? You can switch it on and off for free later.', 'pl.hidden': 'This player hid their stats', 'pl.hands': 'Hands played', 'pl.winPct': 'Win rate', 'pl.bestPot': 'Biggest pot', 'pl.allins': 'All-ins', 'pl.sng': 'Tournament wins', 'pl.rated': 'Rated games', 'pl.streak': 'Best win streak', 'pl.fav': 'Favourite hand', 'pl.won': 'Total won', 'hm.left': 'Refresh in {h} h {m} min · hands in this hall at cash tables', 'v.aofR': 'only fold or all-in', 'v.shortR': '36-card deck, trips beat a straight, flush beats full house, A-6-7-8-9 is a straight', 'v.omahaR': 'use exactly 2 of your cards and 3 from the board', 'v.jokerR': 'a joker replaces any card'
+        'hud.blinds': 'Blinds', 'hm.hm_play': 'Play 15 hands', 'hm.hm_win': 'Win 5 hands', 'hm.hm_show': 'Win at showdown 2 times', 'hm.hm_big': 'Win a pot of 20 blinds or more', 'hm.hm_flop': 'See the flop 8 times', 'hm.hm_raise': 'Raise before the flop 5 times', 'hm.hm_steal': 'Take a pot without a showdown 3 times', 'hm.hm_allin': 'Win an all-in', 'hm.hm_twop': 'Win at showdown with two pair or better 2 times', 'hm.hm_set': 'Win at showdown with three of a kind or better', 'hm.hm_profit': 'Win 30 blinds in a day', 'priv.title': 'Hide my stats', 'priv.sub': 'Other players will not see your stats', 'priv.buySub': 'Other players will not see your stats. A one-time purchase', 'web.on': 'Signed in with Telegram', 'web.off': 'Sign in with Telegram', 'web.onSub': 'Your profile, shop and friends are here', 'web.offSub': 'Profile, shop and friends, same as in Telegram', 'web.in': 'Sign in', 'web.out': 'Sign out', 'web.err': 'Could not sign in', 'priv.on': 'HIDDEN', 'priv.off': 'VISIBLE', 'priv.buyQ': 'Hide your stats from others forever for {n} crystals? You can switch it on and off for free later.', 'pl.hidden': 'This player hid their stats', 'pl.hands': 'Hands played', 'pl.winPct': 'Win rate', 'pl.bestPot': 'Biggest pot', 'pl.allins': 'All-ins', 'pl.sng': 'Tournament wins', 'pl.rated': 'Rated games', 'pl.streak': 'Best win streak', 'pl.fav': 'Favourite hand', 'pl.won': 'Total won', 'hm.left': 'Refresh in {h} h {m} min · hands in this hall at cash tables', 'v.aofR': 'only fold or all-in', 'v.shortR': '36-card deck, trips beat a straight, flush beats full house, A-6-7-8-9 is a straight', 'v.omahaR': 'use exactly 2 of your cards and 3 from the board', 'v.jokerR': 'a joker replaces any card'
     }
 };
 function detectLang() {
@@ -5192,7 +5193,7 @@ function tgAtLeast(v) { try { return !!(tg && tg.isVersionAtLeast && tg.isVersio
 function initTgExtras() {
     const user = tgUser(), show = (id, on) => { const e = $(id); if (e) e.style.display = on ? '' : 'none'; };
     show('rowNotify', !!(user && tg.requestWriteAccess && tgAtLeast('6.9')));
-    show('rowHome', false);
+    show('rowHome', false); if (typeof webLoginRender === 'function') webLoginRender();
     try {
         if (tg && tg.checkHomeScreenStatus && tgAtLeast('8.0')) tg.checkHomeScreenStatus(st => { show('rowHome', st === 'missed' || st === 'unknown'); });
     } catch (e) {}
@@ -6197,12 +6198,12 @@ function makeWsNet(onStatus) {
         ws.onopen = () => {
             everOpened = true; tries = 0; lastRx = Date.now();
             const u = tgUser();
-            ws.send(JSON.stringify({t: 'hello', initData: (tg && tg.initData) || '', notify: cfg.notify ? true : undefined, nick: cfg.nick, guest: guestId(), room: currentRoom || undefined, pass: roomPass || undefined, spectate: (watching && !(S && S.queued)) || undefined}));   // в очереди на место бота при переподключении снова встаём в очередь
+            ws.send(JSON.stringify({t: 'hello', initData: (tg && tg.initData) || '', sess: webSess() || undefined, notify: cfg.notify ? true : undefined, nick: cfg.nick, guest: guestId(), room: currentRoom || undefined, pass: roomPass || undefined, spectate: (watching && !(S && S.queued)) || undefined}));   // в очереди на место бота при переподключении снова встаём в очередь
         };
         ws.onmessage = ev => {
             lastRx = Date.now();
             let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
-            if (m.t === 'hello') { if (m.bot && /^[A-Za-z0-9_]{5,32}$/.test(m.bot)) BOT_LINK = 'https://t.me/' + m.bot; helloOk = true; clockOffset = m.now - Date.now(); onStatus('up'); if (pending) { api.send(pending); pending = null; } return; }
+            if (m.t === 'hello') { if (m.webLogin) { webLoginId = String(m.webLogin); webLoginRender(); } if (m.bot && /^[A-Za-z0-9_]{5,32}$/.test(m.bot)) BOT_LINK = 'https://t.me/' + m.bot; helloOk = true; clockOffset = m.now - Date.now(); onStatus('up'); if (pending) { api.send(pending); pending = null; } return; }
             if (m.t === 'pong') return;
             onServerMsg(m);
         };
@@ -6268,6 +6269,7 @@ function onServerMsg(m) {
         if (m.code === 'kicked') { currentRoom = ''; roomPass = ''; store(ROOM_KEY, ''); resetToMenu(true); toast(text, true); return; }
         if (m.code === 'need_pass') { hideConn(); askPass(m.room, !!m.wrong); return; }
         if (m.code === 'room_closed') { currentRoom = ''; store(ROOM_KEY, ''); resetToMenu(true); toast(text, true); return; }
+        if (m.code === 'auth') webAuthFail();
         if (rejoining && (m.code === 'no_room' || m.code === 'busy' || m.code === 'auth')) { rejoining = false; if (m.code === 'no_room') { store(ROOM_KEY, ''); settleStale(); } }
         if (m.code === 'no_room' || m.code === 'banned' || m.code === 'started' || m.code === 'full' || m.code === 'auth' || m.code === 'busy') {
             hideConn();
@@ -7365,8 +7367,52 @@ function animateGift(e) {
     });
 }
 
+// Веб-версия: вход через Telegram (OpenID, всплывающее окно). Вне Telegram игрок нажимает «Войти», сервер проверяет токен и выдаёт сеанс на 30 дней.
+// Сеанс лежит в localStorage; с ним профиль, магазин, друзья и задания работают так же, как в мини-приложении.
+const WEBSESS_KEY = 'poker_ws';
+let webLoginId = '';          // Client ID из BotFather, сообщает сервер в hello (пусто: вход выключен)
+function webSess() { return (tg && tg.initData) ? '' : store(WEBSESS_KEY); }
+function authFields() { return (tg && tg.initData) ? {initData: tg.initData} : (webSess() ? {sess: webSess()} : {}); }
+function webAuthFail() { if (webSess()) { store(WEBSESS_KEY, ''); try { location.reload(); } catch (e) {} } }    // сеанс не принят (истёк): вернуться к гостю
+function webLoginRender() {
+    const row = $('rowWeb'); if (!row) return;
+    const inTg = !!(tg && tg.initData), on = !inTg && (webSess() || webLoginId); row.style.display = on ? '' : 'none'; if (!on) return;
+    const logged = !!webSess();
+    setText('webLbl', t(logged ? 'web.on' : 'web.off')); setText('webSmall', t(logged ? 'web.onSub' : 'web.offSub'));
+    setText('btnWeb', t(logged ? 'web.out' : 'web.in'));
+}
+function webLoginTap() {
+    if (webSess()) { store(WEBSESS_KEY, ''); location.reload(); return; }
+    if (!webLoginId) { toast(t('web.err'), true); return; }
+    const go = () => {
+        try {
+            window.Telegram.Login.auth({client_id: Number(webLoginId), scope: ['profile'], lang: (typeof LANG !== 'undefined' && LANG === 'en') ? 'en' : 'ru'}, data => {
+                if (!data || !data.id_token) { if (data && data.error) toast(t('web.err'), true); return; }
+                webLoginExchange(data.id_token);
+            });
+        } catch (e) { toast(t('web.err'), true); }
+    };
+    if (window.Telegram && window.Telegram.Login) { go(); return; }
+    const sc = document.createElement('script'); sc.src = 'https://oauth.telegram.org/js/telegram-login.js'; sc.onload = go; sc.onerror = () => toast(t('web.err'), true); document.head.appendChild(sc);
+}
+function webLoginExchange(idToken) {      // токен меняем на сеанс одним коротким соединением и перезагружаем страницу
+    let ws; try { ws = new WebSocket(serverUrl()); } catch (e) { toast(t('web.err'), true); return; }
+    const to = setTimeout(() => { try { ws.close(); } catch (e) {} toast(t('web.err'), true); }, 12000);
+    ws.onopen = () => ws.send(JSON.stringify({t: 'hello', idToken: idToken, nick: cfg.nick || undefined}));
+    ws.onmessage = ev => { let m; try { m = JSON.parse(ev.data); } catch (e) { return; } if (m.t === 'hello' && m.sess) { clearTimeout(to); store(WEBSESS_KEY, m.sess); location.reload(); } else if (m.t === 'err') { clearTimeout(to); toast(t('web.err'), true); } };
+    ws.onerror = () => {};
+}
+
 // ═════ Часть клиента: «Что нового» — список обновлений для игроков (самое новое сверху). Дополнять при каждой версии; у каждой записи сразу и русский, и английский (поле en). ═════
 const CHANGELOG = [
+    {v: '0.99.2', date: '16 ноября', title: 'Вход через Telegram в браузере', items: [
+        'Играйте в браузере с тем же профилем: войдите через Telegram в настройках, и фишки, магазин и друзья на месте.',
+        'За приглашённых друзей награда теперь до 50 раз в день.'
+    ],
+        en: {date: 'Nov 16', title: 'Sign in with Telegram in the browser', items: [
+            'Play in the browser with the same profile: sign in with Telegram in settings and your chips, shop and friends are there.',
+            'The reward for invited friends now works up to 50 times a day.'
+        ]}},
     {v: '0.99.1', date: '16 ноября', title: 'Миссии каждый день и открытая статистика', items: [
         'Миссии залов каждый день, и они стали разнообразнее.',
         'За столом видно, какой идёт режим, а при входе показано его главное правило. В справке по комбинациям порядок для шорт-дека.',
@@ -7417,18 +7463,6 @@ const CHANGELOG = [
             '133 titles for levels, wins, hands, friends and achievements. Your chosen title shows in your profile and to friends.',
             'More stats in your profile: hands entered, showdowns, duels.',
             'Tap a player or a bot at the table to open a compact mini profile. Emoji got their own button, plus a new phrase "Damn, unc...".',
-            'Interface improvements.'
-        ]}},
-    {v: '0.98.6', date: '10 ноября', title: 'Звуки и плашки', items: [
-        'Звуки теперь играют у всех (у части игроков они пропадали). Чек стучит дважды.',
-        'Новые маленькие плашки: награды золотые, подтверждения спокойные, красный цвет только у ошибок.',
-        'Достижение «Четыре Три» переименовано.',
-        'Улучшение интерфейса.'
-    ],
-        en: {date: 'Nov 10', title: 'Sounds and notes', items: [
-            'Sounds now play for everyone (they were missing for some players). The check knocks twice.',
-            'New small notes: rewards are gold, confirmations are calm, red is only for errors.',
-            'The "Four Three" achievement was renamed.',
             'Interface improvements.'
         ]}}
 ];
@@ -7549,16 +7583,17 @@ function progOnWalletSave() {
 }
 
 // ───────── связь с сервером: отдельный лёгкий сокет только для профиля ─────────
-function profileEnabled() { return !!(serverUrl() && tg && tg.initData && tgUser()); }
+function profileEnabled() { return !!(serverUrl() && ((tg && tg.initData && tgUser()) || webSess())); }
 function profileConnect() {
     if (!profileEnabled() || pnet) return;
     let ws;
     try { ws = new WebSocket(serverUrl()); } catch (e) { return pnetRetry(); }
     pnet = ws;
-    ws.onopen = () => { pnetTries = 0; ws.send(JSON.stringify({t: 'hello', initData: tg.initData, nick: cfg.nick, notify: cfg.notify ? true : undefined})); };
+    ws.onopen = () => { pnetTries = 0; ws.send(JSON.stringify(Object.assign({t: 'hello', nick: cfg.nick, notify: cfg.notify ? true : undefined}, authFields()))); };
     ws.onmessage = ev => {
         let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
-        if (m.t === 'hello') { pnetUp = true; if (m.bot && /^[A-Za-z0-9_]{5,32}$/.test(m.bot)) BOT_LINK = 'https://t.me/' + m.bot; return; }
+        if (m.t === 'err' && m.code === 'auth') { webAuthFail(); return; }
+        if (m.t === 'hello') { pnetUp = true; if (m.webLogin) webLoginId = String(m.webLogin); if (m.bot && /^[A-Za-z0-9_]{5,32}$/.test(m.bot)) BOT_LINK = 'https://t.me/' + m.bot; return; }
         onProfileMsg(m);
     };
     ws.onclose = () => { if (pnet === ws) { pnet = null; pnetUp = false; profileReady = false; pnetRetry(); } };
