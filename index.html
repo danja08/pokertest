@@ -4256,7 +4256,7 @@ const E = PokerEngine;
 const {BOT_CHARACTERS, TURN_SECONDS, bestHand} = E;
 const SERVER_URL = 'wss://pokertest-server.onrender.com';              // подставляется при сборке; ?server=wss://... переопределяет
 let BOT_LINK = 'https://t.me/bratishkapoker_bot';      // имя бота присылает сервер в hello (переменная BOT_USERNAME на Render), это запасное
-const APP_VERSION = '0.99.2';                       // должна совпадать с v в меню; build.py кладёт её в version.json
+const APP_VERSION = '0.99.3';                       // должна совпадать с v в меню; build.py кладёт её в version.json
 const tg = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
 const SUIT_CLASS = E.SUIT_CLASS;
 const SEAT_COLORS = ['#d64535', '#4a90c8', '#e8821a', '#a89a80', '#4fb060', '#ffe27a'];
@@ -5193,7 +5193,7 @@ function tgAtLeast(v) { try { return !!(tg && tg.isVersionAtLeast && tg.isVersio
 function initTgExtras() {
     const user = tgUser(), show = (id, on) => { const e = $(id); if (e) e.style.display = on ? '' : 'none'; };
     show('rowNotify', !!(user && tg.requestWriteAccess && tgAtLeast('6.9')));
-    show('rowHome', false); if (typeof webLoginRender === 'function') webLoginRender();
+    show('rowHome', false); if (typeof webLoginRender === 'function') { webLoginRender(); webLoginProbe(); }
     try {
         if (tg && tg.checkHomeScreenStatus && tgAtLeast('8.0')) tg.checkHomeScreenStatus(st => { show('rowHome', st === 'missed' || st === 'unknown'); });
     } catch (e) {}
@@ -7402,9 +7402,25 @@ function webLoginExchange(idToken) {      // токен меняем на сеа
     ws.onmessage = ev => { let m; try { m = JSON.parse(ev.data); } catch (e) { return; } if (m.t === 'hello' && m.sess) { clearTimeout(to); store(WEBSESS_KEY, m.sess); location.reload(); } else if (m.t === 'err') { clearTimeout(to); toast(t('web.err'), true); } };
     ws.onerror = () => {};
 }
+// Гость в меню не держит соединения с сервером, поэтому про вход узнаём коротким пробным hello (без сеанса и вне Telegram).
+function webLoginProbe() {
+    if ((tg && tg.initData) || webSess() || webLoginId || !serverUrl()) return;
+    let ws; try { ws = new WebSocket(serverUrl()); } catch (e) { return; }
+    const done = () => { try { ws.close(); } catch (e) {} };
+    setTimeout(done, 15000);
+    ws.onopen = () => ws.send(JSON.stringify({t: 'hello', guest: guestId()}));
+    ws.onmessage = ev => { let m; try { m = JSON.parse(ev.data); } catch (e) { return; } if (m.t === 'hello') { if (m.webLogin) { webLoginId = String(m.webLogin); webLoginRender(); } done(); } };
+    ws.onerror = () => {};
+}
 
 // ═════ Часть клиента: «Что нового» — список обновлений для игроков (самое новое сверху). Дополнять при каждой версии; у каждой записи сразу и русский, и английский (поле en). ═════
 const CHANGELOG = [
+    {v: '0.99.3', date: '16 ноября', title: 'Исправление входа в браузере', items: [
+        'В браузере кнопка входа через Telegram теперь появляется сразу.'
+    ],
+        en: {date: 'Nov 16', title: 'Browser sign-in fix', items: [
+            'In the browser the Telegram sign-in button now shows up right away.'
+        ]}},
     {v: '0.99.2', date: '16 ноября', title: 'Вход через Telegram в браузере', items: [
         'Играйте в браузере с тем же профилем: войдите через Telegram в настройках, и фишки, магазин и друзья на месте.',
         'За приглашённых друзей награда теперь до 50 раз в день.'
