@@ -1789,8 +1789,8 @@ body[data-off~="wheel"] [data-sys="wheel"], body[data-off~="rated"] [data-sys="r
   <div class="sheet" id="sheetPlay" style="height:auto;max-height:80%">
     <div class="sheet-title"><span>СТОЛ С ДРУЗЬЯМИ</span><button class="sheet-close s-icons-close" onclick="closeSheet()">✕</button></div>
     <div class="sheet-body">
-      <button class="btn btn-start big" onclick="closeSheets();createRoom('sng')"><i class="ic s-icons2-cup"></i> SIT &amp; GO</button>
-      <button class="btn btn-check big" onclick="closeSheets();createRoom('cash')"><i class="ic s-icons2-cash"></i> КЭШ-СТОЛ</button>
+      <div class="m2-hint" data-i="tc.hint">Выберите чат, затем вид стола.</div>
+      <button class="btn btn-start big" onclick="tableInChat()"><i class="ic s-icons2-play"></i> <span data-i="tc.btn">СОЗДАТЬ В ЧАТЕ</span></button>
       <div class="m2-or">или войти по коду</div>
       <div class="join-row">
         <input id="codeInput" type="text" maxlength="5" placeholder="КОД" autocomplete="off" autocapitalize="characters" spellcheck="false">
@@ -4384,7 +4384,7 @@ const E = PokerEngine;
 const {BOT_CHARACTERS, TURN_SECONDS, bestHand} = E;
 const SERVER_URL = 'wss://pokertest-server.onrender.com';              // подставляется при сборке; ?server=wss://... переопределяет
 let BOT_LINK = 'https://t.me/bratishkapoker_bot';      // имя бота присылает сервер в hello (переменная BOT_USERNAME на Render), это запасное
-const APP_VERSION = '0.99.5';                       // должна совпадать с v в меню; build.py кладёт её в version.json
+const APP_VERSION = '0.99.6';                       // должна совпадать с v в меню; build.py кладёт её в version.json
 const tg = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
 const SUIT_CLASS = E.SUIT_CLASS;
 const SEAT_COLORS = ['#d64535', '#4a90c8', '#e8821a', '#a89a80', '#4fb060', '#ffe27a'];
@@ -4534,18 +4534,24 @@ function boot() {
     setToggle('btnHints', cfg.hints);
     if (!HINTS_ENABLED) { const hr = $('btnHints'); if (hr && hr.parentNode) hr.parentNode.style.display = 'none'; }
     const sp = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || queryParam('room') || (/^[A-Za-z0-9]{5}$/.test(hashCode) ? hashCode : '');
-    // приглашение из чата: «n_КОД» значит «стола ещё может не быть: первый, кто открыл, создаёт его»
-    const code = /^(?:n_)?[A-Za-z0-9]{5}$/.test(String(sp || '')) ? String(sp).toUpperCase().replace(/^N_/, '') : '';
-    inviteCreate = /^n_/i.test(String(sp || ''));
+    // приглашение из чата: «n_КОД» значит «стола ещё может не быть: первый, кто открыл, создаёт его»; хвост _<режим><вариант> (server/bot.js, TABLE_KINDS) задаёт вид стола
+    const im = /^(n_)?([A-Za-z0-9]{5})(?:_([sc][hoasj]))?$/i.exec(String(sp || ''));
+    const code = im ? im[2].toUpperCase() : '';
+    inviteCreate = im && im[1] ? inviteKind(im[3]) : null;
     // приложение могли закрыть или свернуть с перезагрузкой: после загрузки кошелька возвращаемся за свой стол (или за стол по приглашению)
     walletLoad(() => {
         if (typeof profileInit === 'function') profileInit();
-        if (code && code !== store(ROOM_KEY)) { $('codeInput').value = code; joinByInput(); }
+        if (code && code !== store(ROOM_KEY) && inviteCreate) createRoom(inviteCreate.mode, inviteCreate.variant, code);
+        else if (code && code !== store(ROOM_KEY)) { $('codeInput').value = code; joinByInput(); }
         else rejoinSaved(code);
     });
 }
 const ROOM_KEY = 'poker_room';
-let inviteCreate = false;           // открыто по приглашению «создай стол» из чата: при входе создать стол с этим кодом, если его ещё нет
+let inviteCreate = null;            // открыто по приглашению «создай стол» из чата: {mode, variant}; при входе создать стол с этим кодом, если его ещё нет
+function inviteKind(tail) {
+    const tl = String(tail || '').toLowerCase(), V = {h: 'holdem', o: 'omaha', a: 'aof', s: 'short', j: 'joker'};
+    return {mode: tl[0] === 'c' ? 'cash' : 'sng', variant: V[tl[1]] || 'holdem'};
+}
 let openedSheet = '';
 let rejoining = false;
 function rejoinSaved(inviteCode) {
@@ -4676,7 +4682,7 @@ const I18N = {
         'cr.nextLv': 'За {lv} уровень: {list}',
         'gf.btn': 'Подарок', 'gf.to': 'Подарок для {name}', 'gf.toAll': 'Подарок всем за столом', 'gf.treats': 'Угощения', 'gf.throws': 'Кидалки', 'gf.all': 'Всем за столом', 'gf.free': 'В тренировке бесплатно',
         'wk.duel': 'Дуэль 1 на 1', 'wk.duelSub': 'Вызов друга со ставкой', 'wk.tag': 'режим недели', 'wk.left': 'ещё {n} дн.', 'wk.noChips': 'Не хватает фишек на вход', 'err.week_over': 'Режим недели сменился, обновите меню.',
-        'lb.start': 'НАЧАТЬ ИГРУ',
+        'lb.start': 'НАЧАТЬ ИГРУ', 'tc.hint': 'Выберите чат, затем вид стола.', 'tc.btn': 'СОЗДАТЬ В ЧАТЕ', 'tc.needTg': 'Свой стол создаётся в чате Telegram.',
         'go.bust': 'ВЫ ВЫБЫЛИ', 'go.place': 'Ваше место: {n}', 'go.again': '▶ НОВАЯ ПАРТИЯ', 'go.watch': 'досмотреть партию', 'go.menu': 'выйти в меню',
         'wh.title': 'Колесо удачи', 'wh.sub': 'Фишки, бустеры, вещи', 'wh.free': 'бесплатный спин', 'wh.bonus': 'бонусных спинов: {n}', 'wh.next': 'спин за {n}', 'wh.done': 'до завтра', 'wh.go': 'КРУТИТЬ',
         'wh.odds': 'Шансы', 'wh.rules': 'Бесплатный спин раз в сутки (с 00:00 МСК), ещё 4 за фишки.', 'wh.cr': '{n} кристаллов', 'wh.gotCr': 'Колесо: +{n} кристаллов', 'wh.chips': '{n} фишек', 'wh.jackpot': 'Джекпот {n}', 'wh.boost': 'Бустер опыта 1 ч', 'wh.spin': 'Ещё спин',
@@ -4731,7 +4737,7 @@ const I18N = {
         'cr.nextLv': 'Level {lv}: {list}',
         'gf.btn': 'Gift', 'gf.to': 'Gift for {name}', 'gf.toAll': 'Gift for everyone at the table', 'gf.treats': 'Treats', 'gf.throws': 'Throwables', 'gf.all': 'Everyone at the table', 'gf.free': 'Free in training',
         'wk.duel': '1-on-1 Duel', 'wk.duelSub': 'Challenge a friend for a stake', 'wk.tag': 'mode of the week', 'wk.left': '{n} more days', 'wk.noChips': 'Not enough chips to enter', 'err.week_over': 'The mode of the week has changed, refresh the menu.',
-        'lb.start': 'START THE GAME',
+        'lb.start': 'START THE GAME', 'tc.hint': 'Pick a chat, then the table type.', 'tc.btn': 'CREATE IN A CHAT', 'tc.needTg': 'Your own table is created in a Telegram chat.',
         'go.bust': 'YOU ARE OUT', 'go.place': 'Your place: {n}', 'go.again': '▶ NEW GAME', 'go.watch': 'watch the rest', 'go.menu': 'back to menu',
         'wh.title': 'Wheel of luck', 'wh.sub': 'Chips, boosters, items', 'wh.free': 'free spin', 'wh.bonus': 'bonus spins: {n}', 'wh.next': 'spin for {n}', 'wh.done': 'until tomorrow', 'wh.go': 'SPIN',
         'wh.odds': 'Odds', 'wh.rules': 'One free spin a day (from 00:00 MSK), 4 more for chips.', 'wh.cr': '{n} crystals', 'wh.gotCr': 'Wheel: +{n} crystals', 'wh.chips': '{n} chips', 'wh.jackpot': 'Jackpot {n}', 'wh.boost': '1 h XP booster', 'wh.spin': 'One more spin',
@@ -6527,7 +6533,9 @@ function joinTable(code) {
     showConn('Подключение…', ''); n.queue({t: 'join', room: code});
 }
 
-function createRoom(m) {
+// свой стол создаётся только из чата: приглашение бота (n_КОД_<вид>) открывает игру, первый открывший создаёт стол с этим кодом, остальные садятся к нему.
+// Без кода (тесты) стол создаётся сразу.
+function createRoom(m, variant, code) {
     if (sysBlocked('tables')) return;
     if (m) setMode(m);
     menuMsg(''); settleStale();
@@ -6535,7 +6543,13 @@ function createRoom(m) {
     getAudio();
     const n = ensureOnline(); if (!n) return;
     showConn('Подключение…', '');
-    n.queue({t: 'create', mode: cfg.mode});
+    n.queue(code ? {t: 'join', room: code, create: true, mode: cfg.mode, variant: variant || 'holdem'} : {t: 'create', mode: cfg.mode});
+}
+// «Создать в чате»: выбор чата и список видов стола от бота (инлайн-режим); вне Telegram подсказка
+function tableInChat() {
+    if (sysBlocked('tables')) return;
+    try { if (tg && tg.switchInlineQuery && (!tg.isVersionAtLeast || tg.isVersionAtLeast('6.7'))) { closeSheets(); tg.switchInlineQuery('', ['users', 'groups']); return; } } catch (e) {}
+    toast(t('tc.needTg'));
 }
 // «Вставить»: достаём код стола из буфера обмена (чистый код или ссылка с ?start=КОД) и сразу входим
 function parseRoomCode(text) {
@@ -6561,7 +6575,7 @@ function joinByInput() {
     getAudio();
     const n = ensureOnline(); if (!n) return;
     showConn('Подключение…', '');
-    n.queue(inviteCreate ? {t: 'join', room: code, create: true} : {t: 'join', room: code}); inviteCreate = false;
+    n.queue({t: 'join', room: code});
 }
 
 // зритель садится за стол: в лобби или за кэш-стол при свободном месте (вход списывается как у остальных)
@@ -7871,6 +7885,12 @@ function passBuy() {
 
 // ═════ Часть клиента: «Что нового» — список обновлений для игроков (самое новое сверху). Дополнять при каждой версии; у каждой записи сразу и русский, и английский (поле en). ═════
 const CHANGELOG = [
+    {v: '0.99.6', date: '23 ноября', title: 'Свой стол из чата', items: [
+        'Свой стол создаётся прямо в чате: выберите чат и вид стола — холдем, омаха, всё или ничего, шорт-дек или джокеры, Sit & Go или кэш. Друзья нажмут кнопку в сообщении и сядут рядом.'
+    ],
+        en: {date: 'Nov 23', title: 'Your own table from a chat', items: [
+            'Create your own table right in a chat: pick a chat and the table type (Hold\'em, Omaha, All-in or Fold, Short Deck or Jokers, Sit & Go or cash). Friends tap the button in the message and sit next to you.'
+        ]}},
     {v: '0.99.5', date: '21 ноября', title: 'Сезон «Зима», турниры и новые залы', items: [
         'Скоро сезон «Зима»: лента наград на 30 уровней, у каждого уровня бесплатная награда и награда пропуска (зимние головы, шляпы, рубашки, титулы, фразы).',
         'Турниры Sit & Go по уровням входа, как залы: от 500 до 250 000 фишек. Стартуют от двух игроков, остальные места займут боты.',
@@ -8501,7 +8521,7 @@ function shareRef() {
 const USAGE_HOOKS = [
     ['openDuel', 'duel_open'], ['duelQueue', 'duel_queue'], ['openHallMissions', 'missions_open'], ['openFriends', 'friends_open'], ['shareRef', 'ref_share'],
     ['startTour', 'tour_start'], ['openTasks', 'tasks_open'], ['openShop', 'shop_open'], ['openTop', 'top_open'], ['openTables', 'halls_open'], ['quickRated', 'rated_queue'],
-    ['startSolo', 'solo_start'], ['weekTap', 'week_play'], ['createRoom', 'table_create'], ['joinByInput', 'join_code'], ['sendReact', 'reaction_send'], ['openProfile', 'profile_open'], ['playAuto', 'play_auto'], ['quickHall', 'hall_join'], ['openTitles', 'titles_open']
+    ['startSolo', 'solo_start'], ['weekTap', 'week_play'], ['tableInChat', 'table_create'], ['joinByInput', 'join_code'], ['sendReact', 'reaction_send'], ['openProfile', 'profile_open'], ['playAuto', 'play_auto'], ['quickHall', 'hall_join'], ['openTitles', 'titles_open']
 ];
 function usageStat(kind) { try { if (typeof psend === 'function' && typeof profileEnabled === 'function' && profileEnabled()) psend({t: 'stat', k: kind}); } catch (e) {} }
 (function () {
