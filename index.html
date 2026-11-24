@@ -4419,7 +4419,7 @@ const E = PokerEngine;
 const {BOT_CHARACTERS, TURN_SECONDS, bestHand} = E;
 const SERVER_URL = 'wss://pokertest-server.onrender.com';              // подставляется при сборке; ?server=wss://... переопределяет
 let BOT_LINK = 'https://t.me/bratishkapoker_bot';      // имя бота присылает сервер в hello (переменная BOT_USERNAME на Render), это запасное
-const APP_VERSION = '0.99.7';                       // должна совпадать с v в меню; build.py кладёт её в version.json
+const APP_VERSION = '0.99.8';                       // должна совпадать с v в меню; build.py кладёт её в version.json
 const tg = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
 const SUIT_CLASS = E.SUIT_CLASS;
 const SEAT_COLORS = ['#d64535', '#4a90c8', '#e8821a', '#a89a80', '#4fb060', '#ffe27a'];
@@ -4716,7 +4716,7 @@ const I18N = {
         'cr.exLeft': 'осталось сегодня: {n}', 'cr.boostQ': 'Купить бустер опыта на {h} ч за {n} кристаллов?', 'cr.exDone': 'Обмен: +{n} фишек',
         'cr.nextLv': 'За {lv} уровень: {list}',
         'gf.btn': 'Подарок', 'gf.to': 'Подарок для {name}', 'gf.toAll': 'Подарок всем за столом', 'gf.treats': 'Угощения', 'gf.throws': 'Кидалки', 'gf.all': 'Всем за столом', 'gf.free': 'В тренировке бесплатно',
-        'wk.duel': 'Дуэль 1 на 1', 'wk.duelSub': 'Вызов друга со ставкой', 'wk.tag': 'режим недели', 'wk.left': 'ещё {n} дн.', 'wk.noChips': 'Не хватает фишек на вход', 'err.week_over': 'Режим недели сменился, обновите меню.',
+        'wk.duel': 'Дуэль 1 на 1', 'wk.duelSub': 'Вызов друга со ставкой', 'wk.tag': 'режим недели', 'wk.left': 'ещё {n} дн.', 'wk.noChips': 'Не хватает фишек на вход', 'wk.entry': 'Блайнды {sb}/{bb} · вход {n}', 'wk.playing': 'Сейчас играют: {n}', 'wk.bots': 'Столы с ботами всегда открыты', 'err.week_over': 'Режим недели сменился, обновите меню.',
         'lb.start': 'НАЧАТЬ ИГРУ', 'tc.hint': 'Выберите чат, затем вид стола.', 'st9.n': '{n} мест', 'rt.elo': 'Ваш рейтинг Эло: {r} · от 2 до {n} игроков', 'err.seats_busy': 'Сначала освободите места 7–9.', 'tc.btn': 'СОЗДАТЬ В ЧАТЕ', 'tc.needTg': 'Свой стол создаётся в чате Telegram.',
         'go.bust': 'ВЫ ВЫБЫЛИ', 'go.place': 'Ваше место: {n}', 'go.again': '▶ НОВАЯ ПАРТИЯ', 'go.watch': 'досмотреть партию', 'go.menu': 'выйти в меню',
         'wh.title': 'Колесо удачи', 'wh.sub': 'Фишки, бустеры, вещи', 'wh.free': 'бесплатный спин', 'wh.bonus': 'бонусных спинов: {n}', 'wh.next': 'спин за {n}', 'wh.done': 'до завтра', 'wh.go': 'КРУТИТЬ',
@@ -4771,7 +4771,7 @@ const I18N = {
         'cr.exLeft': 'left today: {n}', 'cr.boostQ': 'Buy a {h} h XP booster for {n} crystals?', 'cr.exDone': 'Exchange: +{n} chips',
         'cr.nextLv': 'Level {lv}: {list}',
         'gf.btn': 'Gift', 'gf.to': 'Gift for {name}', 'gf.toAll': 'Gift for everyone at the table', 'gf.treats': 'Treats', 'gf.throws': 'Throwables', 'gf.all': 'Everyone at the table', 'gf.free': 'Free in training',
-        'wk.duel': '1-on-1 Duel', 'wk.duelSub': 'Challenge a friend for a stake', 'wk.tag': 'mode of the week', 'wk.left': '{n} more days', 'wk.noChips': 'Not enough chips to enter', 'err.week_over': 'The mode of the week has changed, refresh the menu.',
+        'wk.duel': '1-on-1 Duel', 'wk.duelSub': 'Challenge a friend for a stake', 'wk.tag': 'mode of the week', 'wk.left': '{n} more days', 'wk.noChips': 'Not enough chips to enter', 'wk.entry': 'Blinds {sb}/{bb} · entry {n}', 'wk.playing': 'Playing now: {n}', 'wk.bots': 'Tables with bots are always open', 'err.week_over': 'The mode of the week has changed, refresh the menu.',
         'lb.start': 'START THE GAME', 'tc.hint': 'Pick a chat, then the table type.', 'st9.n': '{n} seats', 'rt.elo': 'Your Elo rating: {r} · 2 to {n} players', 'err.seats_busy': 'Free seats 7–9 first.', 'tc.btn': 'CREATE IN A CHAT', 'tc.needTg': 'Your own table is created in a Telegram chat.',
         'go.bust': 'YOU ARE OUT', 'go.place': 'Your place: {n}', 'go.again': '▶ NEW GAME', 'go.watch': 'watch the rest', 'go.menu': 'back to menu',
         'wh.title': 'Wheel of luck', 'wh.sub': 'Chips, boosters, items', 'wh.free': 'free spin', 'wh.bonus': 'bonus spins: {n}', 'wh.next': 'spin for {n}', 'wh.done': 'until tomorrow', 'wh.go': 'SPIN',
@@ -6533,6 +6533,19 @@ function renderTourney() {
     }).join(''));
     setHtml('tbList', '');
 }
+// режим недели: те же пять ступеней входа, открыты всем (решает только баланс), столы на 6 мест; ниже открытые столы этого режима
+function openWeek() { tablesMode = 'week'; openTablesScreen(); }
+function renderWeek() {
+    const st = E.STAKES, m = weekMode();
+    if (m === 'duel') { closeTables(); return; }
+    setText('tbTitle', t('v.' + m)); $('tbSubA').style.display = 'none'; $('tbSubB').style.display = '';
+    const mine = tablesRows.filter(r => r.variant === m);
+    setHtml('tbHalls', HALLS.map((h, i) => {
+        const enough = wallet.balance >= st[i].buyIn, can = enough && !sysIsOff('hall' + i), n = mine.filter(r => r.hall === i).reduce((a, r) => a + r.humans, 0);
+        return `<div class="hall h${i}${hallXc(i)}"><div class="hall-ic"><i class="hall-em s-halls-${hallArt(i, false)}"></i></div><div class="hall-tx"><b>${esc(h.label)}</b><span>${esc(t('wk.entry', {sb: st[i].sb, bb: st[i].bb, n: fmtNB(st[i].buyIn)}))}</span><small>${esc(n ? t('wk.playing', {n}) : t('wk.bots'))}</small></div><button class="btn ${can ? 'btn-start' : 'btn-fold'}" onclick="quickHall(${i}, weekMode())" ${can ? '' : 'disabled'}>${esc(t(enough ? 'tn.play' : 'tn.noChips'))}</button></div>`;
+    }).join(''));
+    setHtml('tbList', tableRowsHtml(mine));
+}
 function quickTourney(i) {
     if (sysBlocked('tourney') || sysBlocked('hall' + i)) return;
     if (!(typeof profileEnabled === 'function' && profileEnabled())) { toast(t('tn.tg')); return; }
@@ -6545,29 +6558,36 @@ function quickTourney(i) {
 function renderTables() {
     setText('tbTitle', t('tb.title')); $('tbSubA').style.display = ''; $('tbSubB').style.display = '';
     fillSeatPicks();
+    $('seatPick').style.display = tablesMode === 'halls' || tablesMode === 'tourney' ? '' : 'none';
     if (tablesMode === 'tourney') { renderTourney(); return; }
+    if (tablesMode === 'week') { renderWeek(); return; }
     const st = E.STAKES;
     const halls = HALLS.map((h, i) => {
         const need = hallNeed(i), lock = hallLockedFor(i), can = !lock && wallet.balance >= st[i].buyIn, n = tablesRows.filter(r => r.hall === i).reduce((a, r) => a + r.humans, 0);
         return `<div class="hall h${i}${hallXc(i)}${lock ? ' locked' : ''}"><div class="hall-ic"><i class="hall-em s-halls-${hallArt(i, lock)}"></i></div><div class="hall-tx"><b>${esc(h.label)}</b><span>Блайнды ${st[i].sb}/${st[i].bb} · вход ${st[i].buyIn}</span><small>${lock ? 'Откроется, когда накопите ' + fmtN(need) + ' (рекорд ' + fmtN(myPeak()) + ')' : n ? 'Сейчас играют: ' + n : 'Столы с ботами всегда открыты'}</small>${lock ? '' : hmLinkHtml(i)}</div><button class="btn ${can ? 'btn-start' : 'btn-fold'}" onclick="quickHall(${i})" ${can ? '' : 'disabled'}>${lock ? 'ЗАКРЫТ' : can ? 'ИГРАТЬ' : 'НЕТ ФИШЕК'}</button></div>`;
     }).join('');
-    const rows = tablesRows.length ? tablesRows.map(r => {
-        const cash = r.mode === 'cash', can = wallet.balance >= r.buyIn && r.humans < (r.seats || 6) && (!cash || !hallLockedFor(r.hall));
-        return `<div class="tb-row"><div class="tb-mid"><b>${cash ? esc(HALLS[r.hall].label) + ' · ' + r.sb + '/' + r.bb : 'Sit &amp; Go · друзья'}${r.variant && r.variant !== 'holdem' ? ' · ' + esc(t('v.' + r.variant)) : ''}${r.pw ? ' 🔒' : ''}</b><span>${r.host ? esc(r.host) + ' · ' : ''}людей ${r.humans} из 6 · стол ${r.code}</span></div><button class="btn btn-check" onclick="joinTable('${r.code}')" ${can ? '' : 'disabled'}>СЕСТЬ</button></div>`;
-    }).join('') : '<div class="tb-empty">Открытых столов пока нет. Нажмите «Играть» в зале: стол создастся, и к вам смогут сесть другие.</div>';
+    const rows = tableRowsHtml(tablesRows);
     const tgOk = typeof profileEnabled === 'function' && profileEnabled(), enough = wallet.balance >= E.SNG_BUYIN;
     const rated = tablesMode === 'tourney' ? '' : `<div class="hall rated"><div class="hall-ic"><i class="hall-em s-mcards-cup"></i></div><div class="hall-tx"><b>Рейтинговая игра</b><span>Sit &amp; Go только с людьми · вход ${E.SNG_BUYIN}</span><small>${!tgOk ? 'Доступна внутри Telegram' : esc(t('rt.elo', {r: typeof eloInfo !== 'undefined' && eloInfo ? eloInfo.r : 1000, n: mySeats()}))}</small></div><button class="btn btn-start" ${tgOk && enough ? '' : 'disabled'} onclick="quickRated()">${!tgOk ? 'TELEGRAM' : enough ? 'ИСКАТЬ' : 'НУЖНО ' + E.SNG_BUYIN}</button></div>`;
     const train = `<div class="hall train"><div class="hall-ic"><i class="hall-em s-icons2-robot"></i></div><div class="hall-tx"><b>Тренировка с ботами</b><span>На баланс не влияет</span></div><button class="btn btn-check" onclick="openSheet('sheetTrain')">ИГРАТЬ</button></div>`;
     setHtml('tbHalls', rated + halls + train); setHtml('tbList', rows);
 }
+// стол зала закрыт, пока зал не открыт; стол режима недели открыт всем
+function tableLocked(r) { return r.mode === 'cash' && (r.variant || 'holdem') === 'holdem' && hallLockedFor(r.hall); }
+function tableRowsHtml(list) {
+    return list.length ? list.map(r => {
+        const cash = r.mode === 'cash', can = wallet.balance >= r.buyIn && r.humans < (r.seats || 6) && !tableLocked(r);
+        return `<div class="tb-row"><div class="tb-mid"><b>${cash ? esc(HALLS[r.hall].label) + ' · ' + r.sb + '/' + r.bb : 'Sit &amp; Go · друзья'}${r.variant && r.variant !== 'holdem' ? ' · ' + esc(t('v.' + r.variant)) : ''}${r.pw ? ' 🔒' : ''}</b><span>${r.host ? esc(r.host) + ' · ' : ''}людей ${r.humans} из ${r.seats || 6} · стол ${r.code}</span></div><button class="btn btn-check" onclick="joinTable('${r.code}')" ${can ? '' : 'disabled'}>СЕСТЬ</button></div>`;
+    }).join('') : '<div class="tb-empty">Открытых столов пока нет. Нажмите «Играть» в зале: стол создастся, и к вам смогут сесть другие.</div>';
+}
 function myLevel() { return (typeof PG !== 'undefined' && typeof prog !== 'undefined') ? PG.levelInfo(myXp()).level : 1; }
 function quickHall(i, variant) {
     if (sysBlocked('hall' + i)) return;
-    if (hallLockedFor(i)) { toast(`Зал откроется с ${fmtN(hallNeed(i))} фишек`); return; }
+    if (!variant && hallLockedFor(i)) { toast(`Зал откроется с ${fmtN(hallNeed(i))} фишек`); return; }
     if (wallet.balance < E.STAKES[i].buyIn) { toast(`Нужно ${E.STAKES[i].buyIn} на вход`); return; }
     menuMsg(''); settleStale(); getAudio();
     const n = ensureOnline(); if (!n) { showScreen('menu'); return; }
-    showConn('Подключение…', ''); n.queue(variant ? {t: 'quick', hall: i, variant, seats: mySeats()} : {t: 'quick', hall: i, seats: mySeats()});
+    showConn('Подключение…', ''); n.queue(variant ? {t: 'quick', hall: i, variant, seats: 6} : {t: 'quick', hall: i, seats: mySeats()});
 }
 function quickRated() {
     if (sysBlocked('rated')) return;
@@ -6579,7 +6599,7 @@ function quickRated() {
 }
 function joinTable(code) {
     const r = tablesRows.find(x => x.code === code);
-    if (r && r.mode === 'cash' && hallLockedFor(r.hall)) { toast(`Зал откроется с ${fmtN(hallNeed(r.hall))} фишек`); return; }
+    if (r && tableLocked(r)) { toast(`Зал откроется с ${fmtN(hallNeed(r.hall))} фишек`); return; }
     if (r && r.pw) { askPass(code, false); return; }
     if (r && wallet.balance < r.buyIn) { toast(`Нужно ${r.buyIn} на вход`); return; }
     menuMsg(''); settleStale(); getAudio();
@@ -7940,6 +7960,12 @@ function passBuy() {
 
 // ═════ Часть клиента: «Что нового» — список обновлений для игроков (самое новое сверху). Дополнять при каждой версии; у каждой записи сразу и русский, и английский (поле en). ═════
 const CHANGELOG = [
+    {v: '0.99.8', date: '24 ноября', title: 'Режим недели для всех', items: [
+        'Режим недели открыт всем: выбирайте вход от 500 до 250 000 фишек, играйте с друзьями за одним столом на 6 мест.'
+    ],
+        en: {date: 'Nov 24', title: 'Mode of the week for everyone', items: [
+            'The mode of the week is open to everyone: pick an entry from 500 to 250 000 chips and play with friends at one 6-seat table.'
+        ]}},
     {v: '0.99.7', date: '23 ноября', title: 'Столы на 9 мест', items: [
         'Столы на 6 или 9 мест: выбирайте в залах, турнирах, тренировке и в своём столе.',
         'Исправление ошибок: подарок больше не достаётся тому, кто сел на место после вас; в профиле игрока видна его голова и шляпа.'
@@ -8339,14 +8365,13 @@ function weekMode() { return PokerVariants.weekMode(dayKey()); }
 function weekCardHtml() {
     const m = weekMode();
     if (m === 'duel') return `<span class="m2-ti">${esc(t('wk.duel'))}</span><i class="m2-pic s-mcards-boss"></i><span class="m2-bt">${esc(t('wk.duelSub'))}</span>`;
-    const left = PokerVariants.weekEndsIn(dayKey()), i = autoHall();
+    const left = PokerVariants.weekEndsIn(dayKey()), i = wallet.balance >= E.STAKES[0].buyIn ? 0 : -1;
     return `<span class="m2-ti">${esc(t('v.' + m))}</span><span class="m2-tag wk">${esc(t('wk.tag'))}</span><i class="m2-pic s-mcards-table"></i><span class="m2-bt">${esc(t('v.' + m + 'D'))}<big>${esc(i < 0 ? t('wk.noChips') : t('wk.left', {n: left}))}</big></span>`;
 }
 function weekTap() {
     const m = weekMode();
     if (m === 'duel') { openDuel(); return; }
-    const i = autoHall(); if (i < 0) { toast(t('wk.noChips')); return; }
-    quickHall(i, m);
+    openWeek();
 }
 // кнопка ИГРАТЬ: самый высокий открытый зал, где хватает фишек
 // короткая подпись под значком зала в карточке главной («Высшая лига» → «Лига»)
