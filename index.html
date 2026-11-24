@@ -1124,7 +1124,8 @@ input { font-family: inherit; }
 .seat.active .av-wrap.hd .avatar { box-shadow: none; filter: drop-shadow(0 0 calc(var(--u)*3) #d64535) drop-shadow(0 0 calc(var(--u)*7) rgba(214,69,53,.8)); }
 .seat.winner .av-wrap.hd .avatar { box-shadow: none; filter: drop-shadow(0 0 calc(var(--u)*3) #f2c230) drop-shadow(0 0 calc(var(--u)*8) rgba(242,194,48,.85)); }
 .seat.folded .av-wrap.hd .avatar, .seat.out .av-wrap.hd .avatar { filter: grayscale(.85) brightness(.7); }
-.av-wrap.hd .tmr { inset: auto calc(var(--u)*2) calc(var(--u)*-3) calc(var(--u)*2); height: calc(var(--u)*5); border-radius: 0; -webkit-mask: none; mask: none; background: linear-gradient(90deg, var(--c) calc(var(--p, 1) * 100%), rgba(28,22,18,.8) 0); box-shadow: 0 0 0 calc(var(--u)*1.5) var(--ink); }
+.av-wrap.hd .tmr { inset: auto calc(var(--u)*4) calc(var(--u)*-11) calc(var(--u)*4); height: calc(var(--u)*5); border-radius: 0; -webkit-mask: none; mask: none; background: linear-gradient(90deg, var(--c) calc(var(--p, 1) * 100%), rgba(28,22,18,.8) 0); box-shadow: 0 0 0 calc(var(--u)*1.5) var(--ink); }
+.av-wrap.hd ~ .plate { margin-top: calc(var(--u)*11); }      /* полоска времени хода лежит между головой и ником, ничего не закрывая */
 .hat2 { position: absolute; aspect-ratio: 4 / 3; height: auto; z-index: 2; pointer-events: none; transform-origin: 50% 100%; }
 .mp-av.hd .avatar.head, .pf2-av .av-wrap.hd .avatar.head, .m2-av.hd .avatar.head { transform: scale(1.3); transform-origin: 50% 60%; }
 .av-wrap.hd::before, .av-wrap.hd::after { z-index: 8; }
@@ -1383,10 +1384,13 @@ body[data-off~="wheel"] [data-sys="wheel"], body[data-off~="rated"] [data-sys="r
 .t9 .seat:not([data-seat="0"]) { transform: translate(-50%, -50%) scale(.86); }
 .t9 .seat[data-seat="n1"] { left: 11%; top: 74%; } .t9 .seat[data-seat="n2"] { left: 11%; top: 44%; } .t9 .seat[data-seat="n3"] { left: 11%; top: 24%; } .t9 .seat[data-seat="n4"] { left: 30%; top: 11%; }
 .t9 .seat[data-seat="n5"] { left: 70%; top: 11%; } .t9 .seat[data-seat="n6"] { left: 89%; top: 24%; } .t9 .seat[data-seat="n7"] { left: 89%; top: 44%; } .t9 .seat[data-seat="n8"] { left: 89%; top: 74%; }
-.t9 .bet[data-seat="n1"] { left: 28%; top: 67%; } .t9 .bet[data-seat="n2"] { left: 26%; top: 37%; } .t9 .bet[data-seat="n3"] { left: 25%; top: 30%; } .t9 .bet[data-seat="n4"] { left: 36%; top: 21%; }
-.t9 .bet[data-seat="n5"] { left: 64%; top: 21%; } .t9 .bet[data-seat="n6"] { left: 75%; top: 30%; } .t9 .bet[data-seat="n7"] { left: 74%; top: 37%; } .t9 .bet[data-seat="n8"] { left: 72%; top: 67%; }
-.t9 .bet[data-seat="n5"], .t9 .bet[data-seat="n6"], .t9 .bet[data-seat="n7"], .t9 .bet[data-seat="n8"] { flex-direction: row-reverse; }
+.t9 .bet { transform: translate(0, -50%) scale(.86); transform-origin: 0 50%; } .t9 .bet[data-seat="n5"], .t9 .bet[data-seat="n6"], .t9 .bet[data-seat="n7"], .t9 .bet[data-seat="n8"] { transform: translate(-100%, -50%) scale(.86); transform-origin: 100% 50%; flex-direction: row-reverse; }      /* ставка растёт от места к центру, а не в обе стороны: длинная сумма не уходит под банк и к соседу */
+.t9 .bet[data-seat="0"] { left: 50%; transform: translate(-50%, -50%); transform-origin: 50% 50%; top: calc(100% - calc(var(--u)*200)); }
+.t9 .bet[data-seat="n1"] { left: 20%; top: 62%; } .t9 .bet[data-seat="n2"] { left: 23%; top: 47.5%; } .t9 .bet[data-seat="n3"] { left: 21%; top: 29%; }
+.t9 .bet[data-seat="n6"] { left: 79%; top: 29%; } .t9 .bet[data-seat="n7"] { left: 77%; top: 47.5%; } .t9 .bet[data-seat="n8"] { left: 80%; top: 62%; }
 .t9 .bet[data-seat="n5"] .bet-tag, .t9 .bet[data-seat="n6"] .bet-tag, .t9 .bet[data-seat="n7"] .bet-tag, .t9 .bet[data-seat="n8"] .bet-tag { margin: 0 calc(var(--u)*-5) 0 0; }
+.t9 .bet[data-seat="n4"], .t9 .bet[data-seat="n5"] { flex-direction: column; transform: translate(-50%, -50%) scale(.86); transform-origin: 50% 50%; top: 20%; } .t9 .bet[data-seat="n4"] { left: 43%; } .t9 .bet[data-seat="n5"] { left: 57%; }      /* верхняя пара: ставка под своими картами (сбоку её путали со ставкой соседа) */
+.t9 .bet[data-seat="n4"] .bet-tag, .t9 .bet[data-seat="n5"] .bet-tag { margin: calc(var(--u)*-3) 0 0; }
 .t9 .seat[data-seat="n1"] .hand, .t9 .seat[data-seat="n2"] .hand, .t9 .seat[data-seat="n3"] .hand, .t9 .seat[data-seat="n4"] .hand, .t9 .seat[data-seat="n5"] .hand { left: calc(var(--u)*74); }      /* у верхней пары руки смотрят вправо: не сталкиваются посередине */
 .t9 .seat[data-seat="n6"] .hand, .t9 .seat[data-seat="n7"] .hand, .t9 .seat[data-seat="n8"] .hand { right: calc(var(--u)*74); }
 .t9 .seat[data-seat="n1"] .mk-row, .t9 .seat[data-seat="n2"] .mk-row, .t9 .seat[data-seat="n3"] .mk-row, .t9 .seat[data-seat="n4"] .mk-row { right: auto; left: calc(var(--u)*-24); }
@@ -2772,6 +2776,7 @@ function createTable(opts) {
             p.name = cleanName(user.name, p.name);
             p.photo = cleanPhoto(user.photo); p.look = cleanLook(user.look);
             p.connected = true; p.sitOut = false; p.afk = false; p.timeouts = 0;
+            if (p.leaving && p.paid) p.leaving = false;      // вернулся до конца раздачи, стек ещё на столе: место за ним (иначе его высадило бы перед следующей раздачей)
             kick(); render();
             return existing;
         }
@@ -2829,7 +2834,8 @@ function createTable(opts) {
             p.sitOut = true;
             if (game.opts.mode === 'cash') {
                 p.leaving = true;                                                  // место освободится, когда закончится раздача
-                if (!p.inHand || p.folded || game.handOver || game.waiting) { log(`🚪 ${nm(p)} уходит со стеком ${p.chips}`); payOut(p, p.chips, 'cashout'); Object.assign(p, emptySeat(i)); render(); return; }
+                if (!p.inHand || game.handOver || game.waiting) { log(`🚪 ${nm(p)} уходит со стеком ${p.chips}`); payOut(p, p.chips, 'cashout'); Object.assign(p, emptySeat(i)); render(); return; }
+                if (p.folded) { log(`🚪 ${nm(p)} уходит со стеком ${p.chips}`); payOut(p, p.chips, 'cashout'); p.chips = 0; render(); return; }      // сбросил карты: стек уходит сразу, а вложенное в банк остаётся до конца раздачи (место освободится перед следующей)
             }
             // турнир с ботами (не рейтинг и не дуэль: там ботов нет): стек ушедшего доигрывает бот, место не висит пустым
             else if (game.opts.bots && !p.out && p.chips > 0) {
@@ -3214,7 +3220,7 @@ function createTable(opts) {
             p.isWinner = false;
             p.vpip = false; p.pfr = false; p.sawFlop = false;
             p.allIn = false;
-            p.noRaise = false;
+            p.noRaise = false; p.faced = 0;
             p.won = 0;
             p.back = 0;
             p.winCards = null;
@@ -3525,12 +3531,15 @@ function createTable(opts) {
                     // полный рейз открывает торговлю заново для всех
                     game.minRaise = raiseSize;
                     game.lastActors = new Set([i]);
+                    p.faced = game.currentBet;
                     game.players.forEach(q => { q.noRaise = false; });
                 } else {
                     // неполный all-in рейз: те, кто уже ходил, могут только колл/фолд
-                    game.lastActors.forEach(j => { if (j !== i) game.players[j].noRaise = true; });
+                    // правило TDA: короткие олл-ины, вместе дающие полный рейз против того, на что игрок уже ответил, открывают ему рейз снова
+                    game.lastActors.forEach(j => { if (j !== i) game.players[j].noRaise = game.currentBet - (game.players[j].faced || 0) < game.minRaise; });
                     game.lastActors.add(i);
                 }
+                p.faced = game.currentBet;
                 noteAction(p, 'raise'); game.lastAggressor = i;
                 p.action = p.allIn ? 'All-in' : (wasBet ? 'Бет' : 'Рейз');
                 if (p.allIn) log(`${nm(p)} ALL-IN ${p.bet}`);
@@ -3560,6 +3569,7 @@ function createTable(opts) {
             log(p.allIn ? `${nm(p)} ALL-IN ${p.bet} (колл ${paid})` : `${nm(p)} колл ${paid} (${(paid / game.bigBlind).toFixed(1)} BB) → стек ${p.chips}`);
             sound('call');
         }
+        if (kind !== 'fold') p.faced = game.currentBet;      // на какую ставку игрок уже ответил (для правила коротких олл-инов)
         game.lastActors.add(i);
         moveToNextPlayer();
     };
@@ -3633,7 +3643,7 @@ function createTable(opts) {
 
         const canAct = cont.filter(p => p.chips > 0);
         // торговаться не с кем: никто не может ходить, или единственный игрок со стеком уже уравнял ставку
-        const noBetting = canAct.length === 0 || (canAct.length === 1 && canAct[0].bet >= game.currentBet);
+        const noBetting = canAct.length === 0 || (canAct.length === 1 && canAct[0].bet >= Math.max(0, ...cont.filter(q => q !== canAct[0]).map(q => q.bet)));      // против короткого олл-ина ББ доплачивать некому
         // все, кто может ходить, уже ходили и уравняли ставку
         const closed = canAct.every(p => p.bet === game.currentBet && game.lastActors.has(p.idx));
 
@@ -3710,7 +3720,7 @@ function createTable(opts) {
         game.players.forEach(p => { if (p.bet > 0) ev('sweep', {seat: p.idx, amt: p.bet}); });
         game.players.forEach(p => {
             p.bet = 0;
-            p.noRaise = false;
+            p.noRaise = false; p.faced = 0;
             p.action = p.folded ? 'Фолд' : (p.allIn ? 'All-in' : '');
         });
         game.currentBet = 0;
@@ -3800,11 +3810,19 @@ function createTable(opts) {
         if (onHand) { try { onHand({n: game.hand, kind: kind, players: inHand.map(p => ({userId: p.userId, seat: p.idx, put: p.invested, won: p.won || 0, back: kind === 'showdown' ? (p.back || 0) : 0, folded: p.folded, chips: p.chips, allIn: !!p.allIn, v: !!p.vpip, r: !!p.pfr, f: !!p.sawFlop, hole: p.userId != null ? p.hand.map(c => ({suit: c.suit, rank: c.rank})) : null, rk: kind === 'showdown' && !p.folded && handOf && handOf[p.idx] ? handOf[p.idx].rank : -1}))}); } catch (e) { /* подсчёт опыта не должен ломать игру */ } }
     }
 
+    // непокрытая ставка: сколько самый большой вклад раздачи превышает второй (считая и сбросивших); это возврат, а не выигрыш
+    function uncalled() {
+        let top = -1, a = 0, b = 0;
+        game.players.forEach((q, i) => { const v = q.invested || 0; if (v > a) { b = a; a = v; top = i; } else if (v > b) b = v; });
+        return {seat: top, amt: Math.max(0, a - b)};
+    }
+
     // Все, кроме одного, сфолдили — банк забирает оставшийся без вскрытия
     H.awardUncontested = function (w) {
         stopTimer();
         hideActions();
-        const rake = rakeFor(game.pot), take = game.pot - rake;
+        const un = uncalled(), back = un.seat === w.idx ? un.amt : 0;
+        const rake = rakeFor(game.pot - back), take = game.pot - rake;      // рейк только с оспоренного (непокрытая ставка возвращается без рейка)
         w.chips += take;
         w.won = take;
         w.isWinner = true;
@@ -3837,25 +3855,27 @@ function createTable(opts) {
             log(`  ${nm(p)}: ${fmtCards(p.hand)} → ${res.handOf[p.idx].name}`);
         });
 
+        // банк с одним претендентом — возврат только в пределах непокрытой ставки; фишки сбросивших в нём — выигранный банк
+        const un = uncalled();
+        res.pots.forEach(pt => { pt.back = pt.elig.length === 1 && pt.elig[0] === un.seat ? Math.min(un.amt, pt.amount) : 0; });
         let sideNo = 0, mainDone = false;
         res.pots.forEach(pt => {
-            if (pt.elig.length === 1) {
-                log(`↩ Возврат непокрытой ставки ${pt.amount} → ${nm(game.players[pt.elig[0]])}`);
-                return;
-            }
+            if (pt.back > 0) log(`↩ Возврат непокрытой ставки ${pt.back} → ${nm(game.players[pt.elig[0]])}`);
+            const won = pt.amount - pt.back;
+            if (won <= 0) return;
             const label = !mainDone ? 'Основной банк' : `Побочный банк #${++sideNo}`;
             mainDone = true;
             const names = pt.winners.map(w => nm(game.players[w])).join(', ');
-            log(`🏆 ${label} ${pt.amount}: ${pt.winners.length > 1 ? 'делят ' : ''}${names} — ${pt.hand.name}`, 'result');
+            log(`🏆 ${label} ${won}: ${pt.winners.length > 1 ? 'делят ' : ''}${names} — ${pt.hand.name}`, 'result');
             pt.winners.forEach(w => { game.players[w].isWinner = true; });
         });
 
         const refund = new Array(NS()).fill(0);      // возврат непокрытой ставки: это не выигрыш (не раздача, не опыт, не подсветка победителя)
-        res.pots.forEach(pt => { if (pt.elig.length === 1) refund[pt.elig[0]] += pt.amount; });
-        game.potBreakdown = res.pots.map(x => x.amount);
+        res.pots.forEach(pt => { if (pt.back > 0) refund[pt.elig[0]] += pt.back; });
+        game.potBreakdown = res.pots.map(x => x.amount - x.back).filter(a => a > 0);
         {   // рейк берётся только с оспоренных банков (возврат непокрытой ставки не облагается), пропорционально выигрышу
             let contested = 0;
-            res.pots.forEach(pt => { if (pt.elig.length !== 1) contested += pt.amount; });
+            res.pots.forEach(pt => { contested += pt.amount - pt.back; });
             const rake = rakeFor(contested);
             if (rake > 0) {
                 const win = res.payout.map((v, i) => Math.max(0, v - refund[i])), total = win.reduce((a, b) => a + b, 0);
@@ -3929,12 +3949,20 @@ function createTable(opts) {
         const alive = game.players.filter(p => !p.empty && p.chips > 0);
         if (alive.length < 2) { if (cash) enterWaiting(); else gameOver(); return; }
 
-        // кнопка дилера переходит к следующему игроку со стеком
-        let attempts = 0;
-        do {
-            game.dealer = (game.dealer + 1) % NS();
-            attempts++;
-        } while (game.players[game.dealer].chips === 0 && attempts < NS());
+        // большой блайнд всегда переходит к следующему игроку со стеком, прошлый ББ ставит малый, кнопка перед ним:
+        // никто не платит ББ дважды подряд и не пропускает его, когда кто-то вылетел или подсел (кнопка может постоять на месте)
+        const live = i => !game.players[i].empty && game.players[i].chips > 0;
+        const step = (i, d) => { let k = i, n = 0; do { k = (k + d + NS()) % NS(); } while (!live(k) && ++n < NS()); return k; };
+        if (game.bb != null && game.bb >= 0 && game.bb < NS()) {
+            const bb = step(game.bb, 1);
+            game.dealer = alive.length === 2 ? step(bb, -1) : step(step(bb, -1), -1);      // вдвоём кнопка = малый блайнд
+        } else {
+            let attempts = 0;
+            do {
+                game.dealer = (game.dealer + 1) % NS();
+                attempts++;
+            } while (game.players[game.dealer].chips === 0 && attempts < NS());
+        }
 
         game.hand++;
         H.startHand();
@@ -3985,7 +4013,7 @@ function createTable(opts) {
         setEconomy: function (c) { if (!c) return; if (c.rakePct !== undefined) eco.rakePct = Math.max(0, Math.min(10, +c.rakePct || 0)); if (c.rakeCapBB !== undefined) eco.rakeCapBB = Math.max(0, +c.rakeCapBB || 0); if (c.feePct !== undefined) eco.feePct = Math.max(0, Math.min(20, +c.feePct || 0)); },
         // для тестов
         _t: {buildPots: buildPots, computePayouts: computePayouts, contenders: contenders, nextActor: nextActor,
-             canRaise: canRaise, putChips: putChips, botTurn: botTurn, botChoose: botChoose, autoAct: autoAct}
+             canRaise: canRaise, putChips: putChips, botTurn: botTurn, botChoose: botChoose, autoAct: autoAct, nextHand: nextHand}
     };
 }
 
@@ -4419,7 +4447,7 @@ const E = PokerEngine;
 const {BOT_CHARACTERS, TURN_SECONDS, bestHand} = E;
 const SERVER_URL = 'wss://pokertest-server.onrender.com';              // подставляется при сборке; ?server=wss://... переопределяет
 let BOT_LINK = 'https://t.me/bratishkapoker_bot';      // имя бота присылает сервер в hello (переменная BOT_USERNAME на Render), это запасное
-const APP_VERSION = '0.99.8';                       // должна совпадать с v в меню; build.py кладёт её в version.json
+const APP_VERSION = '0.99.9';                       // должна совпадать с v в меню; build.py кладёт её в version.json
 const tg = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
 const SUIT_CLASS = E.SUIT_CLASS;
 const SEAT_COLORS = ['#d64535', '#4a90c8', '#e8821a', '#a89a80', '#4fb060', '#ffe27a'];
@@ -7960,6 +7988,14 @@ function passBuy() {
 
 // ═════ Часть клиента: «Что нового» — список обновлений для игроков (самое новое сверху). Дополнять при каждой версии; у каждой записи сразу и русский, и английский (поле en). ═════
 const CHANGELOG = [
+    {v: '0.99.9', date: '24 ноября', title: 'Порядок за столом на 9', items: [
+        'Стол на 9 мест: ставки стоят у своих игроков и не прячутся под банк, полоска хода под головой не закрывает ник.',
+        'Исправление ошибок: блайнды идут по кругу без повторов, когда кто-то вылетает; честнее делится банк с ва-банками и возвратом лишней ставки.'
+    ],
+        en: {date: 'Nov 24', title: 'Tidier 9-seat table', items: [
+            '9-seat table: bets stay next to their players and no longer hide under the pot; the turn bar sits under the head and does not cover the name.',
+            'Bug fixes: blinds go around without repeats when someone busts; pots with all-ins and returned extra bets are split more fairly.'
+        ]}},
     {v: '0.99.8', date: '24 ноября', title: 'Режим недели для всех', items: [
         'Режим недели открыт всем: выбирайте вход от 500 до 250 000 фишек, играйте с друзьями за одним столом на 6 мест.'
     ],
