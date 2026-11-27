@@ -4520,7 +4520,7 @@ const E = PokerEngine;
 const {BOT_CHARACTERS, TURN_SECONDS, bestHand} = E;
 const SERVER_URL = 'wss://pokertest-server.onrender.com';              // подставляется при сборке; ?server=wss://... переопределяет
 let BOT_LINK = 'https://t.me/bratishkapoker_bot';      // имя бота присылает сервер в hello (переменная BOT_USERNAME на Render), это запасное
-const APP_VERSION = '1.0.0';                       // должна совпадать с v в меню; build.py кладёт её в version.json
+const APP_VERSION = '1.0.1';                       // должна совпадать с v в меню; build.py кладёт её в version.json
 const tg = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) || null;
 const SUIT_CLASS = E.SUIT_CLASS;
 const SEAT_COLORS = ['#d64535', '#4a90c8', '#e8821a', '#a89a80', '#4fb060', '#ffe27a'];
@@ -6328,7 +6328,7 @@ function renderLobby() {
     }).join(''));
     const host = S.host === S.me;
     $('lobbyStart').style.display = host ? 'flex' : 'none';
-    { const custom = mode === 'online' && !roomInfo().rated && !roomInfo().duel && !roomInfo().paid, b = $('lobbyStart');      // стол с друзьями: платный старт в фишках (цену задаёт сервер, один раз за стол)
+    { const custom = SYS.tc > 0 && mode === 'online' && !roomInfo().rated && !roomInfo().duel && !roomInfo().paid, b = $('lobbyStart');      // цена 0: бесплатно, на кнопке без цены      // стол с друзьями: платный старт в фишках (цену задаёт сервер, один раз за стол)
       const html = custom ? `<i class="ic s-icons2-play"></i> ${esc(t('lb.start'))} · <span class="lb-pr"><i class="bi s-chips-red lb-chip"></i>${fmtN(SYS.tc)}</span>` : `<i class="ic s-icons2-play"></i> ${esc(t('lb.start'))}`; if (b._h !== html) { b.innerHTML = html; b._h = html; } b.classList.toggle('cost', !!custom); }
     $('lobbyStart').disabled = !botsOn && n < 2;
     $('lobbyStart').style.opacity = (!botsOn && n < 2) ? '.5' : '';
@@ -8010,6 +8010,24 @@ function webGoogleInit() {
 // patchUrlMappings из SDK сам переписывает адреса WebSocket и fetch. SDK лежит отдельным файлом discord-sdk.js (client/vendor), грузится только в Discord.
 // Вход: authorize (код) → наш сервер /discord/token (код → игрок dc…, сеанс как у веб-версии) → authenticate. Все, кто запустил игру в одном канале, садятся за один стол.
 const DC_PREFIX = '/srv';
+// Discord запрещает на странице встроенные обработчики (onclick="…" и т. п.: в CSP нет unsafe-inline), но разрешает unsafe-eval.
+// Поэтому внутри Discord один перехватчик на документе находит ближайший элемент с атрибутом on<событие> и выполняет его код сам (this = элемент, event = событие).
+const DC_INLINE = ['click', 'input', 'change', 'keydown', 'pointerdown', 'pointerup'];
+function dcInlineShim() {
+    const cache = new Map();
+    DC_INLINE.forEach(type => document.addEventListener(type, ev => {
+        for (let el = ev.target; el && el !== document; el = el.parentNode) {
+            if (!el.getAttribute) continue;
+            const code = el.getAttribute('on' + type); if (!code) continue;
+            if (el.disabled) continue;
+            let fn = cache.get(code);
+            if (!fn) { try { fn = new Function('event', code); } catch (e) { return; } cache.set(code, fn); }
+            try { if (fn.call(el, ev) === false) ev.preventDefault(); } catch (e) { console.error(e); }
+            if (ev.cancelBubble) return;      // как у браузера: обработчики срабатывают от вложенного к внешнему, пока событие не остановили
+        }
+    }, false));
+}
+if (typeof location !== 'undefined' && /[?&]frame_id=/.test(location.search) && /[?&]instance_id=/.test(location.search)) dcInlineShim();
 let dcSdk = null;
 function inDiscord() { return !!(queryParam('frame_id') && queryParam('instance_id')); }
 function dcHttpBase() { const u = serverUrl(); return u ? u.replace(/^ws/, 'http').replace(/\/ws\/?$/, '') : ''; }
@@ -8058,14 +8076,14 @@ async function discordStart(done) {
 
 // ═════ Часть клиента: системные настройки сервера и админка владельца (v0.99.5). Склеивается в сборке после предыдущих по порядку (см. build.py), общая область видимости.
 // Сервер присылает {t:'sys'}: что выключено владельцем, баннер, цена старта стола. Админка (owner.js) шлёт {t:'adm'} через соединение профиля.
-let SYS = {off: [], banner: null, tc: 2500, ex: 5, ss: 0, admin: false};
+let SYS = {off: [], banner: null, tc: 0, ex: 5, ss: 0, admin: false};
 
 function sysIsOff(k) { return SYS.off.indexOf(k) >= 0; }
 // функция выключена владельцем: говорим игроку и не отправляем запрос (сервер всё равно ответит отказом)
 function sysBlocked(k) { if (!sysIsOff(k)) return false; toast(t('sys.off'), true); return true; }
 
 function onSysMsg(m) {
-    SYS = {off: Array.isArray(m.off) ? m.off : [], banner: m.banner || null, tc: m.tc | 0 || 2500, ex: m.ex | 0, ss: Number(m.ss) || 0, admin: !!m.admin};
+    SYS = {off: Array.isArray(m.off) ? m.off : [], banner: m.banner || null, tc: Math.max(0, m.tc | 0), ex: m.ex | 0, ss: Number(m.ss) || 0, admin: !!m.admin};
     if (typeof renderSeasonCard === 'function') renderSeasonCard();
     if (typeof profileEnabled === 'function' && profileEnabled()) psend({t: 'pass'});      // сезон мог открыться или закрыться (выключатели владельца)
     try { document.body.setAttribute('data-off', SYS.off.join(' ')); } catch (e) {}
@@ -8310,6 +8328,14 @@ function passBuy() {
 
 // ═════ Часть клиента: «Что нового» — список обновлений для игроков (самое новое сверху). Дополнять при каждой версии; у каждой записи сразу и русский, и английский (поле en). ═════
 const CHANGELOG = [
+    {v: '1.0.1', date: '27 ноября', title: 'Стол с друзьями бесплатно', items: [
+        'Стол с друзьями теперь бесплатный: создавайте и начинайте игру без платы за старт.',
+        'Исправление ошибок.'
+    ],
+        en: {date: 'Nov 27', title: 'Free tables with friends', items: [
+            'Tables with friends are now free: create one and start playing with no start fee.',
+            'Bug fixes.'
+        ]}},
     {v: '1.0.0', date: '27 ноября', title: 'Школа покера и крупье', items: [
         'Школа покера: 10 коротких уроков с вопросами и +100 фишек за каждый. Новичкам — учебная раздача с подсказками и +500 за первую победу.',
         'Крупье за столом: рука раздаёт карты из колоды и показывает, чей сейчас ход.',
@@ -8347,52 +8373,6 @@ const CHANGELOG = [
     ],
         en: {date: 'Nov 23', title: 'Your own table from a chat', items: [
             'Create your own table right in a chat: pick a chat and the table type (Hold\'em, Omaha, All-in or Fold, Short Deck or Jokers, Sit & Go or cash). Friends tap the button in the message and sit next to you.'
-        ]}},
-    {v: '0.99.5', date: '21 ноября', title: 'Сезон «Зима», турниры и новые залы', items: [
-        'Скоро сезон «Зима»: лента наград на 30 уровней, у каждого уровня бесплатная награда и награда пропуска (зимние головы, шляпы, рубашки, титулы, фразы).',
-        'Турниры Sit & Go по уровням входа, как залы: от 500 до 250 000 фишек. Стартуют от двух игроков, остальные места займут боты.',
-        'Два новых зала для больших стеков: «Элита» (вход 50 000) и «Высшая лига» (вход 250 000).',
-        'Стол с друзьями теперь за 2 500 фишек вместо кристаллов.',
-        'Когда игрок выходит из партии, его место занимает бот.',
-        'Исправление ошибок и улучшение интерфейса.'
-    ],
-        en: {date: 'Nov 21', title: 'Winter season, tournaments and new halls', items: [
-            'Winter season is coming: a 30-level reward track, each level has a free reward and a pass reward (winter heads, hats, card backs, titles, phrases).',
-            'Sit & Go tournaments by entry level, like the halls: from 500 to 250 000 chips. They start with two players and bots fill the rest.',
-            'Two new halls for big stacks: Elite (entry 50 000) and Top league (entry 250 000).',
-            'A table with friends now costs 2 500 chips instead of crystals.',
-            'When a player leaves a game, a bot takes the seat.',
-            'Bug fixes and interface improvements.'
-        ]}},    {v: '0.99.4', date: '16 ноября', title: 'Вход через Google', items: [
-        'В браузере можно войти через Google: тот же профиль на любом устройстве.'
-    ],
-        en: {date: 'Nov 16', title: 'Sign in with Google', items: [
-            'In the browser you can sign in with Google: the same profile on any device.'
-        ]}},    {v: '0.99.3', date: '16 ноября', title: 'Исправление входа в браузере', items: [
-        'В браузере кнопка входа через Telegram теперь появляется сразу.'
-    ],
-        en: {date: 'Nov 16', title: 'Browser sign-in fix', items: [
-            'In the browser the Telegram sign-in button now shows up right away.'
-        ]}},    {v: '0.99.2', date: '16 ноября', title: 'Вход через Telegram в браузере', items: [
-        'Играйте в браузере с тем же профилем: войдите через Telegram в настройках, и фишки, магазин и друзья на месте.',
-        'За приглашённых друзей награда теперь до 50 раз в день.'
-    ],
-        en: {date: 'Nov 16', title: 'Sign in with Telegram in the browser', items: [
-            'Play in the browser with the same profile: sign in with Telegram in settings and your chips, shop and friends are there.',
-            'The reward for invited friends now works up to 50 times a day.'
-        ]}},    {v: '0.99.1', date: '16 ноября', title: 'Миссии каждый день и открытая статистика', items: [
-        'Миссии залов каждый день, и они стали разнообразнее.',
-        'За столом видно, какой идёт режим, а при входе показано его главное правило. В справке по комбинациям порядок для шорт-дека.',
-        'В профиле игрока вся его статистика. Свою можно скрыть в настройках за кристаллы.',
-        'Предметы за кристаллы подешевели.',
-        'После фолда видно, какая была бы комбинация. Эмодзи ровнее и крупнее, исправление ошибок.'
-    ],
-        en: {date: 'Nov 16', title: 'Daily missions and open stats', items: [
-            'Hall missions refresh every day and there are more kinds.',
-            'The table shows which mode is on, and its main rule when you sit down. The hand rankings help shows the Short Deck order.',
-            'A player profile shows all their stats. You can hide yours in settings for crystals.',
-            'Crystal items are cheaper.',
-            'After you fold you see what your hand would have been. Even, bigger emoji and bug fixes.'
         ]}},
 ];
 // красная точка на кнопке «Настройки», пока не заглянули в «Что нового» после обновления (новичку не показываем)
